@@ -13,4 +13,3 @@ pub use payloads::{
     HttpRequestEventData, HttpResponseEventData, LogEventData, NetworkErrorEventData,
     NetworkRetryEventData,
 };
-

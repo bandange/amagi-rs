@@ -6,7 +6,6 @@ pub(crate) mod requests;
 mod search;
 mod transport;
 
-
 use super::sign::generate_verify_fp;
 
 const DANMAKU_SEGMENT_MS: u64 = 32_000;

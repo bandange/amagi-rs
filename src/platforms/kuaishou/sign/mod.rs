@@ -6,7 +6,6 @@ mod primitives;
 mod state;
 mod types;
 
-
 pub use api::{
     generate_hxfalcon_from_payload, generate_kww, get_cat_version, sign_live_api_request,
     sign_live_api_url,

@@ -1,6 +1,5 @@
 //! Global tracing subscriber initialization and runtime telemetry defaults.
 
-
 use std::fmt;
 use std::io::IsTerminal;
 use std::sync::OnceLock;

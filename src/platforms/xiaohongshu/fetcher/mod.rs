@@ -86,5 +86,4 @@ impl XiaohongshuFetcher {
         signing.signer.set_browser_state(browser_state);
         Ok(())
     }
-
 }

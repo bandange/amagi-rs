@@ -74,7 +74,6 @@ pub const DEFAULT_HOST: &str = "127.0.0.1";
 /// Default port used by the built-in HTTP server.
 pub const DEFAULT_PORT: u16 = 4567;
 
-
 /// Parse process arguments and run the application.
 ///
 /// This is a convenience wrapper around [`cli::parse_env`] followed by [`app::run`].

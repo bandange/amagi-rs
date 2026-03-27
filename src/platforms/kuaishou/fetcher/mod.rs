@@ -14,7 +14,6 @@ mod support;
 mod value;
 mod work;
 
-
 const KUAISHOU_GRAPHQL_ENDPOINT: &str = "https://www.kuaishou.com/graphql";
 const KUAISHOU_LIVE_BASE_URL: &str = "https://live.kuaishou.com";
 const EMOJI_LIST_OPERATION_NAME: &str = "visionBaseEmoticons";

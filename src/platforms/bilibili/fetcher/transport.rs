@@ -273,7 +273,6 @@ impl BilibiliFetcher {
 
         header_map_from_headers(&headers)
     }
-
 }
 
 fn header_map_from_headers(headers: &BTreeMap<String, String>) -> Result<HeaderMap, AppError> {

@@ -10,7 +10,6 @@ pub(crate) mod requests;
 mod transport;
 mod user;
 
-
 const BILIBILI_API_BASE_URL: &str = "https://api.bilibili.com";
 const BILIBILI_VC_BASE_URL: &str = "https://api.vc.bilibili.com";
 const BILIBILI_LIVE_BASE_URL: &str = "https://api.live.bilibili.com";

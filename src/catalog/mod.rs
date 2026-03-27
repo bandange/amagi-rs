@@ -13,4 +13,3 @@ pub use lookup::{
     find_method, get_api_route, get_chinese_method_name, get_english_method_name, method_specs,
 };
 pub use types::{ApiMethodSpec, HttpMethod, ParsePlatformError, Platform, PlatformSpec};
-
