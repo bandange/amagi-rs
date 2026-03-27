@@ -1,0 +1,362 @@
+{
+  "meta": {
+    "code": "zh-CN",
+    "aliases": ["zh", "zh-cn", "zh-hans"]
+  },
+  "headings": {
+    "usage": "用法",
+    "global_options": "全局选项",
+    "options": "选项",
+    "arguments": "参数",
+    "commands": "命令"
+  },
+  "help": {
+    "root_after_help": "使用 --lang zh 或 --lang en 切换 CLI 帮助语言。"
+  },
+  "commands": {
+    "root": {
+      "about": "面向多平台社交网页适配的 Rust SDK、CLI 与 Web API 服务"
+    },
+    "run": {
+      "about": "运行本地 CLI 工作流。"
+    },
+    "serve": {
+      "about": "启动内置 Web API 服务。"
+    },
+    "run.bilibili": {
+      "about": "运行 Bilibili 专用任务。"
+    },
+    "run.bilibili.video-info": {
+      "about": "获取单个 Bilibili 视频详情。"
+    },
+    "run.bilibili.video-stream": {
+      "about": "获取单个 Bilibili 视频流信息。"
+    },
+    "run.bilibili.video-danmaku": {
+      "about": "获取单个 Bilibili 视频弹幕分段。"
+    },
+    "run.bilibili.comments": {
+      "about": "获取单个 Bilibili 内容的评论列表。"
+    },
+    "run.bilibili.comment-replies": {
+      "about": "获取单个 Bilibili 根评论的回复列表。"
+    },
+    "run.bilibili.user-card": {
+      "about": "获取单个 Bilibili 用户卡片。"
+    },
+    "run.bilibili.user-dynamic-list": {
+      "about": "获取单个 Bilibili 用户动态列表。"
+    },
+    "run.bilibili.user-space-info": {
+      "about": "获取单个 Bilibili 用户空间信息。"
+    },
+    "run.bilibili.uploader-total-views": {
+      "about": "获取单个 UP 主的总播放量。"
+    },
+    "run.bilibili.dynamic-detail": {
+      "about": "获取单个 Bilibili 动态详情。"
+    },
+    "run.bilibili.dynamic-card": {
+      "about": "获取单个 Bilibili 动态卡片。"
+    },
+    "run.bilibili.bangumi-info": {
+      "about": "获取单个 Bilibili 番剧元数据。"
+    },
+    "run.bilibili.bangumi-stream": {
+      "about": "获取单个 Bilibili 番剧播放流。"
+    },
+    "run.bilibili.live-room-info": {
+      "about": "获取单个 Bilibili 直播间详情。"
+    },
+    "run.bilibili.live-room-init": {
+      "about": "获取单个 Bilibili 直播间初始化信息。"
+    },
+    "run.bilibili.login-status": {
+      "about": "获取当前 Bilibili 登录状态。"
+    },
+    "run.bilibili.login-qrcode": {
+      "about": "请求一个 Bilibili 登录二维码。"
+    },
+    "run.bilibili.qrcode-status": {
+      "about": "轮询一个 Bilibili 登录二维码状态。"
+    },
+    "run.bilibili.emoji-list": {
+      "about": "获取 Bilibili 表情列表。"
+    },
+    "run.bilibili.av-to-bv": {
+      "about": "将 AV 号转换为 BV 号。"
+    },
+    "run.bilibili.bv-to-av": {
+      "about": "将 BV 号转换为 AV 号。"
+    },
+    "run.bilibili.article-content": {
+      "about": "获取单个 Bilibili 专栏正文。"
+    },
+    "run.bilibili.article-cards": {
+      "about": "获取一个或多个 Bilibili 专栏卡片。"
+    },
+    "run.bilibili.article-info": {
+      "about": "获取单个 Bilibili 专栏元数据。"
+    },
+    "run.bilibili.article-list-info": {
+      "about": "获取单个 Bilibili 文集信息。"
+    },
+    "run.bilibili.captcha-from-voucher": {
+      "about": "根据验证码凭证请求 Bilibili 验证挑战。"
+    },
+    "run.bilibili.validate-captcha": {
+      "about": "提交并验证一个 Bilibili 验证码结果。"
+    },
+    "run.douyin": {
+      "about": "运行抖音专用任务。"
+    },
+    "run.douyin.parse-work": {
+      "about": "解析单个抖音作品。"
+    },
+    "run.douyin.video-work": {
+      "about": "获取单个抖音视频作品。"
+    },
+    "run.douyin.image-album-work": {
+      "about": "获取单个抖音图文作品。"
+    },
+    "run.douyin.slides-work": {
+      "about": "获取单个抖音图集作品。"
+    },
+    "run.douyin.text-work": {
+      "about": "获取单个抖音文字作品。"
+    },
+    "run.douyin.work-comments": {
+      "about": "获取单个抖音作品的评论列表。"
+    },
+    "run.douyin.comment-replies": {
+      "about": "获取单个抖音评论的回复列表。"
+    },
+    "run.douyin.user-profile": {
+      "about": "获取单个抖音用户资料。"
+    },
+    "run.douyin.user-video-list": {
+      "about": "获取单个抖音用户的视频列表。"
+    },
+    "run.douyin.user-favorite-list": {
+      "about": "获取单个抖音用户的收藏列表。"
+    },
+    "run.douyin.user-recommend-list": {
+      "about": "获取单个抖音用户的推荐列表。"
+    },
+    "run.douyin.search": {
+      "about": "搜索抖音内容。"
+    },
+    "run.douyin.suggest-words": {
+      "about": "获取抖音搜索联想词。"
+    },
+    "run.douyin.music-info": {
+      "about": "获取抖音音乐信息。"
+    },
+    "run.douyin.live-room-info": {
+      "about": "获取抖音直播间信息。"
+    },
+    "run.douyin.login-qrcode": {
+      "about": "请求抖音登录二维码。"
+    },
+    "run.douyin.emoji-list": {
+      "about": "获取抖音表情列表。"
+    },
+    "run.douyin.dynamic-emoji-list": {
+      "about": "获取抖音动态表情列表。"
+    },
+    "run.douyin.danmaku-list": {
+      "about": "获取抖音弹幕列表。"
+    },
+    "run.kuaishou": {
+      "about": "运行快手专用任务。"
+    },
+    "run.kuaishou.video-work": {
+      "about": "获取单个快手作品。"
+    },
+    "run.kuaishou.work-comments": {
+      "about": "获取单个快手作品的评论列表。"
+    },
+    "run.kuaishou.emoji-list": {
+      "about": "获取快手表情列表。"
+    },
+    "run.kuaishou.user-profile": {
+      "about": "获取单个快手用户资料。"
+    },
+    "run.kuaishou.user-work-list": {
+      "about": "获取单个快手用户的作品列表。"
+    },
+    "run.kuaishou.live-room-info": {
+      "about": "获取快手直播间信息。"
+    },
+    "run.xiaohongshu": {
+      "about": "运行小红书专用任务。"
+    },
+    "run.xiaohongshu.home-feed": {
+      "about": "获取小红书首页推荐流。"
+    },
+    "run.xiaohongshu.note-detail": {
+      "about": "获取单个小红书笔记详情。"
+    },
+    "run.xiaohongshu.note-comments": {
+      "about": "获取单个小红书笔记的评论列表。"
+    },
+    "run.xiaohongshu.user-profile": {
+      "about": "获取单个小红书用户资料。"
+    },
+    "run.xiaohongshu.user-note-list": {
+      "about": "获取单个小红书用户的笔记列表。"
+    },
+    "run.xiaohongshu.emoji-list": {
+      "about": "获取小红书表情列表。"
+    },
+    "run.xiaohongshu.search": {
+      "about": "搜索小红书笔记。"
+    },
+    "run.twitter": {
+      "about": "运行 Twitter/X 专用任务。"
+    },
+    "run.twitter.search-tweets": {
+      "about": "搜索 Twitter/X 推文。"
+    },
+    "run.twitter.user-profile": {
+      "about": "获取单个 Twitter/X 用户资料。"
+    },
+    "run.twitter.user-timeline": {
+      "about": "获取单个 Twitter/X 用户时间线。"
+    },
+    "run.twitter.user-replies": {
+      "about": "获取单个 Twitter/X 用户回复流。"
+    },
+    "run.twitter.user-media": {
+      "about": "获取单个 Twitter/X 用户媒体流。"
+    },
+    "run.twitter.user-followers": {
+      "about": "获取单个 Twitter/X 用户粉丝列表。"
+    },
+    "run.twitter.user-following": {
+      "about": "获取单个 Twitter/X 用户关注列表。"
+    },
+    "run.twitter.user-likes": {
+      "about": "获取当前已登录 Twitter/X 账户的点赞列表。"
+    },
+    "run.twitter.user-bookmarks": {
+      "about": "获取当前已登录 Twitter/X 账户的书签列表。"
+    },
+    "run.twitter.user-followed": {
+      "about": "获取当前已登录 Twitter/X 账户的关注时间线。"
+    },
+    "run.twitter.user-recommended": {
+      "about": "获取当前已登录 Twitter/X 账户的推荐时间线。"
+    },
+    "run.twitter.search-users": {
+      "about": "搜索 Twitter/X 用户。"
+    },
+    "run.twitter.tweet-detail": {
+      "about": "获取单条 Twitter/X 推文详情。"
+    },
+    "run.twitter.tweet-replies": {
+      "about": "获取单条 Twitter/X 推文的回复列表。"
+    },
+    "run.twitter.tweet-likers": {
+      "about": "获取点赞单条 Twitter/X 推文的用户列表。"
+    },
+    "run.twitter.tweet-retweeters": {
+      "about": "获取转推单条 Twitter/X 推文的用户列表。"
+    },
+    "run.twitter.space-detail": {
+      "about": "获取单个 Twitter/X Space 详情。"
+    }
+  },
+  "args": {
+    "help": "显示当前命令的帮助信息。",
+    "version": "显示版本信息。",
+    "lang": "CLI 帮助语言。支持 zh 和 en。",
+    "output": "CLI 输出格式。",
+    "output_file": "将 CLI 输出写入文件的可选路径。",
+    "pretty": "将 JSON 输出格式化为带缩进的可读形式。",
+    "append": "向 --output-file 追加内容，而不是先清空文件。",
+    "create_parent_dirs": "为 --output-file 自动创建缺失的父目录。",
+    "douyin_cookie": "抖音 Cookie，供 CLI 任务与 Web 服务共享。",
+    "bilibili_cookie": "Bilibili Cookie，供 CLI 任务与 Web 服务共享。",
+    "kuaishou_cookie": "快手 Cookie，供 CLI 任务与 Web 服务共享。",
+    "xiaohongshu_cookie": "小红书 Cookie，供 CLI 任务与 Web 服务共享。",
+    "twitter_cookie": "Twitter/X Cookie，供 CLI 任务与 Web 服务共享。",
+    "timeout_ms": "上游请求超时时间，单位毫秒。",
+    "max_retries": "可恢复上游失败的最大重试次数。",
+    "log_format": "运行时日志输出格式。",
+    "log_level": "应用输出的最低日志级别。",
+    "quiet": "关闭常规启动输出。",
+    "aweme_id": "目标作品的 aweme_id。",
+    "photo_id": "目标作品的 photo_id。",
+    "comment_id": "目标评论的 comment_id。",
+    "sec_uid": "目标用户的 sec_uid。",
+    "principal_id": "目标用户或直播间的 principal_id。",
+    "music_id": "目标音乐的 music_id。",
+    "room_id": "目标直播间的 room_id。",
+    "web_rid": "目标直播间对应的 web_rid。",
+    "verify_fp": "可选的 verify_fp 覆盖值。",
+    "number": "可选的每页数量。",
+    "cursor": "可选的分页游标。",
+    "max_cursor": "可选的分页游标。",
+    "query": "搜索关键词。",
+    "search_id": "可选的搜索游标 ID。",
+    "search_type": "可选的搜索类型。",
+    "duration": "作品时长，单位毫秒。",
+    "start_time": "可选的弹幕起始时间。",
+    "end_time": "可选的弹幕结束时间。",
+    "bvid": "目标视频的 BV 号。",
+    "aid": "目标视频的 AV 号。",
+    "cid": "目标视频或番剧的 cid。",
+    "segment_index": "可选的弹幕分段索引。",
+    "oid": "目标内容的 oid。",
+    "comment_type": "评论类型。",
+    "mode": "可选的评论模式。",
+    "root": "根评论 ID。",
+    "host_mid": "目标用户的 mid。",
+    "dynamic_id": "目标动态 ID。",
+    "bangumi_id": "目标番剧 ID。",
+    "ep_id": "目标剧集 ep_id。",
+    "qrcode_key": "二维码 key。",
+    "article_id": "目标专栏 ID。",
+    "ids": "一个或多个专栏 ID。",
+    "list_id": "目标文集 ID。",
+    "v_voucher": "验证码凭证。",
+    "csrf": "可选的 csrf。",
+    "challenge": "验证码 challenge。",
+    "token": "验证码 token。",
+    "validate": "验证码 validate。",
+    "seccode": "验证码 seccode。",
+    "pcursor": "可选的分页 pcursor。",
+    "count": "可选的请求数量。",
+    "cursor_score": "可选的首页游标分数。",
+    "num": "可选的请求数量。",
+    "refresh_type": "可选的刷新类型。",
+    "note_index": "可选的笔记索引。",
+    "category": "可选的 feed 分类。",
+    "search_key": "可选的 feed 搜索关键字。",
+    "note_id": "目标笔记 ID。",
+    "xsec_token": "目标笔记对应的 xsec_token。",
+    "user_id": "目标用户 ID。",
+    "keyword": "搜索关键词。",
+    "screen_name": "目标用户的 screen_name。",
+    "tweet_id": "目标推文 ID。",
+    "sort_by": "可选的回复排序方式。",
+    "space_id": "目标 Space ID。",
+    "page": "可选的页码。",
+    "page_size": "可选的每页大小。",
+    "sort": "可选的排序方式。",
+    "note_type": "可选的笔记类型过滤。",
+    "host": "绑定的主机名或 IP 地址。",
+    "port": "绑定的端口号。"
+  },
+  "command_args": {
+    "root.output": "CLI 输出格式。可选值：text（纯文本）、json（JSON 行）。",
+    "root.log_format": "运行时日志输出格式。可选值：text（纯文本日志）、json（结构化 JSON 日志）。",
+    "root.log_level": "应用输出的最低日志级别。可选值：error（仅错误）、warn（警告和错误）、info（信息及以上）、debug（调试及以上）、trace（详细追踪）。",
+    "run.douyin.search.search_type": "可选的搜索类型。可选值：general（综合）、user（用户）、video（视频）。",
+    "run.twitter.search-tweets.search_type": "可选的搜索类型。可选值：latest（最新结果）、top（热门结果）。",
+    "run.twitter.tweet-replies.sort_by": "可选的回复排序方式。可选值：latest（最新）、likes（点赞数）、relevance（相关性）。",
+    "run.xiaohongshu.search.sort": "可选的排序方式。可选值：general（综合排序）、time_descending（最新优先）、popularity_descending（热度优先）。",
+    "run.xiaohongshu.search.note_type": "可选的笔记类型过滤。可选值：all（全部）、video（视频）、image（图文）。"
+  }
+}

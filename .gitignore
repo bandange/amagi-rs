@@ -1,0 +1,21 @@
+# Rust build output
+/target
+
+# Local credentials and machine-specific env files
+.env
+.env.local
+.env.*
+!.env.example
+
+# Local scratch workspaces and reverse-engineering materials
+/dev
+/temp
+/tmp
+
+# Editor settings
+.vscode/
+.idea/
+
+# OS-generated files
+.DS_Store
+Thumbs.db

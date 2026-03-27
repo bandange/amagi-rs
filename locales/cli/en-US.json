@@ -1,0 +1,362 @@
+{
+  "meta": {
+    "code": "en-US",
+    "aliases": ["en", "en-us"]
+  },
+  "headings": {
+    "usage": "Usage",
+    "global_options": "Global Options",
+    "options": "Options",
+    "arguments": "Arguments",
+    "commands": "Commands"
+  },
+  "help": {
+    "root_after_help": "Use --lang zh or --lang en to switch the CLI help language."
+  },
+  "commands": {
+    "root": {
+      "about": "Rust SDK + CLI + Web API service for multi-platform social web adapters"
+    },
+    "run": {
+      "about": "Run the local CLI workflow."
+    },
+    "serve": {
+      "about": "Start the built-in Web API service."
+    },
+    "run.bilibili": {
+      "about": "Run a Bilibili-specific task."
+    },
+    "run.bilibili.video-info": {
+      "about": "Fetch one Bilibili video payload."
+    },
+    "run.bilibili.video-stream": {
+      "about": "Fetch one Bilibili video stream payload."
+    },
+    "run.bilibili.video-danmaku": {
+      "about": "Fetch one Bilibili video danmaku segment."
+    },
+    "run.bilibili.comments": {
+      "about": "Fetch comments for one Bilibili subject."
+    },
+    "run.bilibili.comment-replies": {
+      "about": "Fetch replies for one Bilibili root comment."
+    },
+    "run.bilibili.user-card": {
+      "about": "Fetch one Bilibili user card."
+    },
+    "run.bilibili.user-dynamic-list": {
+      "about": "Fetch one Bilibili user dynamic list."
+    },
+    "run.bilibili.user-space-info": {
+      "about": "Fetch one Bilibili user space payload."
+    },
+    "run.bilibili.uploader-total-views": {
+      "about": "Fetch one uploader's total views."
+    },
+    "run.bilibili.dynamic-detail": {
+      "about": "Fetch one Bilibili dynamic detail payload."
+    },
+    "run.bilibili.dynamic-card": {
+      "about": "Fetch one Bilibili dynamic card payload."
+    },
+    "run.bilibili.bangumi-info": {
+      "about": "Fetch one Bilibili bangumi metadata payload."
+    },
+    "run.bilibili.bangumi-stream": {
+      "about": "Fetch one Bilibili bangumi stream payload."
+    },
+    "run.bilibili.live-room-info": {
+      "about": "Fetch one Bilibili live room detail payload."
+    },
+    "run.bilibili.live-room-init": {
+      "about": "Fetch one Bilibili live room init payload."
+    },
+    "run.bilibili.login-status": {
+      "about": "Fetch the current Bilibili login status."
+    },
+    "run.bilibili.login-qrcode": {
+      "about": "Request a Bilibili login QR code."
+    },
+    "run.bilibili.qrcode-status": {
+      "about": "Poll one Bilibili login QR code."
+    },
+    "run.bilibili.emoji-list": {
+      "about": "Fetch the Bilibili emoji catalog."
+    },
+    "run.bilibili.av-to-bv": {
+      "about": "Convert one AV identifier into BV."
+    },
+    "run.bilibili.bv-to-av": {
+      "about": "Convert one BV identifier into AV."
+    },
+    "run.bilibili.article-content": {
+      "about": "Fetch one Bilibili article content payload."
+    },
+    "run.bilibili.article-cards": {
+      "about": "Fetch Bilibili article cards for one or more ids."
+    },
+    "run.bilibili.article-info": {
+      "about": "Fetch one Bilibili article metadata payload."
+    },
+    "run.bilibili.article-list-info": {
+      "about": "Fetch one Bilibili article-list payload."
+    },
+    "run.bilibili.captcha-from-voucher": {
+      "about": "Request a Bilibili captcha challenge from one voucher."
+    },
+    "run.bilibili.validate-captcha": {
+      "about": "Validate one Bilibili captcha result."
+    },
+    "run.douyin": {
+      "about": "Run a Douyin-specific task."
+    },
+    "run.douyin.parse-work": {
+      "about": "Parse one Douyin work."
+    },
+    "run.douyin.video-work": {
+      "about": "Fetch one Douyin video work."
+    },
+    "run.douyin.image-album-work": {
+      "about": "Fetch one Douyin image album work."
+    },
+    "run.douyin.slides-work": {
+      "about": "Fetch one Douyin slides work."
+    },
+    "run.douyin.text-work": {
+      "about": "Fetch one Douyin text work."
+    },
+    "run.douyin.work-comments": {
+      "about": "Fetch comments for one Douyin work."
+    },
+    "run.douyin.comment-replies": {
+      "about": "Fetch replies for one Douyin comment."
+    },
+    "run.douyin.user-profile": {
+      "about": "Fetch one Douyin user profile."
+    },
+    "run.douyin.user-video-list": {
+      "about": "Fetch one Douyin user video list."
+    },
+    "run.douyin.user-favorite-list": {
+      "about": "Fetch one Douyin user favorite list."
+    },
+    "run.douyin.user-recommend-list": {
+      "about": "Fetch one Douyin user recommend list."
+    },
+    "run.douyin.search": {
+      "about": "Search Douyin content."
+    },
+    "run.douyin.suggest-words": {
+      "about": "Fetch Douyin suggest words."
+    },
+    "run.douyin.music-info": {
+      "about": "Fetch Douyin music metadata."
+    },
+    "run.douyin.live-room-info": {
+      "about": "Fetch Douyin live room info."
+    },
+    "run.douyin.login-qrcode": {
+      "about": "Request a Douyin login QR code."
+    },
+    "run.douyin.emoji-list": {
+      "about": "Fetch the Douyin emoji list."
+    },
+    "run.douyin.dynamic-emoji-list": {
+      "about": "Fetch the Douyin dynamic emoji list."
+    },
+    "run.douyin.danmaku-list": {
+      "about": "Fetch the Douyin danmaku list."
+    },
+    "run.kuaishou": {
+      "about": "Run a Kuaishou-specific task."
+    },
+    "run.kuaishou.video-work": {
+      "about": "Fetch one Kuaishou video work."
+    },
+    "run.kuaishou.work-comments": {
+      "about": "Fetch comments for one Kuaishou work."
+    },
+    "run.kuaishou.emoji-list": {
+      "about": "Fetch the Kuaishou emoji catalog."
+    },
+    "run.kuaishou.user-profile": {
+      "about": "Fetch one Kuaishou user profile."
+    },
+    "run.kuaishou.user-work-list": {
+      "about": "Fetch one Kuaishou user work list."
+    },
+    "run.kuaishou.live-room-info": {
+      "about": "Fetch Kuaishou live room info."
+    },
+    "run.xiaohongshu": {
+      "about": "Run a Xiaohongshu-specific task."
+    },
+    "run.xiaohongshu.home-feed": {
+      "about": "Fetch the Xiaohongshu home feed."
+    },
+    "run.xiaohongshu.note-detail": {
+      "about": "Fetch one Xiaohongshu note detail."
+    },
+    "run.xiaohongshu.note-comments": {
+      "about": "Fetch one page of Xiaohongshu note comments."
+    },
+    "run.xiaohongshu.user-profile": {
+      "about": "Fetch one Xiaohongshu user profile."
+    },
+    "run.xiaohongshu.user-note-list": {
+      "about": "Fetch one page of Xiaohongshu user notes."
+    },
+    "run.xiaohongshu.emoji-list": {
+      "about": "Fetch the Xiaohongshu emoji catalog."
+    },
+    "run.xiaohongshu.search": {
+      "about": "Search Xiaohongshu notes."
+    },
+    "run.twitter": {
+      "about": "Run a Twitter/X-specific task."
+    },
+    "run.twitter.search-tweets": {
+      "about": "Search Twitter/X tweets."
+    },
+    "run.twitter.user-profile": {
+      "about": "Fetch one Twitter/X user profile."
+    },
+    "run.twitter.user-timeline": {
+      "about": "Fetch one Twitter/X user timeline."
+    },
+    "run.twitter.user-replies": {
+      "about": "Fetch one Twitter/X user replies timeline."
+    },
+    "run.twitter.user-media": {
+      "about": "Fetch one Twitter/X user media timeline."
+    },
+    "run.twitter.user-followers": {
+      "about": "Fetch one Twitter/X user followers page."
+    },
+    "run.twitter.user-following": {
+      "about": "Fetch one Twitter/X user following page."
+    },
+    "run.twitter.user-likes": {
+      "about": "Fetch liked tweets for the authenticated Twitter/X account."
+    },
+    "run.twitter.user-bookmarks": {
+      "about": "Fetch bookmarks for the authenticated Twitter/X account."
+    },
+    "run.twitter.user-followed": {
+      "about": "Fetch the followed home timeline for the authenticated Twitter/X account."
+    },
+    "run.twitter.user-recommended": {
+      "about": "Fetch the recommended home timeline for the authenticated Twitter/X account."
+    },
+    "run.twitter.search-users": {
+      "about": "Search Twitter/X users."
+    },
+    "run.twitter.tweet-detail": {
+      "about": "Fetch one Twitter/X tweet detail."
+    },
+    "run.twitter.tweet-replies": {
+      "about": "Fetch replies for one Twitter/X tweet."
+    },
+    "run.twitter.tweet-likers": {
+      "about": "Fetch users who liked one Twitter/X tweet."
+    },
+    "run.twitter.tweet-retweeters": {
+      "about": "Fetch users who retweeted one Twitter/X tweet."
+    },
+    "run.twitter.space-detail": {
+      "about": "Fetch one Twitter/X Space detail."
+    }
+  },
+  "args": {
+    "help": "Print help for the current command.",
+    "version": "Print version information.",
+    "lang": "CLI help language. Supports zh and en.",
+    "output": "CLI-facing output format.",
+    "output_file": "Optional file path used to save CLI-facing output.",
+    "pretty": "Pretty-print JSON output instead of compact JSON.",
+    "append": "Append to --output-file instead of truncating it first.",
+    "create_parent_dirs": "Create missing parent directories for --output-file.",
+    "douyin_cookie": "Douyin cookie shared by CLI tasks and the web service.",
+    "bilibili_cookie": "Bilibili cookie shared by CLI tasks and the web service.",
+    "kuaishou_cookie": "Kuaishou cookie shared by CLI tasks and the web service.",
+    "xiaohongshu_cookie": "Xiaohongshu cookie shared by CLI tasks and the web service.",
+    "twitter_cookie": "Twitter/X cookie shared by CLI tasks and the web service.",
+    "timeout_ms": "Upstream request timeout in milliseconds.",
+    "max_retries": "Maximum retry count for recoverable upstream failures.",
+    "log_format": "Log renderer used for runtime events.",
+    "log_level": "Minimum log level emitted by the application.",
+    "quiet": "Suppress normal startup output.",
+    "aweme_id": "Target aweme_id.",
+    "photo_id": "Target photo_id.",
+    "comment_id": "Target comment_id.",
+    "sec_uid": "Target user's sec_uid.",
+    "principal_id": "Target principal_id.",
+    "music_id": "Target music_id.",
+    "room_id": "Target room_id.",
+    "web_rid": "Target room web_rid.",
+    "verify_fp": "Optional verify_fp override.",
+    "number": "Optional page size.",
+    "cursor": "Optional pagination cursor.",
+    "max_cursor": "Optional pagination cursor.",
+    "query": "Search keyword.",
+    "search_id": "Optional search cursor id.",
+    "search_type": "Optional search type.",
+    "duration": "Work duration in milliseconds.",
+    "start_time": "Optional danmaku segment start time.",
+    "end_time": "Optional danmaku segment end time.",
+    "bvid": "Target video BV id.",
+    "aid": "Target video AV id.",
+    "cid": "Target video or bangumi cid.",
+    "segment_index": "Optional danmaku segment index.",
+    "oid": "Target subject oid.",
+    "comment_type": "Comment type.",
+    "mode": "Optional comment mode.",
+    "root": "Root comment id.",
+    "host_mid": "Target user mid.",
+    "dynamic_id": "Target dynamic id.",
+    "bangumi_id": "Target bangumi id.",
+    "ep_id": "Target episode id.",
+    "qrcode_key": "QR code key.",
+    "article_id": "Target article id.",
+    "ids": "One or more article ids.",
+    "list_id": "Target article-list id.",
+    "v_voucher": "Captcha voucher.",
+    "csrf": "Optional csrf token.",
+    "challenge": "Captcha challenge.",
+    "token": "Captcha token.",
+    "validate": "Captcha validate value.",
+    "seccode": "Captcha seccode.",
+    "pcursor": "Optional pagination pcursor.",
+    "count": "Optional item count.",
+    "cursor_score": "Optional home-feed cursor score.",
+    "num": "Optional item count.",
+    "refresh_type": "Optional refresh type.",
+    "note_index": "Optional note index.",
+    "category": "Optional feed category.",
+    "search_key": "Optional feed search key.",
+    "note_id": "Target note id.",
+    "xsec_token": "Required xsec_token.",
+    "user_id": "Target user id.",
+    "keyword": "Search keyword.",
+    "screen_name": "Target user's screen name.",
+    "tweet_id": "Target tweet id.",
+    "sort_by": "Optional reply sort order.",
+    "space_id": "Target Space id.",
+    "page": "Optional page number.",
+    "page_size": "Optional page size.",
+    "sort": "Optional sort order.",
+    "note_type": "Optional note type filter.",
+    "host": "Host or IP address to bind.",
+    "port": "Port to bind."
+  },
+  "command_args": {
+    "root.output": "CLI-facing output format. Supported values: text (plain text), json (JSON lines).",
+    "root.log_format": "Log renderer used for runtime events. Supported values: text (plain text logs), json (structured JSON logs).",
+    "root.log_level": "Minimum log level emitted by the application. Supported values: error, warn, info, debug, trace.",
+    "run.douyin.search.search_type": "Optional search type. Supported values: general, user, video.",
+    "run.twitter.search-tweets.search_type": "Optional search type. Supported values: latest, top.",
+    "run.twitter.tweet-replies.sort_by": "Optional reply sort order. Supported values: latest, likes, relevance.",
+    "run.xiaohongshu.search.sort": "Optional sort order. Supported values: general, time_descending, popularity_descending.",
+    "run.xiaohongshu.search.note_type": "Optional note type filter. Supported values: all, video, image."
+  }
+}

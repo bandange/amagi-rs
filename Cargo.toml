@@ -1,0 +1,72 @@
+[package]
+name = "amagi"
+version = "0.1.0"
+edition = "2024"
+description = "Rust SDK, CLI, and Web API service skeleton for multi-platform social web adapters."
+license = "GPL-3.0-only"
+readme = "README.md"
+documentation = "https://docs.rs/amagi"
+homepage = "https://github.com/bandange/amagi-rs"
+repository = "https://github.com/bandange/amagi-rs"
+keywords = ["sdk", "cli", "api", "social", "axum"]
+categories = ["api-bindings", "command-line-utilities"]
+exclude = [
+    "dev/**",
+    "target/**",
+    "tmp/**",
+]
+
+[features]
+default = ["client", "cli", "server"]
+catalog = []
+client = ["catalog", "dep:dotenvy", "dep:reqwest", "dep:serde_json", "dep:tokio"]
+cli = [
+    "client",
+    "dep:clap",
+    "dep:serde_json",
+    "dep:tokio",
+    "dep:tracing",
+    "dep:tracing-subscriber",
+]
+server = [
+    "client",
+    "dep:axum",
+    "dep:serde_json",
+    "dep:tokio",
+    "dep:tower-http",
+    "dep:tracing",
+]
+
+[dependencies]
+axum = { version = "0.8.8", optional = true }
+clap = { version = "4.6.0", features = ["derive", "env"], optional = true }
+dotenvy = { version = "0.15.7", optional = true }
+reqwest = { version = "0.12.12", default-features = false, features = [
+    "json",
+    "gzip",
+    "brotli",
+    "deflate",
+    "rustls-tls",
+], optional = true }
+serde = { version = "1.0.228", features = ["derive"] }
+serde_json = { version = "1.0.149", optional = true }
+tokio = { version = "1.50.0", features = [
+    "macros",
+    "rt-multi-thread",
+    "signal",
+    "net",
+], optional = true }
+tower-http = { version = "0.6.8", features = ["trace"], optional = true }
+tracing = { version = "0.1.44", optional = true }
+tracing-subscriber = { version = "0.3.23", features = [
+    "env-filter",
+    "json",
+], optional = true }
+
+[[bin]]
+name = "amagi"
+path = "src/main.rs"
+required-features = ["cli"]
+
+[package.metadata.docs.rs]
+all-features = true

@@ -1,0 +1,68 @@
+use super::super::{ApiMethodSpec, HttpMethod};
+use super::{TAG_COMMENT, TAG_EMOJI, TAG_FEED, TAG_SEARCH, TAG_USER, TAG_WORK};
+
+pub(super) const XIAOHONGSHU_METHODS: [ApiMethodSpec; 7] = [
+    ApiMethodSpec {
+        method_key: "homeFeed",
+        chinese_name: "首页推荐数据",
+        fetcher_name: "fetchHomeFeed",
+        route: "/feed",
+        http_method: HttpMethod::Get,
+        description: "Fetch the Xiaohongshu home feed.",
+        tags: TAG_FEED,
+    },
+    ApiMethodSpec {
+        method_key: "noteDetail",
+        chinese_name: "单个笔记数据",
+        fetcher_name: "fetchNoteDetail",
+        route: "/note",
+        http_method: HttpMethod::Get,
+        description: "Fetch a Xiaohongshu note.",
+        tags: TAG_WORK,
+    },
+    ApiMethodSpec {
+        method_key: "noteComments",
+        chinese_name: "评论数据",
+        fetcher_name: "fetchNoteComments",
+        route: "/comments",
+        http_method: HttpMethod::Get,
+        description: "Fetch comments for a Xiaohongshu note.",
+        tags: TAG_COMMENT,
+    },
+    ApiMethodSpec {
+        method_key: "userProfile",
+        chinese_name: "用户数据",
+        fetcher_name: "fetchUserProfile",
+        route: "/user",
+        http_method: HttpMethod::Get,
+        description: "Fetch a Xiaohongshu user profile.",
+        tags: TAG_USER,
+    },
+    ApiMethodSpec {
+        method_key: "userNoteList",
+        chinese_name: "用户笔记数据",
+        fetcher_name: "fetchUserNoteList",
+        route: "/user/notes",
+        http_method: HttpMethod::Get,
+        description: "Fetch Xiaohongshu notes for a user.",
+        tags: TAG_USER,
+    },
+    ApiMethodSpec {
+        method_key: "emojiList",
+        chinese_name: "表情列表",
+        fetcher_name: "fetchEmojiList",
+        route: "/emoji",
+        http_method: HttpMethod::Get,
+        description: "Fetch the Xiaohongshu emoji catalog.",
+        tags: TAG_EMOJI,
+    },
+    ApiMethodSpec {
+        method_key: "searchNotes",
+        chinese_name: "搜索笔记",
+        fetcher_name: "searchNotes",
+        route: "/search",
+        http_method: HttpMethod::Get,
+        description: "Search Xiaohongshu notes.",
+        tags: TAG_SEARCH,
+    },
+];
