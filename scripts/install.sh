@@ -6,6 +6,8 @@ DEFAULT_SOURCE_MODE="${AMAGI_INSTALL_SOURCE:-auto}"
 REMOTE_REPO_OWNER="${AMAGI_REMOTE_REPO_OWNER:-bandange}"
 REMOTE_REPO_NAME="${AMAGI_REMOTE_REPO_NAME:-amagi-rs}"
 REMOTE_VERSION="${AMAGI_INSTALL_VERSION:-latest}"
+REMOTE_DOWNLOAD_PATH=""
+REMOTE_EXTRACT_DIR=""
 SCRIPT_PATH="${BASH_SOURCE[0]:-}"
 SCRIPT_DIR=""
 REPO_ROOT=""
@@ -245,7 +247,7 @@ build_local_release_binary() {
     return 1
   fi
 
-  printf '[amagi] no local binary found, building release binary with cargo\n'
+  printf '[amagi] no local binary found, building release binary with cargo\n' >&2
   (
     cd "${REPO_ROOT}"
     cargo build --release
@@ -290,7 +292,24 @@ arch_slug() {
 }
 
 remote_asset_name() {
-  printf '%s-%s-%s\n' "${BIN_NAME}" "$(platform_slug)" "$(arch_slug)"
+  local platform
+  local arch
+
+  platform="$(platform_slug)"
+  arch="$(arch_slug)"
+
+  case "${platform}" in
+    linux)
+      printf '%s-%s-unknown-linux-musl.tar.gz\n' "${BIN_NAME}" "${arch}"
+      ;;
+    macos)
+      printf '%s-%s-apple-darwin.tar.gz\n' "${BIN_NAME}" "${arch}"
+      ;;
+    *)
+      printf '[amagi] unsupported platform for remote install asset naming: %s\n' "${platform}" >&2
+      return 1
+      ;;
+  esac
 }
 
 remote_download_url() {
@@ -321,11 +340,14 @@ remote_download_url() {
 download_remote_binary() {
   local url
   local download_path
+  local asset_name
 
+  asset_name="$(remote_asset_name)" || return 1
   url="$(remote_download_url)" || return 1
-  download_path="$(mktemp "${TMPDIR:-/tmp}/amagi-install.XXXXXX")"
+  download_path="$(mktemp "${TMPDIR:-/tmp}/amagi-install.XXXXXX.${asset_name##*.}")"
+  REMOTE_DOWNLOAD_PATH="${download_path}"
 
-  printf '[amagi] downloading %s\n' "${url}"
+  printf '[amagi] downloading %s\n' "${url}" >&2
 
   if command -v curl >/dev/null 2>&1; then
     curl -fsSL "${url}" -o "${download_path}"
@@ -337,8 +359,49 @@ download_remote_binary() {
     return 1
   fi
 
-  chmod 755 "${download_path}"
   printf '%s\n' "${download_path}"
+}
+
+extract_remote_binary() {
+  local archive_path="$1"
+  local asset_name
+  local extracted_binary
+
+  asset_name="$(remote_asset_name)" || return 1
+  REMOTE_EXTRACT_DIR="$(mktemp -d "${TMPDIR:-/tmp}/amagi-extract.XXXXXX")"
+
+  case "${asset_name}" in
+    *.tar.gz)
+      if ! command -v tar >/dev/null 2>&1; then
+        printf '[amagi] tar is required for remote install.\n' >&2
+        return 1
+      fi
+      tar -xzf "${archive_path}" -C "${REMOTE_EXTRACT_DIR}"
+      ;;
+    *)
+      printf '[amagi] unsupported remote asset format: %s\n' "${asset_name}" >&2
+      return 1
+      ;;
+  esac
+
+  extracted_binary="${REMOTE_EXTRACT_DIR}/${BIN_NAME}"
+  if [[ ! -f "${extracted_binary}" ]]; then
+    printf '[amagi] extracted archive did not contain %s\n' "${BIN_NAME}" >&2
+    return 1
+  fi
+
+  chmod 755 "${extracted_binary}"
+  printf '%s\n' "${extracted_binary}"
+}
+
+cleanup_remote_temp() {
+  if [[ -n "${REMOTE_DOWNLOAD_PATH}" && -f "${REMOTE_DOWNLOAD_PATH}" ]]; then
+    rm -f "${REMOTE_DOWNLOAD_PATH}"
+  fi
+
+  if [[ -n "${REMOTE_EXTRACT_DIR}" && -d "${REMOTE_EXTRACT_DIR}" ]]; then
+    rm -rf "${REMOTE_EXTRACT_DIR}"
+  fi
 }
 
 INSTALL_DIR="${AMAGI_INSTALL_DIR:-$(default_install_dir)}"
@@ -368,6 +431,12 @@ else
   if [[ -z "${SOURCE_BINARY}" ]]; then
     exit 1
   fi
+
+  SOURCE_BINARY="$(extract_remote_binary "${SOURCE_BINARY}" || true)"
+  if [[ -z "${SOURCE_BINARY}" ]]; then
+    cleanup_remote_temp
+    exit 1
+  fi
 fi
 
 mkdir -p "${INSTALL_DIR}"
@@ -380,7 +449,7 @@ fi
 chmod 755 "${INSTALL_PATH}"
 
 if [[ "${INSTALL_MODE}" == "remote" && -f "${SOURCE_BINARY}" ]]; then
-  rm -f "${SOURCE_BINARY}"
+  cleanup_remote_temp
 fi
 
 printf '[amagi] installed to %s\n' "${INSTALL_PATH}"

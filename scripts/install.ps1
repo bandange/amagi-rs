@@ -12,6 +12,7 @@ $BinaryName = "amagi.exe"
 $RemoteRepoOwner = if ($env:AMAGI_REMOTE_REPO_OWNER) { $env:AMAGI_REMOTE_REPO_OWNER } else { "bandange" }
 $RemoteRepoName = if ($env:AMAGI_REMOTE_REPO_NAME) { $env:AMAGI_REMOTE_REPO_NAME } else { "amagi-rs" }
 $RemoteBaseUrl = $env:AMAGI_REMOTE_BASE_URL
+$script:RemoteTempPaths = [System.Collections.Generic.List[string]]::new()
 $ScriptPath = if ($PSCommandPath) { $PSCommandPath } else { $MyInvocation.MyCommand.Path }
 $ScriptDir = if ($ScriptPath) { Split-Path -Parent $ScriptPath } else { $null }
 $RepoRoot = if ($ScriptDir) {
@@ -182,12 +183,12 @@ function Build-LocalReleaseBinary {
 
 function Get-RemoteAssetName {
     $arch = switch ([System.Runtime.InteropServices.RuntimeInformation]::OSArchitecture) {
-        ([System.Runtime.InteropServices.Architecture]::X64) { "x86_64"; break }
-        ([System.Runtime.InteropServices.Architecture]::Arm64) { "aarch64"; break }
+        ([System.Runtime.InteropServices.Architecture]::X64) { "x86_64-pc-windows-msvc.zip"; break }
+        ([System.Runtime.InteropServices.Architecture]::Arm64) { throw "[amagi] remote install does not yet publish a Windows Arm64 asset." }
         default { throw "[amagi] unsupported architecture for remote install: $([System.Runtime.InteropServices.RuntimeInformation]::OSArchitecture)" }
     }
 
-    return "amagi-windows-$arch.exe"
+    return "amagi-$arch"
 }
 
 function Get-RemoteDownloadUrl {
@@ -210,11 +211,24 @@ function Get-RemoteDownloadUrl {
 
 function Get-RemoteBinary {
     $url = Get-RemoteDownloadUrl
-    $downloadPath = Join-Path $env:TEMP ("amagi-install-" + [System.Guid]::NewGuid().ToString("N") + ".exe")
+    $downloadPath = Join-Path $env:TEMP ("amagi-install-" + [System.Guid]::NewGuid().ToString("N") + ".zip")
+    $extractDir = Join-Path $env:TEMP ("amagi-extract-" + [System.Guid]::NewGuid().ToString("N"))
+    $extractedBinary = Join-Path $extractDir $BinaryName
 
     Write-Host "[amagi] downloading $url"
     Invoke-WebRequest -Uri $url -OutFile $downloadPath
-    return $downloadPath
+
+    New-Item -ItemType Directory -Force -Path $extractDir | Out-Null
+    Expand-Archive -LiteralPath $downloadPath -DestinationPath $extractDir -Force
+
+    if (-not (Test-Path $extractedBinary -PathType Leaf)) {
+        throw "[amagi] extracted archive did not contain $BinaryName"
+    }
+
+    $script:RemoteTempPaths.Add($downloadPath) | Out-Null
+    $script:RemoteTempPaths.Add($extractDir) | Out-Null
+
+    return $extractedBinary
 }
 
 function Test-PathEntry {
@@ -401,8 +415,15 @@ if ([System.IO.Path]::GetFullPath($SourceBinary) -ne [System.IO.Path]::GetFullPa
     Copy-Item -LiteralPath $SourceBinary -Destination $InstallPath -Force
 }
 
-if ($InstallMode -eq "remote" -and (Test-Path $SourceBinary -PathType Leaf)) {
-    Remove-Item -LiteralPath $SourceBinary -Force
+if ($InstallMode -eq "remote") {
+    foreach ($path in $script:RemoteTempPaths) {
+        if (Test-Path $path -PathType Leaf) {
+            Remove-Item -LiteralPath $path -Force
+        }
+        elseif (Test-Path $path -PathType Container) {
+            Remove-Item -LiteralPath $path -Recurse -Force
+        }
+    }
 }
 
 Write-Host "[amagi] installed to $InstallPath"
