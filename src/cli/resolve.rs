@@ -253,10 +253,17 @@ fn resolve_string(
     env_name: &str,
     dotenv: &DotenvMap,
 ) -> Option<String> {
+    let normalize = |value: String| {
+        let trimmed = value.trim();
+        (!trimmed.is_empty()).then(|| trimmed.to_owned())
+    };
+
     if prefers_existing_value(matches, arg_id) {
-        current
+        current.and_then(normalize)
     } else {
-        env_or_dotenv(env_name, dotenv).or(current)
+        env_or_dotenv(env_name, dotenv)
+            .and_then(normalize)
+            .or_else(|| current.and_then(normalize))
     }
 }
 
