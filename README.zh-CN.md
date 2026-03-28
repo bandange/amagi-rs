@@ -23,28 +23,50 @@
 
 ## 快速开始
 
+先安装 CLI。若要从仓库本地安装或查看其它安装方式，请参考
+[`docs/installation/README.zh-CN.md`](docs/installation/README.zh-CN.md)。
+
+Linux/macOS：
+
 ```bash
-cargo run -- run
-cargo run -- run douyin video-work <aweme_id>
-cargo run -- run douyin work-comments <aweme_id> --number 20
-cargo run -- run douyin user-profile <sec_uid>
-cargo run -- run douyin search "关键词" --type general --number 10
-cargo run -- run douyin emoji-list
-cargo run -- run kuaishou video-work <photo_id>
-cargo run -- run kuaishou work-comments <photo_id>
-cargo run -- run kuaishou emoji-list
-cargo run -- run kuaishou user-profile <principal_id>
-cargo run -- run kuaishou user-work-list <principal_id> --count 24 --pcursor ""
-cargo run -- run kuaishou live-room-info <principal_id>
-cargo run -- run twitter search-tweets OpenAI --search-type latest --count 20
-cargo run -- run twitter user-profile <screen_name>
-cargo run -- run twitter user-timeline <screen_name> --count 20
-cargo run -- run twitter tweet-detail <tweet_id>
-cargo run -- run twitter space-detail <space_id>
-cargo run -- --output json --pretty --output-file tmp/emoji.json --create-parent-dirs run bilibili emoji-list
-cargo run -- --output json --output-file tmp/events.json --append run bilibili qrcode-status <qrcode_key>
-cargo run -- serve --host 127.0.0.1 --port 4567
-cargo doc --no-deps --open
+curl -fsSL https://raw.githubusercontent.com/bandange/amagi-rs/main/scripts/install.sh | bash
+```
+
+PowerShell：
+
+```powershell
+irm https://raw.githubusercontent.com/bandange/amagi-rs/main/scripts/install.ps1 | iex
+```
+
+验证命令：
+
+```bash
+amagi --version
+```
+
+常用命令示例：
+
+```bash
+amagi run
+amagi run douyin video-work <aweme_id>
+amagi run douyin work-comments <aweme_id> --number 20
+amagi run douyin user-profile <sec_uid>
+amagi run douyin search "关键词" --type general --number 10
+amagi run douyin emoji-list
+amagi run kuaishou video-work <photo_id>
+amagi run kuaishou work-comments <photo_id>
+amagi run kuaishou emoji-list
+amagi run kuaishou user-profile <principal_id>
+amagi run kuaishou user-work-list <principal_id> --count 24 --pcursor ""
+amagi run kuaishou live-room-info <principal_id>
+amagi run twitter search-tweets OpenAI --search-type latest --count 20
+amagi run twitter user-profile <screen_name>
+amagi run twitter user-timeline <screen_name> --count 20
+amagi run twitter tweet-detail <tweet_id>
+amagi run twitter space-detail <space_id>
+amagi --output json --pretty --output-file tmp/emoji.json --create-parent-dirs run bilibili emoji-list
+amagi --output json --output-file tmp/events.json --append run bilibili qrcode-status <qrcode_key>
+amagi serve --host 127.0.0.1 --port 4567
 ```
 
 ## 已测试的 Twitter CLI 接口
@@ -135,16 +157,16 @@ $env:AMAGI_XIAOHONGSHU_COOKIE = "..."
 示例：
 
 ```bash
-AMAGI_DOUYIN_COOKIE="sid_guard=..." cargo run -- run douyin emoji-list
-AMAGI_DOUYIN_COOKIE="sid_guard=..." cargo run -- run douyin user-video-list <sec_uid> --number 18
-AMAGI_KUAISHOU_COOKIE="token=..." cargo run -- run kuaishou emoji-list
-AMAGI_KUAISHOU_COOKIE="token=..." cargo run -- run kuaishou user-work-list 3xuser --count 24
-AMAGI_TWITTER_COOKIE="auth_token=...; ct0=...; twid=..." cargo run -- run twitter search-tweets OpenAI --search-type latest --count 20
-AMAGI_TWITTER_COOKIE="auth_token=...; ct0=...; twid=..." cargo run -- run twitter user-profile OpenAI
-AMAGI_TWITTER_COOKIE="auth_token=...; ct0=...; twid=..." cargo run -- run twitter tweet-detail 2028909019977703752
-AMAGI_OUTPUT=json AMAGI_OUTPUT_FILE=tmp/emoji.json AMAGI_OUTPUT_PRETTY=true cargo run -- run bilibili emoji-list
-AMAGI_OUTPUT=json AMAGI_OUTPUT_FILE=tmp/events.json AMAGI_OUTPUT_APPEND=true cargo run -- run bilibili qrcode-status <qrcode_key>
-AMAGI_KUAISHOU_COOKIE="token=..." cargo run -- serve --host 127.0.0.1 --port 4567
+AMAGI_DOUYIN_COOKIE="sid_guard=..." amagi run douyin emoji-list
+AMAGI_DOUYIN_COOKIE="sid_guard=..." amagi run douyin user-video-list <sec_uid> --number 18
+AMAGI_KUAISHOU_COOKIE="token=..." amagi run kuaishou emoji-list
+AMAGI_KUAISHOU_COOKIE="token=..." amagi run kuaishou user-work-list 3xuser --count 24
+AMAGI_TWITTER_COOKIE="auth_token=...; ct0=...; twid=..." amagi run twitter search-tweets OpenAI --search-type latest --count 20
+AMAGI_TWITTER_COOKIE="auth_token=...; ct0=...; twid=..." amagi run twitter user-profile OpenAI
+AMAGI_TWITTER_COOKIE="auth_token=...; ct0=...; twid=..." amagi run twitter tweet-detail 2028909019977703752
+AMAGI_OUTPUT=json AMAGI_OUTPUT_FILE=tmp/emoji.json AMAGI_OUTPUT_PRETTY=true amagi run bilibili emoji-list
+AMAGI_OUTPUT=json AMAGI_OUTPUT_FILE=tmp/events.json AMAGI_OUTPUT_APPEND=true amagi run bilibili qrcode-status <qrcode_key>
+AMAGI_KUAISHOU_COOKIE="token=..." amagi serve --host 127.0.0.1 --port 4567
 ```
 
 ## CLI 输出
@@ -160,8 +182,8 @@ CLI 可以把人类可读文本或机器可读 JSON 输出到标准输出或文�
 示例：
 
 ```bash
-cargo run -- --output json --pretty --output-file tmp/bili/login.json --create-parent-dirs run bilibili login-status
-cargo run -- --output json --output-file tmp/bili/poll.json --append run bilibili qrcode-status <qrcode_key>
+amagi --output json --pretty --output-file tmp/bili/login.json --create-parent-dirs run bilibili login-status
+amagi --output json --output-file tmp/bili/poll.json --append run bilibili qrcode-status <qrcode_key>
 ```
 
 ## 功能选择
