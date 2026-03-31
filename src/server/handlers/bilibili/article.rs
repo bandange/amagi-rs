@@ -1,6 +1,7 @@
 use axum::{
     Json,
     extract::{Path, Query, State},
+    http::HeaderMap,
 };
 
 use super::super::support::{FetchResult, bilibili_fetcher, fetch_error_response};
@@ -13,9 +14,10 @@ use crate::server::state::AppState;
 /// Fetch one Bilibili article content payload through the web API.
 pub async fn bilibili_article_content(
     Path(article_id): Path<String>,
+    headers: HeaderMap,
     State(state): State<AppState>,
 ) -> FetchResult<BilibiliArticleContent> {
-    bilibili_fetcher(&state)
+    bilibili_fetcher(&state, &headers)
         .fetch_article_content(&article_id)
         .await
         .map(Json)
@@ -25,9 +27,10 @@ pub async fn bilibili_article_content(
 /// Fetch one Bilibili article-card payload through the web API.
 pub async fn bilibili_article_cards(
     Query(query): Query<BilibiliArticleCardsQuery>,
+    headers: HeaderMap,
     State(state): State<AppState>,
 ) -> FetchResult<BilibiliArticleCards> {
-    bilibili_fetcher(&state)
+    bilibili_fetcher(&state, &headers)
         .fetch_article_cards(
             query
                 .ids
@@ -43,9 +46,10 @@ pub async fn bilibili_article_cards(
 /// Fetch one Bilibili article metadata payload through the web API.
 pub async fn bilibili_article_info(
     Path(article_id): Path<String>,
+    headers: HeaderMap,
     State(state): State<AppState>,
 ) -> FetchResult<BilibiliArticleInfo> {
-    bilibili_fetcher(&state)
+    bilibili_fetcher(&state, &headers)
         .fetch_article_info(&article_id)
         .await
         .map(Json)
@@ -55,9 +59,10 @@ pub async fn bilibili_article_info(
 /// Fetch one Bilibili article-list payload through the web API.
 pub async fn bilibili_article_list_info(
     Path(list_id): Path<String>,
+    headers: HeaderMap,
     State(state): State<AppState>,
 ) -> FetchResult<BilibiliArticleListInfo> {
-    bilibili_fetcher(&state)
+    bilibili_fetcher(&state, &headers)
         .fetch_article_list_info(&list_id)
         .await
         .map(Json)

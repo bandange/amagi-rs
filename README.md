@@ -140,6 +140,22 @@ $env:AMAGI_TWITTER_COOKIE = "..."
 $env:AMAGI_XIAOHONGSHU_COOKIE = "..."
 ```
 
+When running `amagi serve`, web requests can also override the startup cookie
+per request with HTTP headers. Supported headers:
+
+- `X-Amagi-Cookie`: generic cookie override for the current platform route
+- `X-Amagi-Bilibili-Cookie`
+- `X-Amagi-Douyin-Cookie`
+- `X-Amagi-Kuaishou-Cookie`
+- `X-Amagi-Twitter-Cookie`
+- `X-Amagi-Xiaohongshu-Cookie`
+
+Header precedence is platform-specific first, then `X-Amagi-Cookie`, then the
+server's startup configuration. Sending an empty override header clears the
+startup cookie for that request and forces guest-mode behavior where supported.
+These override headers are intended for `curl`, automation scripts, reverse
+proxies, and other server-to-server callers.
+
 Shared runtime variables:
 
 - `AMAGI_USER_ENV_FILE`
@@ -168,6 +184,8 @@ AMAGI_TWITTER_COOKIE="auth_token=...; ct0=...; twid=..." amagi run twitter tweet
 AMAGI_OUTPUT=json AMAGI_OUTPUT_FILE=tmp/emoji.json AMAGI_OUTPUT_PRETTY=true amagi run bilibili emoji-list
 AMAGI_OUTPUT=json AMAGI_OUTPUT_FILE=tmp/events.json AMAGI_OUTPUT_APPEND=true amagi run bilibili qrcode-status <qrcode_key>
 AMAGI_KUAISHOU_COOKIE="token=..." amagi serve --host 127.0.0.1 --port 4567
+curl -H "X-Amagi-Twitter-Cookie: auth_token=...; ct0=...; twid=u%3D..." "http://127.0.0.1:4567/api/twitter/user/likes?count=20"
+curl -H "X-Amagi-Cookie:" "http://127.0.0.1:4567/api/bilibili/live/21452505"
 ```
 
 ## CLI Output

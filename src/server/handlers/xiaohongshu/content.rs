@@ -1,6 +1,7 @@
 use axum::{
     Json,
     extract::{Path, Query, State},
+    http::HeaderMap,
 };
 
 use super::super::support::{FetchResult, fetch_error_response, xiaohongshu_fetcher};
@@ -15,9 +16,10 @@ use crate::server::state::AppState;
 /// Fetch the Xiaohongshu home feed through the web API.
 pub async fn xiaohongshu_home_feed(
     Query(query): Query<XiaohongshuHomeFeedQuery>,
+    headers: HeaderMap,
     State(state): State<AppState>,
 ) -> FetchResult<XiaohongshuHomeFeed> {
-    xiaohongshu_fetcher(&state)
+    xiaohongshu_fetcher(&state, &headers)
         .fetch_home_feed(&XiaohongshuHomeFeedOptions {
             cursor_score: query.cursor_score,
             num: query.num,
@@ -35,9 +37,10 @@ pub async fn xiaohongshu_home_feed(
 pub async fn xiaohongshu_note_detail(
     Path(note_id): Path<String>,
     Query(query): Query<XiaohongshuNoteQuery>,
+    headers: HeaderMap,
     State(state): State<AppState>,
 ) -> FetchResult<XiaohongshuNoteDetail> {
-    xiaohongshu_fetcher(&state)
+    xiaohongshu_fetcher(&state, &headers)
         .fetch_note_detail(&XiaohongshuNoteDetailOptions {
             note_id,
             xsec_token: query.xsec_token,
@@ -51,9 +54,10 @@ pub async fn xiaohongshu_note_detail(
 pub async fn xiaohongshu_note_comments(
     Path(note_id): Path<String>,
     Query(query): Query<XiaohongshuNoteCommentsQuery>,
+    headers: HeaderMap,
     State(state): State<AppState>,
 ) -> FetchResult<XiaohongshuNoteComments> {
-    xiaohongshu_fetcher(&state)
+    xiaohongshu_fetcher(&state, &headers)
         .fetch_note_comments(&XiaohongshuCommentsOptions {
             note_id,
             cursor: query.cursor,
@@ -66,9 +70,10 @@ pub async fn xiaohongshu_note_comments(
 
 /// Fetch the Xiaohongshu emoji catalog through the web API.
 pub async fn xiaohongshu_emoji_list(
+    headers: HeaderMap,
     State(state): State<AppState>,
 ) -> FetchResult<XiaohongshuEmojiList> {
-    xiaohongshu_fetcher(&state)
+    xiaohongshu_fetcher(&state, &headers)
         .fetch_emoji_list()
         .await
         .map(Json)

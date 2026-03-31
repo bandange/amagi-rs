@@ -90,6 +90,28 @@ Web 运行时读取和 SDK 相同的共享环境变量：
 
 - `AMAGI_USER_ENV_FILE`
 
+### 2.1 单次请求 Cookie 覆盖头
+
+除了启动时的环境变量和 dotenv，`amagi serve` 还支持在单次 HTTP 请求中通过请求头
+覆盖平台 Cookie：
+
+- `X-Amagi-Cookie`
+- `X-Amagi-Bilibili-Cookie`
+- `X-Amagi-Douyin-Cookie`
+- `X-Amagi-Kuaishou-Cookie`
+- `X-Amagi-Twitter-Cookie`
+- `X-Amagi-Xiaohongshu-Cookie`
+
+优先级如下：
+
+1. 平台专用头
+2. `X-Amagi-Cookie`
+3. 启动时的环境变量 / dotenv 配置
+
+如果某个覆盖头显式传入空值，则该次请求会清空启动时默认 Cookie。这适合服务进程
+本身带了登录态 Cookie，但某个请求想强制走游客模式的场景。
+这组请求头面向直接 HTTP 调用方，例如 `curl`、自动化脚本、反向代理和后端服务。
+
 ## 3. 响应约定
 
 ### 3.1 成功响应
@@ -274,6 +296,8 @@ curl "http://127.0.0.1:4567/api/spec/douyin"
 curl "http://127.0.0.1:4567/api/douyin/search?query=openai&type=general&number=10"
 curl "http://127.0.0.1:4567/api/twitter/search/tweets?query=OpenAI&search_type=latest&count=20"
 curl "http://127.0.0.1:4567/api/xiaohongshu/search?keyword=%E6%8A%80%E6%9C%AF&page=1&page_size=20&sort=general&note_type=all"
+curl -H "X-Amagi-Twitter-Cookie: auth_token=...; ct0=...; twid=u%3D..." "http://127.0.0.1:4567/api/twitter/user/likes?count=20"
+curl -H "X-Amagi-Cookie:" "http://127.0.0.1:4567/api/bilibili/live/21452505"
 ```
 
 `POST` 示例：

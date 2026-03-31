@@ -1,6 +1,7 @@
 use axum::{
     Json,
     extract::{Path, State},
+    http::HeaderMap,
 };
 
 use super::super::support::{FetchResult, fetch_error_response, kuaishou_fetcher};
@@ -10,9 +11,10 @@ use crate::server::state::AppState;
 /// Fetch one Kuaishou work through the web API.
 pub async fn kuaishou_video_work(
     Path(photo_id): Path<String>,
+    headers: HeaderMap,
     State(state): State<AppState>,
 ) -> FetchResult<KuaishouVideoWork> {
-    kuaishou_fetcher(&state)
+    kuaishou_fetcher(&state, &headers)
         .fetch_video_work(&photo_id)
         .await
         .map(Json)
@@ -22,9 +24,10 @@ pub async fn kuaishou_video_work(
 /// Fetch comments for one Kuaishou work through the web API.
 pub async fn kuaishou_work_comments(
     Path(photo_id): Path<String>,
+    headers: HeaderMap,
     State(state): State<AppState>,
 ) -> FetchResult<KuaishouWorkComments> {
-    kuaishou_fetcher(&state)
+    kuaishou_fetcher(&state, &headers)
         .fetch_work_comments(&photo_id)
         .await
         .map(Json)
@@ -32,8 +35,11 @@ pub async fn kuaishou_work_comments(
 }
 
 /// Fetch the Kuaishou emoji catalog through the web API.
-pub async fn kuaishou_emoji_list(State(state): State<AppState>) -> FetchResult<KuaishouEmojiList> {
-    kuaishou_fetcher(&state)
+pub async fn kuaishou_emoji_list(
+    headers: HeaderMap,
+    State(state): State<AppState>,
+) -> FetchResult<KuaishouEmojiList> {
+    kuaishou_fetcher(&state, &headers)
         .fetch_emoji_list()
         .await
         .map(Json)

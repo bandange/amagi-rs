@@ -1,6 +1,7 @@
 use axum::{
     Json,
     extract::{Path, Query, State},
+    http::HeaderMap,
 };
 
 use super::super::support::{FetchResult, fetch_error_response, xiaohongshu_fetcher};
@@ -15,9 +16,10 @@ use crate::server::state::AppState;
 pub async fn xiaohongshu_user_profile(
     Path(user_id): Path<String>,
     Query(query): Query<XiaohongshuUserProfileQuery>,
+    headers: HeaderMap,
     State(state): State<AppState>,
 ) -> FetchResult<XiaohongshuUserProfile> {
-    xiaohongshu_fetcher(&state)
+    xiaohongshu_fetcher(&state, &headers)
         .fetch_user_profile(&XiaohongshuUserProfileOptions {
             user_id,
             xsec_token: query.xsec_token,
@@ -32,9 +34,10 @@ pub async fn xiaohongshu_user_profile(
 pub async fn xiaohongshu_user_note_list(
     Path(user_id): Path<String>,
     Query(query): Query<XiaohongshuUserNoteListQuery>,
+    headers: HeaderMap,
     State(state): State<AppState>,
 ) -> FetchResult<XiaohongshuUserNoteList> {
-    xiaohongshu_fetcher(&state)
+    xiaohongshu_fetcher(&state, &headers)
         .fetch_user_note_list(&XiaohongshuUserNotesOptions {
             user_id,
             xsec_token: query.xsec_token,

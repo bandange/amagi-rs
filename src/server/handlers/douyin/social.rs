@@ -1,6 +1,7 @@
 use axum::{
     Json,
     extract::{Path, Query, State},
+    http::HeaderMap,
 };
 
 use super::super::support::{FetchResult, douyin_fetcher, fetch_error_response};
@@ -14,9 +15,10 @@ use crate::server::state::AppState;
 pub async fn douyin_work_comments(
     Path(aweme_id): Path<String>,
     Query(query): Query<DouyinCommentQuery>,
+    headers: HeaderMap,
     State(state): State<AppState>,
 ) -> FetchResult<DouyinWorkComments> {
-    douyin_fetcher(&state)
+    douyin_fetcher(&state, &headers)
         .fetch_work_comments(&aweme_id, query.number, query.cursor)
         .await
         .map(Json)
@@ -27,9 +29,10 @@ pub async fn douyin_work_comments(
 pub async fn douyin_comment_replies(
     Path((aweme_id, comment_id)): Path<(String, String)>,
     Query(query): Query<DouyinCommentQuery>,
+    headers: HeaderMap,
     State(state): State<AppState>,
 ) -> FetchResult<DouyinCommentReplies> {
-    douyin_fetcher(&state)
+    douyin_fetcher(&state, &headers)
         .fetch_comment_replies(&aweme_id, &comment_id, query.number, query.cursor)
         .await
         .map(Json)
@@ -39,9 +42,10 @@ pub async fn douyin_comment_replies(
 /// Search Douyin content through the web API.
 pub async fn douyin_search(
     Query(query): Query<DouyinSearchQuery>,
+    headers: HeaderMap,
     State(state): State<AppState>,
 ) -> FetchResult<DouyinSearchResult> {
-    douyin_fetcher(&state)
+    douyin_fetcher(&state, &headers)
         .search_content(
             &query.query,
             query.search_type,
@@ -56,9 +60,10 @@ pub async fn douyin_search(
 /// Fetch Douyin suggestion keywords through the web API.
 pub async fn douyin_suggest_words(
     Query(query): Query<DouyinSearchQuery>,
+    headers: HeaderMap,
     State(state): State<AppState>,
 ) -> FetchResult<DouyinSuggestWords> {
-    douyin_fetcher(&state)
+    douyin_fetcher(&state, &headers)
         .fetch_suggest_words(&query.query)
         .await
         .map(Json)

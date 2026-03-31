@@ -139,6 +139,21 @@ $env:AMAGI_TWITTER_COOKIE = "..."
 $env:AMAGI_XIAOHONGSHU_COOKIE = "..."
 ```
 
+运行 `amagi serve` 时，也可以在单次 Web 请求里通过 HTTP 头覆盖启动时配置的
+Cookie。支持的请求头：
+
+- `X-Amagi-Cookie`：对当前平台路由生效的通用 Cookie 覆盖头
+- `X-Amagi-Bilibili-Cookie`
+- `X-Amagi-Douyin-Cookie`
+- `X-Amagi-Kuaishou-Cookie`
+- `X-Amagi-Twitter-Cookie`
+- `X-Amagi-Xiaohongshu-Cookie`
+
+优先级为“平台专用头”优先，其次 `X-Amagi-Cookie`，最后才回退到服务启动时的
+Cookie 配置。若显式发送空头值，则会在该次请求里清空默认 Cookie，并在平台支持时
+退回游客模式。
+这组覆盖头主要面向 `curl`、自动化脚本、反向代理和服务到服务调用。
+
 共享运行时变量：
 
 - `AMAGI_USER_ENV_FILE`
@@ -167,6 +182,8 @@ AMAGI_TWITTER_COOKIE="auth_token=...; ct0=...; twid=..." amagi run twitter tweet
 AMAGI_OUTPUT=json AMAGI_OUTPUT_FILE=tmp/emoji.json AMAGI_OUTPUT_PRETTY=true amagi run bilibili emoji-list
 AMAGI_OUTPUT=json AMAGI_OUTPUT_FILE=tmp/events.json AMAGI_OUTPUT_APPEND=true amagi run bilibili qrcode-status <qrcode_key>
 AMAGI_KUAISHOU_COOKIE="token=..." amagi serve --host 127.0.0.1 --port 4567
+curl -H "X-Amagi-Twitter-Cookie: auth_token=...; ct0=...; twid=u%3D..." "http://127.0.0.1:4567/api/twitter/user/likes?count=20"
+curl -H "X-Amagi-Cookie:" "http://127.0.0.1:4567/api/bilibili/live/21452505"
 ```
 
 ## CLI 输出

@@ -1,6 +1,7 @@
 use axum::{
     Json,
     extract::{Path, Query, State},
+    http::HeaderMap,
 };
 
 use super::super::support::{FetchResult, douyin_fetcher, fetch_error_response};
@@ -12,9 +13,10 @@ use crate::server::state::AppState;
 pub async fn douyin_live_room_info(
     Path(room_id): Path<String>,
     Query(query): Query<DouyinLiveRoomQuery>,
+    headers: HeaderMap,
     State(state): State<AppState>,
 ) -> FetchResult<DouyinLiveRoomInfo> {
-    douyin_fetcher(&state)
+    douyin_fetcher(&state, &headers)
         .fetch_live_room_info(&room_id, &query.web_rid)
         .await
         .map(Json)

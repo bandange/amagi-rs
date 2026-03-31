@@ -90,6 +90,30 @@ Override variable:
 
 - `AMAGI_USER_ENV_FILE`
 
+### 2.1 Per-request Cookie Override Headers
+
+Besides startup environment variables, `amagi serve` also accepts per-request
+cookie overrides through HTTP headers:
+
+- `X-Amagi-Cookie`
+- `X-Amagi-Bilibili-Cookie`
+- `X-Amagi-Douyin-Cookie`
+- `X-Amagi-Kuaishou-Cookie`
+- `X-Amagi-Twitter-Cookie`
+- `X-Amagi-Xiaohongshu-Cookie`
+
+Precedence is:
+
+1. platform-specific header
+2. `X-Amagi-Cookie`
+3. startup environment / dotenv configuration
+
+An empty override header clears the configured startup cookie for that request.
+This is useful when the server has a default authenticated cookie but a specific
+request should use guest-mode behavior instead.
+These headers are intended for direct HTTP callers such as `curl`, automation
+scripts, reverse proxies, and backend services.
+
 ## 3. Response Conventions
 
 ### 3.1 Success Responses
@@ -275,6 +299,8 @@ curl "http://127.0.0.1:4567/api/spec/douyin"
 curl "http://127.0.0.1:4567/api/douyin/search?query=openai&type=general&number=10"
 curl "http://127.0.0.1:4567/api/twitter/search/tweets?query=OpenAI&search_type=latest&count=20"
 curl "http://127.0.0.1:4567/api/xiaohongshu/search?keyword=%E6%8A%80%E6%9C%AF&page=1&page_size=20&sort=general&note_type=all"
+curl -H "X-Amagi-Twitter-Cookie: auth_token=...; ct0=...; twid=u%3D..." "http://127.0.0.1:4567/api/twitter/user/likes?count=20"
+curl -H "X-Amagi-Cookie:" "http://127.0.0.1:4567/api/bilibili/live/21452505"
 ```
 
 POST example:
