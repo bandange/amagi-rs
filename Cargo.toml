@@ -1,6 +1,6 @@
 [package]
 name = "amagi"
-version = "0.1.0"
+version = "0.1.1"
 edition = "2024"
 description = "Rust SDK, CLI, and Web API service skeleton for multi-platform social web adapters."
 license = "GPL-3.0-only"
