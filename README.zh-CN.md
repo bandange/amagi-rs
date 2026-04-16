@@ -41,7 +41,7 @@ amagi run twitter user-profile <screen_name>
 amagi serve --host 127.0.0.1 --port 4567
 ```
 
-如果你需要从仓库安装、卸载，或者查看 shell 集成细节，请看[安装指南](docs/installation/README.zh-CN.md)。
+如果你需要安装、更新、卸载，或者查看 shell 集成细节，请看[安装指南](docs/installation/README.zh-CN.md)。
 
 ## 从源码运行
 

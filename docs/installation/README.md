@@ -2,7 +2,7 @@
 
 Chinese version: [README.zh-CN.md](README.zh-CN.md)
 
-Use this guide to install `amagi`, run it directly from source, and remove it.
+Use this guide to install `amagi`, update it, run it directly from source, and remove it.
 
 ## 1. Install
 
@@ -54,6 +54,41 @@ Optional install variables:
 
 ## 2. Run From Source
 
+Update to the latest release:
+
+Linux/macOS:
+
+```bash
+bash scripts/update.sh
+```
+
+PowerShell:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\scripts\update.ps1
+```
+
+Remote one-liner:
+
+Linux/macOS:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/bandange/amagi-rs/main/scripts/update.sh | bash
+```
+
+PowerShell:
+
+```powershell
+irm https://raw.githubusercontent.com/bandange/amagi-rs/main/scripts/update.ps1 | iex
+```
+
+Optional update arguments:
+
+- Linux/macOS: `--source local|remote`, `--version`, `--install-dir`
+- PowerShell: `-Source Local|Remote`, `-Version`, `-InstallDir`
+
+## 3. Run From Source
+
 If you only want to try the project without installing the binary, run it in the repository directory. This requires a local Rust toolchain.
 
 Examples:
@@ -64,7 +99,7 @@ cargo run -- run douyin video-work <aweme_id>
 cargo run -- serve --host 127.0.0.1 --port 4567
 ```
 
-## 3. Config
+## 4. Config
 
 `amagi` reads configuration in this order:
 
@@ -90,7 +125,7 @@ On Linux/macOS, the install script also writes shell integration files:
 
 After installation, open a new shell. If needed, you can also `source` the generated helper file manually.
 
-## 4. Uninstall
+## 5. Uninstall
 
 Linux/macOS:
 

@@ -41,7 +41,7 @@ amagi run twitter user-profile <screen_name>
 amagi serve --host 127.0.0.1 --port 4567
 ```
 
-For repository install, uninstall, and shell integration details, see the [installation guide](docs/installation/README.md).
+For install, update, uninstall, and shell integration details, see the [installation guide](docs/installation/README.md).
 
 ## Run From Source
 

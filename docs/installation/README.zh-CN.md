@@ -2,7 +2,7 @@
 
 英文版：[README.md](README.md)
 
-这份文档只保留用户常用内容：安装、从源码运行、配置位置和卸载。
+这份文档只保留用户常用内容：安装、更新、从源码运行、配置位置和卸载。
 
 ## 1. 安装
 
@@ -52,7 +52,42 @@ amagi --version
 - `AMAGI_INSTALL_VERSION`：安装指定发布版本，而不是 `latest`
 - `AMAGI_REMOTE_REPO_OWNER`、`AMAGI_REMOTE_REPO_NAME`、`AMAGI_REMOTE_BASE_URL`：覆盖默认下载来源
 
-## 2. 从源码运行
+## 2. 更新
+
+更新到最新发布版本：
+
+Linux/macOS：
+
+```bash
+bash scripts/update.sh
+```
+
+PowerShell：
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\scripts\update.ps1
+```
+
+远程一键更新：
+
+Linux/macOS：
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/bandange/amagi-rs/main/scripts/update.sh | bash
+```
+
+PowerShell：
+
+```powershell
+irm https://raw.githubusercontent.com/bandange/amagi-rs/main/scripts/update.ps1 | iex
+```
+
+常用更新参数：
+
+- Linux/macOS：`--source local|remote`、`--version`、`--install-dir`
+- PowerShell：`-Source Local|Remote`、`-Version`、`-InstallDir`
+
+## 3. 从源码运行
 
 如果你只是想临时试用，不想先安装二进制，可以直接在仓库目录运行。这里需要本地已经有 Rust 工具链。
 
@@ -64,7 +99,7 @@ cargo run -- run douyin video-work <aweme_id>
 cargo run -- serve --host 127.0.0.1 --port 4567
 ```
 
-## 3. 配置
+## 4. 配置
 
 `amagi` 按这个顺序读取配置：
 
@@ -90,7 +125,7 @@ cargo run -- serve --host 127.0.0.1 --port 4567
 
 安装完成后，重新打开一个 shell 即可。需要的话，也可以手动 `source` 生成的辅助文件。
 
-## 4. 卸载
+## 5. 卸载
 
 Linux/macOS：
 
