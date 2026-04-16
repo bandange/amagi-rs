@@ -16,7 +16,7 @@
 
 ```toml
 [dependencies]
-amagi = { version = "0.1.0", default-features = false, features = ["server"] }
+amagi = { version = "0.1.2", default-features = false, features = ["server"] }
 tokio = { version = "1", features = ["macros", "rt-multi-thread"] }
 ```
 

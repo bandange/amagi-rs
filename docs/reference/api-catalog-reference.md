@@ -17,7 +17,7 @@ code generation pipelines.
 
 ```toml
 [dependencies]
-amagi = { version = "0.1.0", default-features = false, features = ["catalog"] }
+amagi = { version = "0.1.2", default-features = false, features = ["catalog"] }
 ```
 
 ## 2. Quick Start

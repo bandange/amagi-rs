@@ -1,30 +1,18 @@
 # amagi
 
-中文 README: [`README.zh-CN.md`](README.zh-CN.md)
+Chinese README: [`README.zh-CN.md`](README.zh-CN.md)
 
-Rust SDK, CLI, and Web API service skeleton for multi-platform social web adapters.
+`amagi` is a Rust SDK, CLI, and JSON Web API service for multi-platform social web adapters.
 
-## Overview
+## What It Does
 
-- Build local CLI workflows with `amagi run`
-- Start a JSON Web API service with `amagi serve`
-- Generate API docs with `cargo doc --no-deps --open`
-- Publish generated docs to `docs.rs` after releasing the crate
-- Full CLI command and parameter reference: [`docs/reference/cli-reference.md`](docs/reference/cli-reference.md)
-- Chinese CLI reference: [`docs/reference/cli-reference.zh-CN.md`](docs/reference/cli-reference.zh-CN.md)
-- SDK usage reference: [`docs/reference/sdk-reference.md`](docs/reference/sdk-reference.md)
-- Chinese SDK reference: [`docs/reference/sdk-reference.zh-CN.md`](docs/reference/sdk-reference.zh-CN.md)
-- Web API reference: [`docs/reference/web-api-reference.md`](docs/reference/web-api-reference.md)
-- Chinese Web API reference: [`docs/reference/web-api-reference.zh-CN.md`](docs/reference/web-api-reference.zh-CN.md)
-- API catalog reference: [`docs/reference/api-catalog-reference.md`](docs/reference/api-catalog-reference.md)
-- Chinese API catalog reference: [`docs/reference/api-catalog-reference.zh-CN.md`](docs/reference/api-catalog-reference.zh-CN.md)
-- Installation guide: [`docs/installation/README.md`](docs/installation/README.md)
-- Chinese installation guide: [`docs/installation/README.zh-CN.md`](docs/installation/README.zh-CN.md)
+- Run CLI tasks against Bilibili, Douyin, Kuaishou, Twitter/X, and Xiaohongshu
+- Start a local JSON Web API with `amagi serve`
+- Reuse the same capability as a Rust crate with feature flags
 
 ## Quick Start
 
-Install the CLI first. For local installation from a repository checkout and
-other options, see [`docs/installation/README.md`](docs/installation/README.md).
+Install the latest release:
 
 Linux/macOS:
 
@@ -38,256 +26,88 @@ PowerShell:
 irm https://raw.githubusercontent.com/bandange/amagi-rs/main/scripts/install.ps1 | iex
 ```
 
-Verify the command:
+Verify:
 
 ```bash
 amagi --version
 ```
 
-Run common commands:
+Common examples:
 
 ```bash
-amagi run
 amagi run douyin video-work <aweme_id>
-amagi run douyin work-comments <aweme_id> --number 20
-amagi run douyin user-profile <sec_uid>
-amagi run douyin search "keyword" --type general --number 10
-amagi run douyin emoji-list
-amagi run kuaishou video-work <photo_id>
-amagi run kuaishou work-comments <photo_id>
-amagi run kuaishou emoji-list
-amagi run kuaishou user-profile <principal_id>
-amagi run kuaishou user-work-list <principal_id> --count 24 --pcursor ""
-amagi run kuaishou live-room-info <principal_id>
-amagi run twitter search-tweets OpenAI --search-type latest --count 20
+amagi run bilibili emoji-list
 amagi run twitter user-profile <screen_name>
-amagi run twitter user-timeline <screen_name> --count 20
-amagi run twitter tweet-detail <tweet_id>
-amagi run twitter space-detail <space_id>
-amagi --output json --pretty --output-file tmp/emoji.json --create-parent-dirs run bilibili emoji-list
-amagi --output json --output-file tmp/events.json --append run bilibili qrcode-status <qrcode_key>
 amagi serve --host 127.0.0.1 --port 4567
 ```
 
-## Verified Twitter CLI Interfaces
+For repository install, uninstall, and shell integration details, see the [installation guide](docs/installation/README.md).
 
-The Twitter/X CLI reference now marks tested usable interfaces directly, and
-also calls out interfaces with known behavior caveats:
+## Run From Source
 
-- [`docs/reference/cli-reference.md`](docs/reference/cli-reference.md)
+If you do not want to install the binary, run it directly in the repository. This requires a local Rust toolchain.
 
-## Environment
+```bash
+cargo run -- run
+cargo run -- run douyin video-work <aweme_id>
+cargo run -- serve --host 127.0.0.1 --port 4567
+```
 
-The binary startup path loads layered dotenv configuration automatically, and
-SDK consumers can also build config from dotenv files through `ClientOptions::from_env()` or
-`AmagiClient::from_env()`.
+## Configuration
 
-Default dotenv lookup order:
+Configuration is loaded in this order:
 
-1. user-level config file
-2. current working directory `.env`
-
-Process environment variables still override both dotenv layers.
+1. the user-level dotenv file
+2. the current directory `.env`
 
 User-level dotenv path:
 
 - Linux/macOS: `~/.config/amagi/.env`
 - Windows: `%APPDATA%\\amagi\\.env`
 
-Set `AMAGI_USER_ENV_FILE` to override this user-level dotenv path explicitly.
+Useful files and variables:
 
-Example `.env`:
-
-```dotenv
-AMAGI_DOUYIN_COOKIE=
-AMAGI_BILIBILI_COOKIE=
-AMAGI_KUAISHOU_COOKIE=token=...
-AMAGI_TWITTER_COOKIE=
-AMAGI_XIAOHONGSHU_COOKIE=
-
-AMAGI_TIMEOUT_MS=10000
-AMAGI_MAX_RETRIES=3
-AMAGI_LOG_FORMAT=text
-AMAGI_LOG=info
-AMAGI_OUTPUT=text
-AMAGI_OUTPUT_FILE=
-AMAGI_OUTPUT_PRETTY=false
-AMAGI_OUTPUT_APPEND=false
-AMAGI_OUTPUT_CREATE_DIRS=false
-AMAGI_HOST=127.0.0.1
-AMAGI_PORT=4567
-```
-
-You can also keep a template in [`.env.example`](.env.example).
-
-The CLI and Web runtime both read platform cookies from process environment variables:
-
-```bash
-export AMAGI_DOUYIN_COOKIE="..."
-export AMAGI_BILIBILI_COOKIE="..."
-export AMAGI_KUAISHOU_COOKIE="..."
-export AMAGI_TWITTER_COOKIE="..."
-export AMAGI_XIAOHONGSHU_COOKIE="..."
-```
-
-PowerShell:
-
-```powershell
-$env:AMAGI_DOUYIN_COOKIE = "..."
-$env:AMAGI_BILIBILI_COOKIE = "..."
-$env:AMAGI_KUAISHOU_COOKIE = "..."
-$env:AMAGI_TWITTER_COOKIE = "..."
-$env:AMAGI_XIAOHONGSHU_COOKIE = "..."
-```
-
-When running `amagi serve`, web requests can also override the startup cookie
-per request with HTTP headers. Supported headers:
-
-- `X-Amagi-Cookie`: generic cookie override for the current platform route
-- `X-Amagi-Bilibili-Cookie`
-- `X-Amagi-Douyin-Cookie`
-- `X-Amagi-Kuaishou-Cookie`
-- `X-Amagi-Twitter-Cookie`
-- `X-Amagi-Xiaohongshu-Cookie`
-
-Header precedence is platform-specific first, then `X-Amagi-Cookie`, then the
-server's startup configuration. Sending an empty override header clears the
-startup cookie for that request and forces guest-mode behavior where supported.
-These override headers are intended for `curl`, automation scripts, reverse
-proxies, and other server-to-server callers.
-
-Shared runtime variables:
-
+- [`.env.example`](.env.example)
 - `AMAGI_USER_ENV_FILE`
-- `AMAGI_TIMEOUT_MS`
-- `AMAGI_MAX_RETRIES`
-- `AMAGI_OUTPUT`
-- `AMAGI_OUTPUT_FILE`
-- `AMAGI_OUTPUT_PRETTY`
-- `AMAGI_OUTPUT_APPEND`
-- `AMAGI_OUTPUT_CREATE_DIRS`
-- `AMAGI_LOG_FORMAT`
-- `AMAGI_LOG`
+- `AMAGI_DOUYIN_COOKIE`
+- `AMAGI_BILIBILI_COOKIE`
+- `AMAGI_KUAISHOU_COOKIE`
+- `AMAGI_TWITTER_COOKIE`
+- `AMAGI_XIAOHONGSHU_COOKIE`
 - `AMAGI_HOST`
 - `AMAGI_PORT`
 
+For the full environment and CLI option list, see the [CLI reference](docs/reference/cli-reference.md).
+
+## Crate Features
+
+Default features: `client`, `cli`, `server`
+
+Optional features:
+
+- `catalog`: static catalog and route metadata only
+- `client`: Rust client types and upstream fetchers
+- `cli`: command-line runtime
+- `server`: Axum-based HTTP service
+
 Example:
 
-```bash
-AMAGI_DOUYIN_COOKIE="sid_guard=..." amagi run douyin emoji-list
-AMAGI_DOUYIN_COOKIE="sid_guard=..." amagi run douyin user-video-list <sec_uid> --number 18
-AMAGI_KUAISHOU_COOKIE="token=..." amagi run kuaishou emoji-list
-AMAGI_KUAISHOU_COOKIE="token=..." amagi run kuaishou user-work-list 3xuser --count 24
-AMAGI_TWITTER_COOKIE="auth_token=...; ct0=...; twid=..." amagi run twitter search-tweets OpenAI --search-type latest --count 20
-AMAGI_TWITTER_COOKIE="auth_token=...; ct0=...; twid=..." amagi run twitter user-profile OpenAI
-AMAGI_TWITTER_COOKIE="auth_token=...; ct0=...; twid=..." amagi run twitter tweet-detail 2028909019977703752
-AMAGI_OUTPUT=json AMAGI_OUTPUT_FILE=tmp/emoji.json AMAGI_OUTPUT_PRETTY=true amagi run bilibili emoji-list
-AMAGI_OUTPUT=json AMAGI_OUTPUT_FILE=tmp/events.json AMAGI_OUTPUT_APPEND=true amagi run bilibili qrcode-status <qrcode_key>
-AMAGI_KUAISHOU_COOKIE="token=..." amagi serve --host 127.0.0.1 --port 4567
-curl -H "X-Amagi-Twitter-Cookie: auth_token=...; ct0=...; twid=u%3D..." "http://127.0.0.1:4567/api/twitter/user/likes?count=20"
-curl -H "X-Amagi-Cookie:" "http://127.0.0.1:4567/api/bilibili/live/21452505"
-```
-
-## CLI Output
-
-The CLI can write either human-readable text or machine-readable JSON to stdout
-or a file.
-
-- `--output text|json`: choose text or JSON output
-- `--output-file`, `-o`: write CLI-facing output to a file instead of stdout
-- `--pretty`: pretty-print JSON payloads
-- `--append`: append to an existing output file
-- `--create-parent-dirs`: create missing parent directories for the output path
-
-Examples:
-
-```bash
-amagi --output json --pretty --output-file tmp/bili/login.json --create-parent-dirs run bilibili login-status
-amagi --output json --output-file tmp/bili/poll.json --append run bilibili qrcode-status <qrcode_key>
-```
-
-## Feature Selection
-
-Choose only the surface you need in `Cargo.toml`:
-
 ```toml
-# API catalog only
-amagi = { version = "0.1.0", default-features = false, features = ["catalog"] }
-
-# Rust SDK only
-amagi = { version = "0.1.0", default-features = false, features = ["client"] }
-
-# CLI runtime only
-amagi = { version = "0.1.0", default-features = false, features = ["cli"] }
-
-# Web API service only
-amagi = { version = "0.1.0", default-features = false, features = ["server"] }
+amagi = { version = "0.1.2", default-features = false, features = ["client"] }
 ```
 
-Feature notes:
+## Documentation
 
-- `catalog`: only exports the static catalog and route metadata.
-- `client`: exports `catalog`, client types, events, errors, and Rust-native platform fetchers.
-- `cli`: enables the command parser and local runtime without forcing the server surface.
-- `server`: enables the Axum-based HTTP server surface without forcing the CLI parser.
+- Installation guide: [docs/installation/README.md](docs/installation/README.md)
+- CLI reference: [docs/reference/cli-reference.md](docs/reference/cli-reference.md)
+- SDK reference: [docs/reference/sdk-reference.md](docs/reference/sdk-reference.md)
+- Web API reference: [docs/reference/web-api-reference.md](docs/reference/web-api-reference.md)
+- API catalog reference: [docs/reference/api-catalog-reference.md](docs/reference/api-catalog-reference.md)
 
-## Project Layout
+Chinese documentation:
 
-- `src/catalog/`: shared catalog and route metadata
-- `src/client/`: client configuration and request defaults
-- `src/events/`: typed event bus and payload models
-- `src/platforms/`: Rust-native platform fetchers and shared upstream transport
-- `src/server/`: HTTP server entrypoint and handlers
-- `src/cli/`, `src/output/`, `src/app/`: CLI, output, and runtime orchestration
-- `src/config/`, `src/error/`, `src/telemetry/`, `src/env/`: shared runtime support
-- `docs/reference/`, `docs/installation/`: reference docs and installation guides
-- `scripts/`: local installation scripts for Linux shells and PowerShell
-- `src/lib.rs`: public exports and crate-level entrypoints
-- `src/main.rs`: binary bootstrap
-
-## Rustdoc Example
-
-```rust
-#[cfg(feature = "cli")]
-{
-    use amagi::cli::parse_from;
-    use amagi::config::CommandConfig;
-
-    let config = parse_from(["amagi", "run", "douyin", "emoji-list"]);
-
-    match config.command {
-        CommandConfig::Run(run) => assert!(!run.quiet),
-        #[cfg(feature = "server")]
-        CommandConfig::Serve(_) => unreachable!("expected the run subcommand"),
-    }
-}
-```
-
-## Documentation Conventions
-
-- Use `///` for public API documentation comments
-- Use `//!` for crate-level and module-level documentation
-- Start each public item with a one-line summary sentence ending in a period
-- Prefer intra-doc links for related types, modules, and helper functions
-- Prefer `# Examples`, `# Errors`, and `# Panics` sections when they describe observable behavior
-- Document the public contract rather than repeating implementation details
-- Use `#[doc(alias = "...")]` for useful alternate English search terms
-
-## Suggested Style
-
-````text
-/// Build the socket address used by the HTTP server.
-///
-/// # Examples
-///
-/// ```rust
-/// use amagi::config::ServeConfig;
-///
-/// let serve = ServeConfig {
-///     host: "127.0.0.1".into(),
-///     port: 4567,
-/// };
-///
-/// assert_eq!(serve.bind_addr(), "127.0.0.1:4567");
-/// ```
-````
+- Installation guide: [docs/installation/README.zh-CN.md](docs/installation/README.zh-CN.md)
+- CLI reference: [docs/reference/cli-reference.zh-CN.md](docs/reference/cli-reference.zh-CN.md)
+- SDK reference: [docs/reference/sdk-reference.zh-CN.md](docs/reference/sdk-reference.zh-CN.md)
+- Web API reference: [docs/reference/web-api-reference.zh-CN.md](docs/reference/web-api-reference.zh-CN.md)
+- API catalog reference: [docs/reference/api-catalog-reference.zh-CN.md](docs/reference/api-catalog-reference.zh-CN.md)

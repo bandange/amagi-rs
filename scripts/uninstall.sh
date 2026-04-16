@@ -13,6 +13,9 @@ REPO_ROOT=""
 PATH_CLEANED=0
 USER_ENV_CLEANED=0
 CURRENT_PATH_CLEANED=0
+AMAGI_MANAGED_BLOCK_START="# >>> amagi installer >>>"
+AMAGI_MANAGED_BLOCK_END="# <<< amagi installer <<<"
+AMAGI_LEGACY_COMMENT="# amagi installer"
 
 if [[ -n "${SCRIPT_PATH}" ]]; then
   SCRIPT_DIR="$(cd -- "$(dirname -- "${SCRIPT_PATH}")" && pwd)"
@@ -60,6 +63,26 @@ resolve_user_env_file() {
   fi
 
   printf '%s\n' "${HOME}/.config/amagi/.env"
+}
+
+resolve_shell_integration_dir() {
+  printf '%s\n' "$(dirname -- "$(resolve_user_env_file)")"
+}
+
+resolve_posix_shell_file() {
+  printf '%s\n' "$(resolve_shell_integration_dir)/shell.sh"
+}
+
+resolve_posix_env_export_file() {
+  printf '%s\n' "$(resolve_shell_integration_dir)/env.sh"
+}
+
+resolve_fish_conf_file() {
+  printf '%s\n' "${HOME}/.config/fish/conf.d/amagi.fish"
+}
+
+resolve_fish_env_export_file() {
+  printf '%s\n' "$(resolve_shell_integration_dir)/env.fish"
 }
 
 normalize_dir() {
@@ -204,6 +227,13 @@ profile_contains_path_entry() {
   return 1
 }
 
+profile_contains_managed_block() {
+  local file="$1"
+
+  [[ -f "${file}" ]] || return 1
+  grep -Fq "${AMAGI_MANAGED_BLOCK_START}" "${file}"
+}
+
 has_path_cleanup_targets() {
   local candidate_dir
   local profile_file
@@ -219,6 +249,28 @@ has_path_cleanup_targets() {
       fi
     done < <(profile_files)
   done
+
+  while IFS= read -r profile_file; do
+    if profile_contains_managed_block "${profile_file}"; then
+      return 0
+    fi
+  done < <(profile_files)
+
+  if [[ -f "$(resolve_posix_shell_file)" ]]; then
+    return 0
+  fi
+
+  if [[ -f "$(resolve_posix_env_export_file)" ]]; then
+    return 0
+  fi
+
+  if [[ -f "$(resolve_fish_conf_file)" ]]; then
+    return 0
+  fi
+
+  if [[ -f "$(resolve_fish_env_export_file)" ]]; then
+    return 0
+  fi
 
   return 1
 }
@@ -240,11 +292,18 @@ has_user_env_entries() {
   return 1
 }
 
+has_env_export_artifacts() {
+  [[ -f "$(resolve_posix_env_export_file)" ]] && return 0
+  [[ -f "$(resolve_fish_env_export_file)" ]] && return 0
+  return 1
+}
+
 remove_path_entry_from_file() {
   local file="$1"
   local entry="$2"
   local temp_file
   local target_line
+  local in_managed_block=0
   local pending_comment=""
   local changed=0
   local line
@@ -257,7 +316,21 @@ remove_path_entry_from_file() {
   while IFS= read -r line || [[ -n "${line}" ]]; do
     line="${line%$'\r'}"
 
-    if [[ "${line}" == "# amagi installer" ]]; then
+    if [[ "${in_managed_block}" -eq 1 ]]; then
+      changed=1
+      if [[ "${line}" == "${AMAGI_MANAGED_BLOCK_END}" ]]; then
+        in_managed_block=0
+      fi
+      continue
+    fi
+
+    if [[ "${line}" == "${AMAGI_MANAGED_BLOCK_START}" ]]; then
+      in_managed_block=1
+      changed=1
+      continue
+    fi
+
+    if [[ "${line}" == "${AMAGI_LEGACY_COMMENT}" ]]; then
       pending_comment="${line}"
       continue
     fi
@@ -286,6 +359,67 @@ remove_path_entry_from_file() {
     printf '[amagi] removed PATH entry from %s\n' "${file}"
   else
     rm -f "${temp_file}"
+  fi
+}
+
+remove_file_if_present() {
+  local file="$1"
+  local label="$2"
+
+  if [[ ! -f "${file}" ]]; then
+    return 1
+  fi
+
+  rm -f "${file}"
+  printf '[amagi] removed %s %s\n' "${label}" "${file}"
+  return 0
+}
+
+remove_shell_integration_artifacts() {
+  local removed=0
+  local shell_integration_dir
+
+  if remove_file_if_present "$(resolve_posix_shell_file)" "POSIX shell integration"; then
+    removed=1
+  fi
+
+  if remove_file_if_present "$(resolve_posix_env_export_file)" "POSIX env export file"; then
+    removed=1
+  fi
+
+  if remove_file_if_present "$(resolve_fish_conf_file)" "fish integration"; then
+    removed=1
+  fi
+
+  if remove_file_if_present "$(resolve_fish_env_export_file)" "fish env export file"; then
+    removed=1
+  fi
+
+  shell_integration_dir="$(resolve_shell_integration_dir)"
+  remove_empty_amagi_dir "${shell_integration_dir}"
+
+  if [[ "${removed}" -eq 1 ]]; then
+    PATH_CLEANED=1
+  fi
+}
+
+remove_env_export_artifacts() {
+  local removed=0
+  local shell_integration_dir
+
+  if remove_file_if_present "$(resolve_posix_env_export_file)" "POSIX env export file"; then
+    removed=1
+  fi
+
+  if remove_file_if_present "$(resolve_fish_env_export_file)" "fish env export file"; then
+    removed=1
+  fi
+
+  shell_integration_dir="$(resolve_shell_integration_dir)"
+  remove_empty_amagi_dir "${shell_integration_dir}"
+
+  if [[ "${removed}" -eq 1 ]]; then
+    USER_ENV_CLEANED=1
   fi
 }
 
@@ -441,7 +575,7 @@ done
 if [[ "${KEEP_PATH}" -eq 0 && "${#CANDIDATE_DIRS[@]}" -gt 0 ]]; then
   if has_path_cleanup_targets; then
     if confirm_environment_cleanup \
-      "remove matching PATH entries from shell profile files and the current shell session?" \
+      "remove matching shell profile entries, helper files, and the current shell PATH?" \
       "PATH cleanup"; then
       PATH_CLEANED=1
       for candidate_dir in "${CANDIDATE_DIRS[@]}"; do
@@ -449,6 +583,7 @@ if [[ "${KEEP_PATH}" -eq 0 && "${#CANDIDATE_DIRS[@]}" -gt 0 ]]; then
           remove_path_entry_from_file "${profile_file}" "${candidate_dir}"
         done < <(profile_files)
       done
+      remove_shell_integration_artifacts
       update_current_shell_path
       printf '[amagi] removed matching PATH entries where present\n'
     fi
@@ -456,12 +591,15 @@ if [[ "${KEEP_PATH}" -eq 0 && "${#CANDIDATE_DIRS[@]}" -gt 0 ]]; then
 fi
 
 if [[ "${KEEP_USER_ENV}" -eq 0 ]]; then
-  if has_user_env_entries; then
+  if has_user_env_entries || has_env_export_artifacts; then
     user_env_file="$(resolve_user_env_file)"
     if confirm_environment_cleanup \
-      "remove AMAGI_* entries from ${user_env_file}?" \
+      "remove AMAGI_* entries and exported shell env files from ${user_env_file}?" \
       "user env cleanup"; then
-      remove_user_env_entries
+      if has_user_env_entries; then
+        remove_user_env_entries
+      fi
+      remove_env_export_artifacts
     fi
   fi
 fi

@@ -49,7 +49,7 @@ pub struct DouyinVideoBigThumb {
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub img_y_size: Option<i64>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub interval: Option<i64>,
+    pub interval: Option<f64>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub uri: Option<String>,
     #[serde(
