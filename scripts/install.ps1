@@ -3,7 +3,8 @@ param(
     [ValidateSet("Auto", "Local", "Remote")]
     [string]$Source = $(if ($env:AMAGI_INSTALL_SOURCE) { $env:AMAGI_INSTALL_SOURCE } else { "Auto" }),
     [string]$InstallDir = $env:AMAGI_INSTALL_DIR,
-    [string]$Version = $(if ($env:AMAGI_INSTALL_VERSION) { $env:AMAGI_INSTALL_VERSION } else { "latest" })
+    [string]$Version = $(if ($env:AMAGI_INSTALL_VERSION) { $env:AMAGI_INSTALL_VERSION } else { "latest" }),
+    [switch]$Proxy
 )
 
 $ErrorActionPreference = "Stop"
@@ -12,6 +13,7 @@ $BinaryName = "amagi.exe"
 $RemoteRepoOwner = if ($env:AMAGI_REMOTE_REPO_OWNER) { $env:AMAGI_REMOTE_REPO_OWNER } else { "bandange" }
 $RemoteRepoName = if ($env:AMAGI_REMOTE_REPO_NAME) { $env:AMAGI_REMOTE_REPO_NAME } else { "amagi-rs" }
 $RemoteBaseUrl = $env:AMAGI_REMOTE_BASE_URL
+$ProxyPrefix = if ($Proxy) { "https://gh-proxy.com/" } else { "" }
 $script:RemoteTempPaths = [System.Collections.Generic.List[string]]::new()
 $ScriptPath = if ($PSCommandPath) { $PSCommandPath } else { $MyInvocation.MyCommand.Path }
 $ScriptDir = if ($ScriptPath) { Split-Path -Parent $ScriptPath } else { $null }
@@ -203,10 +205,10 @@ function Get-RemoteDownloadUrl {
     }
 
     if ($Version -eq "latest") {
-        return "https://github.com/$RemoteRepoOwner/$RemoteRepoName/releases/latest/download/$assetName"
+        return "${ProxyPrefix}https://github.com/$RemoteRepoOwner/$RemoteRepoName/releases/latest/download/$assetName"
     }
 
-    return "https://github.com/$RemoteRepoOwner/$RemoteRepoName/releases/download/$Version/$assetName"
+    return "${ProxyPrefix}https://github.com/$RemoteRepoOwner/$RemoteRepoName/releases/download/$Version/$assetName"
 }
 
 function Get-RemoteBinary {

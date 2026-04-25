@@ -39,6 +39,25 @@ PowerShell:
 irm https://raw.githubusercontent.com/bandange/amagi-rs/main/scripts/install.ps1 | iex
 ```
 
+Use proxy mode:
+
+Linux/macOS:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/bandange/amagi-rs/main/scripts/install.sh | bash -s -- --proxy
+```
+
+PowerShell:
+
+```powershell
+$Proxy = $true; irm https://raw.githubusercontent.com/bandange/amagi-rs/main/scripts/install.ps1 | iex
+```
+
+Notes:
+
+- `--proxy` and `-Proxy` rewrite remote release asset downloads to `https://gh-proxy.com/https://github.com/...`
+- the installer script itself is still fetched from `raw.githubusercontent.com`
+
 Verify:
 
 ```bash
@@ -51,6 +70,11 @@ Optional install variables:
 - `AMAGI_PROFILE_FILE`: on Linux/macOS, write the shell hook into one specific profile file
 - `AMAGI_INSTALL_VERSION`: install a specific release instead of `latest`
 - `AMAGI_REMOTE_REPO_OWNER`, `AMAGI_REMOTE_REPO_NAME`, `AMAGI_REMOTE_BASE_URL`: override the default download source
+
+Optional install arguments:
+
+- Linux/macOS: `--source local|remote`, `--version`, `--install-dir`, `--proxy`
+- PowerShell: `-Source Local|Remote`, `-Version`, `-InstallDir`, `-Proxy`
 
 ## 2. Run From Source
 

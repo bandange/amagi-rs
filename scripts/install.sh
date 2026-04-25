@@ -3,9 +3,11 @@ set -euo pipefail
 
 BIN_NAME="amagi"
 DEFAULT_SOURCE_MODE="${AMAGI_INSTALL_SOURCE:-auto}"
+INSTALL_DIR="${AMAGI_INSTALL_DIR:-}"
 REMOTE_REPO_OWNER="${AMAGI_REMOTE_REPO_OWNER:-bandange}"
 REMOTE_REPO_NAME="${AMAGI_REMOTE_REPO_NAME:-amagi-rs}"
 REMOTE_VERSION="${AMAGI_INSTALL_VERSION:-latest}"
+PROXY_PREFIX=""
 REMOTE_DOWNLOAD_PATH=""
 REMOTE_EXTRACT_DIR=""
 SCRIPT_PATH="${BASH_SOURCE[0]:-}"
@@ -21,6 +23,44 @@ if [[ -n "${SCRIPT_PATH}" ]]; then
   SCRIPT_DIR="$(cd -- "$(dirname -- "${SCRIPT_PATH}")" && pwd)"
   REPO_ROOT="$(cd -- "${SCRIPT_DIR}/.." 2>/dev/null && pwd || true)"
 fi
+
+require_flag_value() {
+  local flag="$1"
+  local value="${2:-}"
+
+  if [[ $# -lt 2 || -z "${value}" || "${value}" == --* ]]; then
+    printf '[amagi] %s requires a value\n' "${flag}" >&2
+    exit 1
+  fi
+}
+
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    --source)
+      require_flag_value "$@"
+      DEFAULT_SOURCE_MODE="$2"
+      shift 2
+      ;;
+    --install-dir)
+      require_flag_value "$@"
+      INSTALL_DIR="$2"
+      shift 2
+      ;;
+    --version)
+      require_flag_value "$@"
+      REMOTE_VERSION="$2"
+      shift 2
+      ;;
+    --proxy)
+      PROXY_PREFIX="https://gh-proxy.com/"
+      shift
+      ;;
+    *)
+      printf '[amagi] unknown flag: %s\n' "$1" >&2
+      exit 1
+      ;;
+  esac
+done
 
 default_install_dir() {
   printf '%s\n' "${HOME}/.local/bin"
@@ -709,10 +749,12 @@ remote_download_url() {
   fi
 
   if [[ "${REMOTE_VERSION}" == "latest" ]]; then
-    printf 'https://github.com/%s/%s/releases/latest/download/%s\n' \
+    printf '%shttps://github.com/%s/%s/releases/latest/download/%s\n' \
+      "${PROXY_PREFIX}" \
       "${REMOTE_REPO_OWNER}" "${REMOTE_REPO_NAME}" "${asset_name}"
   else
-    printf 'https://github.com/%s/%s/releases/download/%s/%s\n' \
+    printf '%shttps://github.com/%s/%s/releases/download/%s/%s\n' \
+      "${PROXY_PREFIX}" \
       "${REMOTE_REPO_OWNER}" "${REMOTE_REPO_NAME}" "${REMOTE_VERSION}" "${asset_name}"
   fi
 }
@@ -784,7 +826,9 @@ cleanup_remote_temp() {
   fi
 }
 
-INSTALL_DIR="${AMAGI_INSTALL_DIR:-$(default_install_dir)}"
+if [[ -z "${INSTALL_DIR}" ]]; then
+  INSTALL_DIR="$(default_install_dir)"
+fi
 INSTALL_MODE="$(resolve_execution_mode)"
 SOURCE_BINARY=""
 

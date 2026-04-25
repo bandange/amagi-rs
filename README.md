@@ -26,6 +26,20 @@ PowerShell:
 irm https://raw.githubusercontent.com/bandange/amagi-rs/main/scripts/install.ps1 | iex
 ```
 
+Use proxy mode:
+
+Linux/macOS:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/bandange/amagi-rs/main/scripts/install.sh | bash -s -- --proxy
+```
+
+PowerShell:
+
+```powershell
+$Proxy = $true; irm https://raw.githubusercontent.com/bandange/amagi-rs/main/scripts/install.ps1 | iex
+```
+
 Verify:
 
 ```bash

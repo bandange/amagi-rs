@@ -39,6 +39,25 @@ PowerShell：
 irm https://raw.githubusercontent.com/bandange/amagi-rs/main/scripts/install.ps1 | iex
 ```
 
+使用代理模式：
+
+Linux/macOS：
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/bandange/amagi-rs/main/scripts/install.sh | bash -s -- --proxy
+```
+
+PowerShell：
+
+```powershell
+$Proxy = $true; irm https://raw.githubusercontent.com/bandange/amagi-rs/main/scripts/install.ps1 | iex
+```
+
+说明：
+
+- `--proxy` 和 `-Proxy` 会把远程 release 下载地址改写为 `https://gh-proxy.com/https://github.com/...`
+- 安装脚本本身仍然是从 `raw.githubusercontent.com` 拉取
+
 验证：
 
 ```bash
@@ -51,6 +70,11 @@ amagi --version
 - `AMAGI_PROFILE_FILE`：在 Linux/macOS 上只写入一个指定的 shell 启动文件
 - `AMAGI_INSTALL_VERSION`：安装指定发布版本，而不是 `latest`
 - `AMAGI_REMOTE_REPO_OWNER`、`AMAGI_REMOTE_REPO_NAME`、`AMAGI_REMOTE_BASE_URL`：覆盖默认下载来源
+
+常用安装参数：
+
+- Linux/macOS：`--source local|remote`、`--version`、`--install-dir`、`--proxy`
+- PowerShell：`-Source Local|Remote`、`-Version`、`-InstallDir`、`-Proxy`
 
 ## 2. 更新
 
