@@ -16,7 +16,7 @@ If you embed the web service in your own Rust application:
 
 ```toml
 [dependencies]
-amagi = { version = "0.1.3", default-features = false, features = ["server"] }
+amagi = { version = "0.1.4", default-features = false, features = ["server"] }
 tokio = { version = "1", features = ["macros", "rt-multi-thread"] }
 ```
 
