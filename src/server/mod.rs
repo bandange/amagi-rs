@@ -2,6 +2,7 @@
 
 mod handlers;
 mod router;
+mod runtime;
 mod state;
 
 use tokio::net::TcpListener;
@@ -12,6 +13,7 @@ use crate::client::AmagiClient;
 use crate::config::ServeConfig;
 use crate::error::AppError;
 use crate::output::Printer;
+use runtime::ServerRuntimeConfig;
 
 /// Bind the configured address, print startup output, and serve the HTTP app.
 ///
@@ -30,14 +32,27 @@ pub async fn serve(
     let bind_addr = config.bind_addr();
     let listener = TcpListener::bind(&bind_addr).await?;
     let local_addr = listener.local_addr()?.to_string();
+    let runtime =
+        ServerRuntimeConfig::from_env_with_overrides(|name| config.runtime_override(name))?;
 
-    let state = state::AppState::new(APP_NAME, env!("CARGO_PKG_VERSION"), config.clone(), client);
+    let state = state::AppState::new(
+        APP_NAME,
+        env!("CARGO_PKG_VERSION"),
+        config.clone(),
+        client,
+        runtime,
+    )?;
     let app = router::build(state);
 
     printer.print_banner(APP_NAME, env!("CARGO_PKG_VERSION"))?;
     printer.print_server_ready(APP_NAME, env!("CARGO_PKG_VERSION"), &local_addr)?;
 
-    info!(app = APP_NAME, mode = "server", addr = %local_addr, "http server listening");
+    info!(
+        app = APP_NAME,
+        mode = "server",
+        addr = %local_addr,
+        "http server listening"
+    );
 
     axum::serve(listener, app)
         .with_graceful_shutdown(shutdown_signal())

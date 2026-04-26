@@ -45,6 +45,38 @@ pub struct ServeConfig {
     pub host: String,
     /// Port to bind.
     pub port: u16,
+    /// Optional node-aware runtime overrides for this process.
+    pub runtime_overrides: ServeRuntimeOverrides,
+}
+
+/// Optional node-aware runtime overrides accepted by `amagi serve`.
+#[cfg(feature = "server")]
+#[derive(Debug, Clone, Default)]
+pub struct ServeRuntimeOverrides {
+    /// Override for `AMAGI_PROXY_TIMEOUT_MS`.
+    pub proxy_timeout_ms: Option<u64>,
+    /// Override for `AMAGI_PROXY_MAX_HOPS`.
+    pub proxy_max_hops: Option<u32>,
+    /// Override for `AMAGI_PLATFORM_DOUYIN_MODE`.
+    pub douyin_mode: Option<String>,
+    /// Override for `AMAGI_PLATFORM_DOUYIN_UPSTREAM`.
+    pub douyin_upstream: Option<String>,
+    /// Override for `AMAGI_PLATFORM_BILIBILI_MODE`.
+    pub bilibili_mode: Option<String>,
+    /// Override for `AMAGI_PLATFORM_BILIBILI_UPSTREAM`.
+    pub bilibili_upstream: Option<String>,
+    /// Override for `AMAGI_PLATFORM_KUAISHOU_MODE`.
+    pub kuaishou_mode: Option<String>,
+    /// Override for `AMAGI_PLATFORM_KUAISHOU_UPSTREAM`.
+    pub kuaishou_upstream: Option<String>,
+    /// Override for `AMAGI_PLATFORM_XIAOHONGSHU_MODE`.
+    pub xiaohongshu_mode: Option<String>,
+    /// Override for `AMAGI_PLATFORM_XIAOHONGSHU_UPSTREAM`.
+    pub xiaohongshu_upstream: Option<String>,
+    /// Override for `AMAGI_PLATFORM_TWITTER_MODE`.
+    pub twitter_mode: Option<String>,
+    /// Override for `AMAGI_PLATFORM_TWITTER_UPSTREAM`.
+    pub twitter_upstream: Option<String>,
 }
 
 #[cfg(feature = "server")]
@@ -62,6 +94,7 @@ impl ServeConfig {
     /// let serve = ServeConfig {
     ///     host: "127.0.0.1".into(),
     ///     port: 4567,
+    ///     runtime_overrides: Default::default(),
     /// };
     ///
     /// assert_eq!(serve.bind_addr(), "127.0.0.1:4567");
@@ -84,6 +117,7 @@ impl ServeConfig {
     /// let serve = ServeConfig {
     ///     host: "127.0.0.1".into(),
     ///     port: 4567,
+    ///     runtime_overrides: Default::default(),
     /// };
     ///
     /// assert_eq!(serve.base_url(), "http://127.0.0.1:4567");
@@ -91,5 +125,32 @@ impl ServeConfig {
     #[doc(alias = "root_url")]
     pub fn base_url(&self) -> String {
         format!("http://{}", self.bind_addr())
+    }
+
+    /// Return an optional runtime override using the env-style key.
+    pub fn runtime_override(&self, name: &str) -> Option<String> {
+        self.runtime_overrides.lookup(name)
+    }
+}
+
+#[cfg(feature = "server")]
+impl ServeRuntimeOverrides {
+    /// Return an optional runtime override using the env-style key.
+    pub fn lookup(&self, name: &str) -> Option<String> {
+        match name {
+            "AMAGI_PROXY_TIMEOUT_MS" => self.proxy_timeout_ms.map(|value| value.to_string()),
+            "AMAGI_PROXY_MAX_HOPS" => self.proxy_max_hops.map(|value| value.to_string()),
+            "AMAGI_PLATFORM_DOUYIN_MODE" => self.douyin_mode.clone(),
+            "AMAGI_PLATFORM_DOUYIN_UPSTREAM" => self.douyin_upstream.clone(),
+            "AMAGI_PLATFORM_BILIBILI_MODE" => self.bilibili_mode.clone(),
+            "AMAGI_PLATFORM_BILIBILI_UPSTREAM" => self.bilibili_upstream.clone(),
+            "AMAGI_PLATFORM_KUAISHOU_MODE" => self.kuaishou_mode.clone(),
+            "AMAGI_PLATFORM_KUAISHOU_UPSTREAM" => self.kuaishou_upstream.clone(),
+            "AMAGI_PLATFORM_XIAOHONGSHU_MODE" => self.xiaohongshu_mode.clone(),
+            "AMAGI_PLATFORM_XIAOHONGSHU_UPSTREAM" => self.xiaohongshu_upstream.clone(),
+            "AMAGI_PLATFORM_TWITTER_MODE" => self.twitter_mode.clone(),
+            "AMAGI_PLATFORM_TWITTER_UPSTREAM" => self.twitter_upstream.clone(),
+            _ => None,
+        }
     }
 }

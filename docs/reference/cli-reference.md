@@ -356,6 +356,18 @@ amagi serve [OPTIONS]
 | --- | --- | --- | --- | --- |
 | `--host <HOST>` | host or IP | `127.0.0.1` | `AMAGI_HOST` | bind address |
 | `--port <PORT>` | `u16` | `4567` | `AMAGI_PORT` | bind port |
+| `--proxy-timeout-ms <MS>` | `u64` | `15000` | `AMAGI_PROXY_TIMEOUT_MS` | timeout used by node-to-node proxy requests |
+| `--proxy-max-hops <COUNT>` | `u32` | `1` | `AMAGI_PROXY_MAX_HOPS` | maximum proxy hop count |
+| `--douyin-mode <MODE>` | `enabled`, `local`, `upstream`, `disabled` | `local` | `AMAGI_PLATFORM_DOUYIN_MODE` | Douyin serving mode; `enabled` maps to local handling |
+| `--douyin-upstream <URL>` | URL | none | `AMAGI_PLATFORM_DOUYIN_UPSTREAM` | upstream node base URL used when Douyin runs in `upstream` mode |
+| `--bilibili-mode <MODE>` | `enabled`, `local`, `upstream`, `disabled` | `local` | `AMAGI_PLATFORM_BILIBILI_MODE` | Bilibili serving mode; `enabled` maps to local handling |
+| `--bilibili-upstream <URL>` | URL | none | `AMAGI_PLATFORM_BILIBILI_UPSTREAM` | upstream node base URL used when Bilibili runs in `upstream` mode |
+| `--kuaishou-mode <MODE>` | `enabled`, `local`, `upstream`, `disabled` | `local` | `AMAGI_PLATFORM_KUAISHOU_MODE` | Kuaishou serving mode; `enabled` maps to local handling |
+| `--kuaishou-upstream <URL>` | URL | none | `AMAGI_PLATFORM_KUAISHOU_UPSTREAM` | upstream node base URL used when Kuaishou runs in `upstream` mode |
+| `--xiaohongshu-mode <MODE>` | `enabled`, `local`, `upstream`, `disabled` | `local` | `AMAGI_PLATFORM_XIAOHONGSHU_MODE` | Xiaohongshu serving mode; `enabled` maps to local handling |
+| `--xiaohongshu-upstream <URL>` | URL | none | `AMAGI_PLATFORM_XIAOHONGSHU_UPSTREAM` | upstream node base URL used when Xiaohongshu runs in `upstream` mode |
+| `--twitter-mode <MODE>` | `enabled`, `local`, `upstream`, `disabled` | `local` | `AMAGI_PLATFORM_TWITTER_MODE` | Twitter/X serving mode; `enabled` maps to local handling |
+| `--twitter-upstream <URL>` | URL | none | `AMAGI_PLATFORM_TWITTER_UPSTREAM` | upstream node base URL used when Twitter/X runs in `upstream` mode |
 
 ## 11. Environment Variables
 
@@ -396,6 +408,18 @@ Supported variables:
 | `AMAGI_LOG` | log level |
 | `AMAGI_HOST` | server bind address |
 | `AMAGI_PORT` | server bind port |
+| `AMAGI_PROXY_TIMEOUT_MS` | node-to-node proxy timeout |
+| `AMAGI_PROXY_MAX_HOPS` | maximum proxy hop count |
+| `AMAGI_PLATFORM_DOUYIN_MODE` | Douyin serving mode |
+| `AMAGI_PLATFORM_DOUYIN_UPSTREAM` | Douyin upstream node base URL |
+| `AMAGI_PLATFORM_BILIBILI_MODE` | Bilibili serving mode |
+| `AMAGI_PLATFORM_BILIBILI_UPSTREAM` | Bilibili upstream node base URL |
+| `AMAGI_PLATFORM_KUAISHOU_MODE` | Kuaishou serving mode |
+| `AMAGI_PLATFORM_KUAISHOU_UPSTREAM` | Kuaishou upstream node base URL |
+| `AMAGI_PLATFORM_XIAOHONGSHU_MODE` | Xiaohongshu serving mode |
+| `AMAGI_PLATFORM_XIAOHONGSHU_UPSTREAM` | Xiaohongshu upstream node base URL |
+| `AMAGI_PLATFORM_TWITTER_MODE` | Twitter/X serving mode |
+| `AMAGI_PLATFORM_TWITTER_UPSTREAM` | Twitter/X upstream node base URL |
 
 ## 12. Maintenance Rules
 

@@ -5,11 +5,11 @@ use clap::{CommandFactory, FromArgMatches, parser::ValueSource};
 use super::args::{Cli, Command, RunArgs};
 use super::map::map_run_task;
 use crate::client::{ClientOptions, CookieConfig, RequestConfig};
-#[cfg(feature = "server")]
-use crate::config::ServeConfig;
 use crate::config::{
     AppConfig, CommandConfig, LoggingConfig, OutputConfig, OutputFormat, RunConfig,
 };
+#[cfg(feature = "server")]
+use crate::config::{ServeConfig, ServeRuntimeOverrides};
 use crate::env::{DotenvMap, env_or_dotenv};
 use crate::error::AppError;
 
@@ -87,6 +87,20 @@ pub(super) fn app_config_from_plain_cli(cli: Cli) -> AppConfig {
         Command::Serve(serve) => CommandConfig::Serve(ServeConfig {
             host: serve.host,
             port: serve.port,
+            runtime_overrides: ServeRuntimeOverrides {
+                proxy_timeout_ms: serve.runtime.proxy_timeout_ms,
+                proxy_max_hops: serve.runtime.proxy_max_hops,
+                douyin_mode: serve.runtime.douyin_mode,
+                douyin_upstream: serve.runtime.douyin_upstream,
+                bilibili_mode: serve.runtime.bilibili_mode,
+                bilibili_upstream: serve.runtime.bilibili_upstream,
+                kuaishou_mode: serve.runtime.kuaishou_mode,
+                kuaishou_upstream: serve.runtime.kuaishou_upstream,
+                xiaohongshu_mode: serve.runtime.xiaohongshu_mode,
+                xiaohongshu_upstream: serve.runtime.xiaohongshu_upstream,
+                twitter_mode: serve.runtime.twitter_mode,
+                twitter_upstream: serve.runtime.twitter_upstream,
+            },
         }),
     };
 
@@ -234,6 +248,92 @@ fn app_config_from_cli(
                 )
                 .unwrap_or_else(|| crate::DEFAULT_HOST.to_owned()),
                 port: resolve_u16(serve.port, serve_matches, "port", "AMAGI_PORT", dotenv)?,
+                runtime_overrides: ServeRuntimeOverrides {
+                    proxy_timeout_ms: resolve_optional_u64(
+                        serve.runtime.proxy_timeout_ms,
+                        serve_matches,
+                        "proxy_timeout_ms",
+                        "AMAGI_PROXY_TIMEOUT_MS",
+                        dotenv,
+                    )?,
+                    proxy_max_hops: resolve_optional_u32(
+                        serve.runtime.proxy_max_hops,
+                        serve_matches,
+                        "proxy_max_hops",
+                        "AMAGI_PROXY_MAX_HOPS",
+                        dotenv,
+                    )?,
+                    douyin_mode: resolve_string(
+                        serve.runtime.douyin_mode,
+                        serve_matches,
+                        "douyin_mode",
+                        "AMAGI_PLATFORM_DOUYIN_MODE",
+                        dotenv,
+                    ),
+                    douyin_upstream: resolve_string(
+                        serve.runtime.douyin_upstream,
+                        serve_matches,
+                        "douyin_upstream",
+                        "AMAGI_PLATFORM_DOUYIN_UPSTREAM",
+                        dotenv,
+                    ),
+                    bilibili_mode: resolve_string(
+                        serve.runtime.bilibili_mode,
+                        serve_matches,
+                        "bilibili_mode",
+                        "AMAGI_PLATFORM_BILIBILI_MODE",
+                        dotenv,
+                    ),
+                    bilibili_upstream: resolve_string(
+                        serve.runtime.bilibili_upstream,
+                        serve_matches,
+                        "bilibili_upstream",
+                        "AMAGI_PLATFORM_BILIBILI_UPSTREAM",
+                        dotenv,
+                    ),
+                    kuaishou_mode: resolve_string(
+                        serve.runtime.kuaishou_mode,
+                        serve_matches,
+                        "kuaishou_mode",
+                        "AMAGI_PLATFORM_KUAISHOU_MODE",
+                        dotenv,
+                    ),
+                    kuaishou_upstream: resolve_string(
+                        serve.runtime.kuaishou_upstream,
+                        serve_matches,
+                        "kuaishou_upstream",
+                        "AMAGI_PLATFORM_KUAISHOU_UPSTREAM",
+                        dotenv,
+                    ),
+                    xiaohongshu_mode: resolve_string(
+                        serve.runtime.xiaohongshu_mode,
+                        serve_matches,
+                        "xiaohongshu_mode",
+                        "AMAGI_PLATFORM_XIAOHONGSHU_MODE",
+                        dotenv,
+                    ),
+                    xiaohongshu_upstream: resolve_string(
+                        serve.runtime.xiaohongshu_upstream,
+                        serve_matches,
+                        "xiaohongshu_upstream",
+                        "AMAGI_PLATFORM_XIAOHONGSHU_UPSTREAM",
+                        dotenv,
+                    ),
+                    twitter_mode: resolve_string(
+                        serve.runtime.twitter_mode,
+                        serve_matches,
+                        "twitter_mode",
+                        "AMAGI_PLATFORM_TWITTER_MODE",
+                        dotenv,
+                    ),
+                    twitter_upstream: resolve_string(
+                        serve.runtime.twitter_upstream,
+                        serve_matches,
+                        "twitter_upstream",
+                        "AMAGI_PLATFORM_TWITTER_UPSTREAM",
+                        dotenv,
+                    ),
+                },
             })
         }
     };
@@ -287,6 +387,26 @@ fn resolve_u32(
     resolve_number(current, matches, arg_id, env_name, dotenv)
 }
 
+fn resolve_optional_u64(
+    current: Option<u64>,
+    matches: &clap::ArgMatches,
+    arg_id: &str,
+    env_name: &str,
+    dotenv: &DotenvMap,
+) -> Result<Option<u64>, AppError> {
+    resolve_optional_number(current, matches, arg_id, env_name, dotenv)
+}
+
+fn resolve_optional_u32(
+    current: Option<u32>,
+    matches: &clap::ArgMatches,
+    arg_id: &str,
+    env_name: &str,
+    dotenv: &DotenvMap,
+) -> Result<Option<u32>, AppError> {
+    resolve_optional_number(current, matches, arg_id, env_name, dotenv)
+}
+
 fn resolve_bool(
     current: bool,
     matches: &clap::ArgMatches,
@@ -329,6 +449,32 @@ where
 
     match env_or_dotenv(env_name, dotenv) {
         Some(value) => value.parse::<T>().map_err(|error| {
+            AppError::Io(std::io::Error::new(
+                std::io::ErrorKind::InvalidData,
+                format!("invalid value for {env_name}: {error}"),
+            ))
+        }),
+        None => Ok(current),
+    }
+}
+
+fn resolve_optional_number<T>(
+    current: Option<T>,
+    matches: &clap::ArgMatches,
+    arg_id: &str,
+    env_name: &str,
+    dotenv: &DotenvMap,
+) -> Result<Option<T>, AppError>
+where
+    T: std::str::FromStr,
+    T::Err: std::fmt::Display,
+{
+    if prefers_existing_value(matches, arg_id) {
+        return Ok(current);
+    }
+
+    match env_or_dotenv(env_name, dotenv) {
+        Some(value) => value.parse::<T>().map(Some).map_err(|error| {
             AppError::Io(std::io::Error::new(
                 std::io::ErrorKind::InvalidData,
                 format!("invalid value for {env_name}: {error}"),

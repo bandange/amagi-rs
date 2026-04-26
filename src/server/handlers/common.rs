@@ -12,11 +12,9 @@ use super::{
 };
 use crate::catalog::{Platform, PlatformSpec};
 
-const PUBLISHED_ENDPOINTS: &[&str] = &[
-    "/",
-    "/health",
-    "/api/spec",
-    "/api/spec/{platform}",
+const METADATA_ENDPOINTS: &[&str] = &["/", "/health", "/api/spec", "/api/spec/{platform}"];
+
+const BILIBILI_ENDPOINTS: &[&str] = &[
     "/api/bilibili/video/{bvid}",
     "/api/bilibili/video/{aid}/stream?cid={cid}",
     "/api/bilibili/video/{cid}/danmaku?segment_index={segment_index}",
@@ -44,6 +42,9 @@ const PUBLISHED_ENDPOINTS: &[&str] = &[
     "/api/bilibili/emoji",
     "/api/bilibili/convert/av/{aid}",
     "/api/bilibili/convert/bv/{bvid}",
+];
+
+const DOUYIN_ENDPOINTS: &[&str] = &[
     "/api/douyin/work/{aweme_id}",
     "/api/douyin/work/{aweme_id}/video",
     "/api/douyin/work/{aweme_id}/image-album",
@@ -63,12 +64,18 @@ const PUBLISHED_ENDPOINTS: &[&str] = &[
     "/api/douyin/live/{room_id}",
     "/api/douyin/auth/qrcode",
     "/api/douyin/danmaku/{aweme_id}",
+];
+
+const KUAISHOU_ENDPOINTS: &[&str] = &[
     "/api/kuaishou/work/{photo_id}",
     "/api/kuaishou/comments/{photo_id}",
     "/api/kuaishou/emoji",
     "/api/kuaishou/user/{principal_id}",
     "/api/kuaishou/user/{principal_id}/works",
     "/api/kuaishou/live/{principal_id}",
+];
+
+const TWITTER_ENDPOINTS: &[&str] = &[
     "/api/twitter/user/{screen_name}",
     "/api/twitter/user/{screen_name}/timeline",
     "/api/twitter/user/{screen_name}/replies",
@@ -86,6 +93,9 @@ const PUBLISHED_ENDPOINTS: &[&str] = &[
     "/api/twitter/tweet/{tweet_id}/likers",
     "/api/twitter/tweet/{tweet_id}/retweeters",
     "/api/twitter/space/{space_id}",
+];
+
+const XIAOHONGSHU_ENDPOINTS: &[&str] = &[
     "/api/xiaohongshu/feed",
     "/api/xiaohongshu/note/{note_id}?xsec_token={xsec_token}",
     "/api/xiaohongshu/comments/{note_id}?xsec_token={xsec_token}",
@@ -108,6 +118,8 @@ pub async fn root(State(state): State<AppState>) -> Json<RootResponse> {
                 api_base_path: client.api_base_path(),
                 method_count: client.methods().len(),
                 has_cookie: client.has_cookie(),
+                mode: state.platform_mode(platform),
+                published: state.is_platform_published(platform),
             }
         })
         .collect();
@@ -119,7 +131,7 @@ pub async fn root(State(state): State<AppState>) -> Json<RootResponse> {
         status: "ok",
         bind,
         base_url,
-        endpoints: PUBLISHED_ENDPOINTS.to_vec(),
+        endpoints: published_endpoints(&state),
         platforms,
     })
 }
@@ -137,6 +149,7 @@ pub async fn health(State(state): State<AppState>) -> Json<HealthResponse> {
 pub async fn api_catalog(State(state): State<AppState>) -> Json<ApiCatalogResponse> {
     let platforms = Platform::ALL
         .into_iter()
+        .filter(|platform| state.is_platform_published(*platform))
         .map(|platform| platform_catalog(platform, &state))
         .collect();
 
@@ -161,6 +174,16 @@ pub async fn platform_catalog_by_name(
         )
     })?;
 
+    if !state.is_platform_published(parsed) {
+        return Err((
+            StatusCode::NOT_FOUND,
+            Json(CatalogErrorResponse {
+                error: "platform_disabled",
+                platform: parsed.to_string(),
+            }),
+        ));
+    }
+
     Ok(Json(platform_catalog(parsed, &state)))
 }
 
@@ -175,5 +198,27 @@ fn catalog_from_spec(spec: PlatformSpec) -> PlatformCatalogResponse {
         api_base_path: spec.api_base_path,
         method_count: spec.methods.len(),
         methods: spec.methods.to_vec(),
+    }
+}
+
+fn published_endpoints(state: &AppState) -> Vec<&'static str> {
+    let mut endpoints = METADATA_ENDPOINTS.to_vec();
+
+    for platform in Platform::ALL {
+        if state.is_platform_published(platform) {
+            endpoints.extend_from_slice(platform_endpoints(platform));
+        }
+    }
+
+    endpoints
+}
+
+fn platform_endpoints(platform: Platform) -> &'static [&'static str] {
+    match platform {
+        Platform::Bilibili => BILIBILI_ENDPOINTS,
+        Platform::Douyin => DOUYIN_ENDPOINTS,
+        Platform::Kuaishou => KUAISHOU_ENDPOINTS,
+        Platform::Twitter => TWITTER_ENDPOINTS,
+        Platform::Xiaohongshu => XIAOHONGSHU_ENDPOINTS,
     }
 }

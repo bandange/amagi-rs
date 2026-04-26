@@ -1,6 +1,7 @@
 use serde::Serialize;
 
 use crate::catalog::{ApiMethodSpec, Platform};
+use crate::server::runtime::PlatformServeMode;
 
 /// Summary of one published platform.
 #[derive(Debug, Serialize)]
@@ -13,6 +14,10 @@ pub struct PlatformSummary {
     pub method_count: usize,
     /// Whether the current client has a bound cookie for the platform.
     pub has_cookie: bool,
+    /// Serving mode resolved for the platform on this node.
+    pub mode: PlatformServeMode,
+    /// Whether the platform is published by the current node.
+    pub published: bool,
 }
 
 /// Root metadata payload for the HTTP server.

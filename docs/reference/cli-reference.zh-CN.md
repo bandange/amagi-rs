@@ -356,6 +356,18 @@ amagi serve [OPTIONS]
 | --- | --- | --- | --- | --- |
 | `--host <HOST>` | 主机名或 IP | `127.0.0.1` | `AMAGI_HOST` | 服务绑定地址 |
 | `--port <PORT>` | `u16` | `4567` | `AMAGI_PORT` | 服务绑定端口 |
+| `--proxy-timeout-ms <MS>` | `u64` | `15000` | `AMAGI_PROXY_TIMEOUT_MS` | 节点间代理请求超时时间 |
+| `--proxy-max-hops <COUNT>` | `u32` | `1` | `AMAGI_PROXY_MAX_HOPS` | 单次请求允许的最大代理跳数 |
+| `--douyin-mode <MODE>` | `enabled`、`local`、`upstream`、`disabled` | `local` | `AMAGI_PLATFORM_DOUYIN_MODE` | 抖音服务模式；`enabled` 映射为本地处理 |
+| `--douyin-upstream <URL>` | URL | 无 | `AMAGI_PLATFORM_DOUYIN_UPSTREAM` | 抖音处于 `upstream` 模式时使用的上游节点地址 |
+| `--bilibili-mode <MODE>` | `enabled`、`local`、`upstream`、`disabled` | `local` | `AMAGI_PLATFORM_BILIBILI_MODE` | Bilibili 服务模式；`enabled` 映射为本地处理 |
+| `--bilibili-upstream <URL>` | URL | 无 | `AMAGI_PLATFORM_BILIBILI_UPSTREAM` | Bilibili 处于 `upstream` 模式时使用的上游节点地址 |
+| `--kuaishou-mode <MODE>` | `enabled`、`local`、`upstream`、`disabled` | `local` | `AMAGI_PLATFORM_KUAISHOU_MODE` | 快手服务模式；`enabled` 映射为本地处理 |
+| `--kuaishou-upstream <URL>` | URL | 无 | `AMAGI_PLATFORM_KUAISHOU_UPSTREAM` | 快手处于 `upstream` 模式时使用的上游节点地址 |
+| `--xiaohongshu-mode <MODE>` | `enabled`、`local`、`upstream`、`disabled` | `local` | `AMAGI_PLATFORM_XIAOHONGSHU_MODE` | 小红书服务模式；`enabled` 映射为本地处理 |
+| `--xiaohongshu-upstream <URL>` | URL | 无 | `AMAGI_PLATFORM_XIAOHONGSHU_UPSTREAM` | 小红书处于 `upstream` 模式时使用的上游节点地址 |
+| `--twitter-mode <MODE>` | `enabled`、`local`、`upstream`、`disabled` | `local` | `AMAGI_PLATFORM_TWITTER_MODE` | Twitter/X 服务模式；`enabled` 映射为本地处理 |
+| `--twitter-upstream <URL>` | URL | 无 | `AMAGI_PLATFORM_TWITTER_UPSTREAM` | Twitter/X 处于 `upstream` 模式时使用的上游节点地址 |
 
 ## 11. 环境变量总表
 
@@ -396,6 +408,18 @@ dotenv、进程环境变量和显式命令行参数的优先级为：
 | `AMAGI_LOG` | 日志级别 |
 | `AMAGI_HOST` | 服务端监听地址 |
 | `AMAGI_PORT` | 服务端监听端口 |
+| `AMAGI_PROXY_TIMEOUT_MS` | 节点间代理超时 |
+| `AMAGI_PROXY_MAX_HOPS` | 最大代理跳数 |
+| `AMAGI_PLATFORM_DOUYIN_MODE` | 抖音服务模式 |
+| `AMAGI_PLATFORM_DOUYIN_UPSTREAM` | 抖音上游节点地址 |
+| `AMAGI_PLATFORM_BILIBILI_MODE` | Bilibili 服务模式 |
+| `AMAGI_PLATFORM_BILIBILI_UPSTREAM` | Bilibili 上游节点地址 |
+| `AMAGI_PLATFORM_KUAISHOU_MODE` | 快手服务模式 |
+| `AMAGI_PLATFORM_KUAISHOU_UPSTREAM` | 快手上游节点地址 |
+| `AMAGI_PLATFORM_XIAOHONGSHU_MODE` | 小红书服务模式 |
+| `AMAGI_PLATFORM_XIAOHONGSHU_UPSTREAM` | 小红书上游节点地址 |
+| `AMAGI_PLATFORM_TWITTER_MODE` | Twitter/X 服务模式 |
+| `AMAGI_PLATFORM_TWITTER_UPSTREAM` | Twitter/X 上游节点地址 |
 
 ## 12. 维护规则
 
