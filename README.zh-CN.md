@@ -107,7 +107,7 @@ cargo run -- serve --host 127.0.0.1 --port 4567
 示例：
 
 ```toml
-amagi = { version = "0.1.2", default-features = false, features = ["client"] }
+amagi = { version = "0.1.3", default-features = false, features = ["client"] }
 ```
 
 ## 文档
