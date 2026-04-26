@@ -4,7 +4,9 @@ param(
     [string]$Source = $(if ($env:AMAGI_UPDATE_SOURCE) { $env:AMAGI_UPDATE_SOURCE } else { "Remote" }),
     [string]$InstallDir = $env:AMAGI_INSTALL_DIR,
     [string]$Version = $(if ($env:AMAGI_INSTALL_VERSION) { $env:AMAGI_INSTALL_VERSION } elseif ($env:AMAGI_UPDATE_VERSION) { $env:AMAGI_UPDATE_VERSION } else { "latest" }),
-    [string]$InstallScriptUrl = $env:AMAGI_INSTALL_SCRIPT_URL
+    [string]$InstallScriptUrl = $env:AMAGI_INSTALL_SCRIPT_URL,
+    [switch]$Proxy,
+    [string]$ProxyPrefix = $env:AMAGI_PROXY_PREFIX
 )
 
 $ErrorActionPreference = "Stop"
@@ -15,12 +17,49 @@ $InstallScriptRef = if ($env:AMAGI_INSTALL_SCRIPT_REF) { $env:AMAGI_INSTALL_SCRI
 $ScriptPath = if ($PSCommandPath) { $PSCommandPath } else { $MyInvocation.MyCommand.Path }
 $ScriptDir = if ($ScriptPath) { Split-Path -Parent $ScriptPath } else { $null }
 
+function Get-DefaultProxyPrefix {
+    return "https://gh-proxy.com/"
+}
+
+function Normalize-ProxyPrefix {
+    param(
+        [string]$Prefix
+    )
+
+    if ([string]::IsNullOrWhiteSpace($Prefix)) {
+        return ""
+    }
+
+    if ($Prefix.EndsWith("/")) {
+        return $Prefix
+    }
+
+    return "$Prefix/"
+}
+
+function Add-ProxyPrefixToUrl {
+    param(
+        [string]$Url
+    )
+
+    if ([string]::IsNullOrWhiteSpace($ProxyPrefix)) {
+        return $Url
+    }
+
+    return "$ProxyPrefix$Url"
+}
+
+$ProxyPrefix = Normalize-ProxyPrefix -Prefix $ProxyPrefix
+if ($Proxy -and [string]::IsNullOrWhiteSpace($ProxyPrefix)) {
+    $ProxyPrefix = Get-DefaultProxyPrefix
+}
+
 function Get-ResolvedInstallScriptUrl {
     if (-not [string]::IsNullOrWhiteSpace($InstallScriptUrl)) {
         return $InstallScriptUrl
     }
 
-    return "https://raw.githubusercontent.com/$RemoteRepoOwner/$RemoteRepoName/$InstallScriptRef/scripts/install.ps1"
+    return (Add-ProxyPrefixToUrl -Url "https://raw.githubusercontent.com/$RemoteRepoOwner/$RemoteRepoName/$InstallScriptRef/scripts/install.ps1")
 }
 
 function Invoke-LocalInstallScript {
@@ -29,19 +68,46 @@ function Invoke-LocalInstallScript {
         return $false
     }
 
+    $invokeArgs = @{
+        Source = $Source
+        InstallDir = $InstallDir
+        Version = $Version
+    }
+
+    if ($Proxy) {
+        $invokeArgs.Proxy = $true
+    }
+
+    if (-not [string]::IsNullOrWhiteSpace($ProxyPrefix)) {
+        $invokeArgs.ProxyPrefix = $ProxyPrefix
+    }
+
     Write-Host "[amagi] updating via local install script ($($Source.ToLowerInvariant()) mode)"
-    & $localInstallScript -Source $Source -InstallDir $InstallDir -Version $Version
+    & $localInstallScript @invokeArgs
     return $true
 }
 
 function Invoke-RemoteInstallScript {
     $url = Get-ResolvedInstallScriptUrl
     $tempPath = Join-Path $env:TEMP ("amagi-install-" + [System.Guid]::NewGuid().ToString("N") + ".ps1")
+    $invokeArgs = @{
+        Source = $Source
+        InstallDir = $InstallDir
+        Version = $Version
+    }
+
+    if ($Proxy) {
+        $invokeArgs.Proxy = $true
+    }
+
+    if (-not [string]::IsNullOrWhiteSpace($ProxyPrefix)) {
+        $invokeArgs.ProxyPrefix = $ProxyPrefix
+    }
 
     Write-Host "[amagi] updating via $url"
     try {
         Invoke-WebRequest -Uri $url -OutFile $tempPath
-        & $tempPath -Source $Source -InstallDir $InstallDir -Version $Version
+        & $tempPath @invokeArgs
     }
     finally {
         if (Test-Path $tempPath -PathType Leaf) {

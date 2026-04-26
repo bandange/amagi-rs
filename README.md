@@ -31,13 +31,13 @@ Use proxy mode:
 Linux/macOS:
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/bandange/amagi-rs/main/scripts/install.sh | bash -s -- --proxy
+curl -fsSL https://gh-proxy.com/https://raw.githubusercontent.com/bandange/amagi-rs/main/scripts/install.sh | bash -s -- --proxy
 ```
 
 PowerShell:
 
 ```powershell
-$Proxy = $true; irm https://raw.githubusercontent.com/bandange/amagi-rs/main/scripts/install.ps1 | iex
+& ([scriptblock]::Create((irm "https://gh-proxy.com/https://raw.githubusercontent.com/bandange/amagi-rs/main/scripts/install.ps1"))) -Proxy
 ```
 
 Verify:

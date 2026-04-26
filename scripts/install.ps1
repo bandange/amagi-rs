@@ -4,7 +4,8 @@ param(
     [string]$Source = $(if ($env:AMAGI_INSTALL_SOURCE) { $env:AMAGI_INSTALL_SOURCE } else { "Auto" }),
     [string]$InstallDir = $env:AMAGI_INSTALL_DIR,
     [string]$Version = $(if ($env:AMAGI_INSTALL_VERSION) { $env:AMAGI_INSTALL_VERSION } else { "latest" }),
-    [switch]$Proxy
+    [switch]$Proxy,
+    [string]$ProxyPrefix = $env:AMAGI_PROXY_PREFIX
 )
 
 $ErrorActionPreference = "Stop"
@@ -13,7 +14,6 @@ $BinaryName = "amagi.exe"
 $RemoteRepoOwner = if ($env:AMAGI_REMOTE_REPO_OWNER) { $env:AMAGI_REMOTE_REPO_OWNER } else { "bandange" }
 $RemoteRepoName = if ($env:AMAGI_REMOTE_REPO_NAME) { $env:AMAGI_REMOTE_REPO_NAME } else { "amagi-rs" }
 $RemoteBaseUrl = $env:AMAGI_REMOTE_BASE_URL
-$ProxyPrefix = if ($Proxy) { "https://gh-proxy.com/" } else { "" }
 $script:RemoteTempPaths = [System.Collections.Generic.List[string]]::new()
 $ScriptPath = if ($PSCommandPath) { $PSCommandPath } else { $MyInvocation.MyCommand.Path }
 $ScriptDir = if ($ScriptPath) { Split-Path -Parent $ScriptPath } else { $null }
@@ -27,6 +27,43 @@ $RepoRoot = if ($ScriptDir) {
 }
 else {
     $null
+}
+
+function Get-DefaultProxyPrefix {
+    return "https://gh-proxy.com/"
+}
+
+function Normalize-ProxyPrefix {
+    param(
+        [string]$Prefix
+    )
+
+    if ([string]::IsNullOrWhiteSpace($Prefix)) {
+        return ""
+    }
+
+    if ($Prefix.EndsWith("/")) {
+        return $Prefix
+    }
+
+    return "$Prefix/"
+}
+
+function Add-ProxyPrefixToUrl {
+    param(
+        [string]$Url
+    )
+
+    if ([string]::IsNullOrWhiteSpace($ProxyPrefix)) {
+        return $Url
+    }
+
+    return "$ProxyPrefix$Url"
+}
+
+$ProxyPrefix = Normalize-ProxyPrefix -Prefix $ProxyPrefix
+if ($Proxy -and [string]::IsNullOrWhiteSpace($ProxyPrefix)) {
+    $ProxyPrefix = Get-DefaultProxyPrefix
 }
 
 function Get-DefaultInstallDir {
@@ -205,10 +242,10 @@ function Get-RemoteDownloadUrl {
     }
 
     if ($Version -eq "latest") {
-        return "${ProxyPrefix}https://github.com/$RemoteRepoOwner/$RemoteRepoName/releases/latest/download/$assetName"
+        return (Add-ProxyPrefixToUrl -Url "https://github.com/$RemoteRepoOwner/$RemoteRepoName/releases/latest/download/$assetName")
     }
 
-    return "${ProxyPrefix}https://github.com/$RemoteRepoOwner/$RemoteRepoName/releases/download/$Version/$assetName"
+    return (Add-ProxyPrefixToUrl -Url "https://github.com/$RemoteRepoOwner/$RemoteRepoName/releases/download/$Version/$assetName")
 }
 
 function Get-RemoteBinary {

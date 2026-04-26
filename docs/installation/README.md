@@ -44,19 +44,20 @@ Use proxy mode:
 Linux/macOS:
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/bandange/amagi-rs/main/scripts/install.sh | bash -s -- --proxy
+curl -fsSL https://gh-proxy.com/https://raw.githubusercontent.com/bandange/amagi-rs/main/scripts/install.sh | bash -s -- --proxy
 ```
 
 PowerShell:
 
 ```powershell
-$Proxy = $true; irm https://raw.githubusercontent.com/bandange/amagi-rs/main/scripts/install.ps1 | iex
+& ([scriptblock]::Create((irm "https://gh-proxy.com/https://raw.githubusercontent.com/bandange/amagi-rs/main/scripts/install.ps1"))) -Proxy
 ```
 
 Notes:
 
-- `--proxy` and `-Proxy` rewrite remote release asset downloads to `https://gh-proxy.com/https://github.com/...`
-- the installer script itself is still fetched from `raw.githubusercontent.com`
+- `--proxy` and `-Proxy` enable the default proxy prefix `https://gh-proxy.com/`
+- in remote install and update flows, the proxy prefix is applied to both the script entry URL and GitHub release asset downloads
+- `--proxy-prefix`, `-ProxyPrefix`, and `AMAGI_PROXY_PREFIX` let you use a custom proxy prefix instead of the default
 
 Verify:
 
@@ -69,12 +70,13 @@ Optional install variables:
 - `AMAGI_INSTALL_DIR`: override the install directory
 - `AMAGI_PROFILE_FILE`: on Linux/macOS, write the shell hook into one specific profile file
 - `AMAGI_INSTALL_VERSION`: install a specific release instead of `latest`
+- `AMAGI_PROXY_PREFIX`: override the proxy prefix used for remote script and release downloads
 - `AMAGI_REMOTE_REPO_OWNER`, `AMAGI_REMOTE_REPO_NAME`, `AMAGI_REMOTE_BASE_URL`: override the default download source
 
 Optional install arguments:
 
-- Linux/macOS: `--source local|remote`, `--version`, `--install-dir`, `--proxy`
-- PowerShell: `-Source Local|Remote`, `-Version`, `-InstallDir`, `-Proxy`
+- Linux/macOS: `--source local|remote`, `--version`, `--install-dir`, `--proxy`, `--proxy-prefix`
+- PowerShell: `-Source Local|Remote`, `-Version`, `-InstallDir`, `-Proxy`, `-ProxyPrefix`
 
 ## 2. Run From Source
 
@@ -106,10 +108,24 @@ PowerShell:
 irm https://raw.githubusercontent.com/bandange/amagi-rs/main/scripts/update.ps1 | iex
 ```
 
+Remote update with proxy:
+
+Linux/macOS:
+
+```bash
+curl -fsSL https://gh-proxy.com/https://raw.githubusercontent.com/bandange/amagi-rs/main/scripts/update.sh | bash -s -- --proxy
+```
+
+PowerShell:
+
+```powershell
+& ([scriptblock]::Create((irm "https://gh-proxy.com/https://raw.githubusercontent.com/bandange/amagi-rs/main/scripts/update.ps1"))) -Proxy
+```
+
 Optional update arguments:
 
-- Linux/macOS: `--source local|remote`, `--version`, `--install-dir`
-- PowerShell: `-Source Local|Remote`, `-Version`, `-InstallDir`
+- Linux/macOS: `--source local|remote`, `--version`, `--install-dir`, `--proxy`, `--proxy-prefix`
+- PowerShell: `-Source Local|Remote`, `-Version`, `-InstallDir`, `-Proxy`, `-ProxyPrefix`
 
 ## 3. Run From Source
 

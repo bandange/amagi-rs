@@ -7,7 +7,7 @@ INSTALL_DIR="${AMAGI_INSTALL_DIR:-}"
 REMOTE_REPO_OWNER="${AMAGI_REMOTE_REPO_OWNER:-bandange}"
 REMOTE_REPO_NAME="${AMAGI_REMOTE_REPO_NAME:-amagi-rs}"
 REMOTE_VERSION="${AMAGI_INSTALL_VERSION:-latest}"
-PROXY_PREFIX=""
+PROXY_PREFIX="${AMAGI_PROXY_PREFIX:-}"
 REMOTE_DOWNLOAD_PATH=""
 REMOTE_EXTRACT_DIR=""
 SCRIPT_PATH="${BASH_SOURCE[0]:-}"
@@ -23,6 +23,58 @@ if [[ -n "${SCRIPT_PATH}" ]]; then
   SCRIPT_DIR="$(cd -- "$(dirname -- "${SCRIPT_PATH}")" && pwd)"
   REPO_ROOT="$(cd -- "${SCRIPT_DIR}/.." 2>/dev/null && pwd || true)"
 fi
+
+default_proxy_prefix() {
+  printf '%s\n' 'https://gh-proxy.com/'
+}
+
+normalize_proxy_prefix() {
+  local value="${1:-}"
+
+  if [[ -z "${value}" ]]; then
+    return 0
+  fi
+
+  case "${value}" in
+    */)
+      printf '%s\n' "${value}"
+      ;;
+    *)
+      printf '%s/\n' "${value}"
+      ;;
+  esac
+}
+
+proxied_url() {
+  local url="$1"
+
+  if [[ -n "${PROXY_PREFIX}" ]]; then
+    printf '%s%s\n' "${PROXY_PREFIX}" "${url}"
+    return 0
+  fi
+
+  printf '%s\n' "${url}"
+}
+
+print_usage() {
+  cat <<'EOF'
+Usage: bash scripts/install.sh [OPTIONS]
+
+Options:
+  --source auto|local|remote
+  --install-dir DIR
+  --version VERSION
+  --proxy
+  --proxy-prefix URL
+  --help, -h
+
+Environment overrides:
+  AMAGI_INSTALL_SOURCE
+  AMAGI_INSTALL_DIR
+  AMAGI_INSTALL_VERSION
+  AMAGI_PROXY_PREFIX
+EOF
+}
 
 require_flag_value() {
   local flag="$1"
@@ -52,8 +104,18 @@ while [[ $# -gt 0 ]]; do
       shift 2
       ;;
     --proxy)
-      PROXY_PREFIX="https://gh-proxy.com/"
+      PROXY_PREFIX="$(default_proxy_prefix)"
       shift
+      ;;
+    --proxy-prefix)
+      require_flag_value "$@"
+      PROXY_PREFIX="$2"
+      shift 2
+      ;;
+    --help|-h)
+      print_usage
+      shift
+      exit 0
       ;;
     *)
       printf '[amagi] unknown flag: %s\n' "$1" >&2
@@ -61,6 +123,8 @@ while [[ $# -gt 0 ]]; do
       ;;
   esac
 done
+
+PROXY_PREFIX="$(normalize_proxy_prefix "${PROXY_PREFIX}")"
 
 default_install_dir() {
   printf '%s\n' "${HOME}/.local/bin"
@@ -734,6 +798,7 @@ remote_asset_name() {
 
 remote_download_url() {
   local asset_name
+  local url
 
   asset_name="$(remote_asset_name)"
 
@@ -749,14 +814,12 @@ remote_download_url() {
   fi
 
   if [[ "${REMOTE_VERSION}" == "latest" ]]; then
-    printf '%shttps://github.com/%s/%s/releases/latest/download/%s\n' \
-      "${PROXY_PREFIX}" \
-      "${REMOTE_REPO_OWNER}" "${REMOTE_REPO_NAME}" "${asset_name}"
+    url="https://github.com/${REMOTE_REPO_OWNER}/${REMOTE_REPO_NAME}/releases/latest/download/${asset_name}"
   else
-    printf '%shttps://github.com/%s/%s/releases/download/%s/%s\n' \
-      "${PROXY_PREFIX}" \
-      "${REMOTE_REPO_OWNER}" "${REMOTE_REPO_NAME}" "${REMOTE_VERSION}" "${asset_name}"
+    url="https://github.com/${REMOTE_REPO_OWNER}/${REMOTE_REPO_NAME}/releases/download/${REMOTE_VERSION}/${asset_name}"
   fi
+
+  proxied_url "${url}"
 }
 
 download_remote_binary() {

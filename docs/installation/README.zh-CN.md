@@ -44,19 +44,20 @@ irm https://raw.githubusercontent.com/bandange/amagi-rs/main/scripts/install.ps1
 Linux/macOS：
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/bandange/amagi-rs/main/scripts/install.sh | bash -s -- --proxy
+curl -fsSL https://gh-proxy.com/https://raw.githubusercontent.com/bandange/amagi-rs/main/scripts/install.sh | bash -s -- --proxy
 ```
 
 PowerShell：
 
 ```powershell
-$Proxy = $true; irm https://raw.githubusercontent.com/bandange/amagi-rs/main/scripts/install.ps1 | iex
+& ([scriptblock]::Create((irm "https://gh-proxy.com/https://raw.githubusercontent.com/bandange/amagi-rs/main/scripts/install.ps1"))) -Proxy
 ```
 
 说明：
 
-- `--proxy` 和 `-Proxy` 会把远程 release 下载地址改写为 `https://gh-proxy.com/https://github.com/...`
-- 安装脚本本身仍然是从 `raw.githubusercontent.com` 拉取
+- `--proxy` 和 `-Proxy` 会启用默认代理前缀 `https://gh-proxy.com/`
+- 在远程安装和远程更新流程里，这个代理前缀会同时作用于脚本入口地址和 GitHub release 下载地址
+- `--proxy-prefix`、`-ProxyPrefix` 和 `AMAGI_PROXY_PREFIX` 可用于改成自定义代理前缀
 
 验证：
 
@@ -69,12 +70,13 @@ amagi --version
 - `AMAGI_INSTALL_DIR`：覆盖安装目录
 - `AMAGI_PROFILE_FILE`：在 Linux/macOS 上只写入一个指定的 shell 启动文件
 - `AMAGI_INSTALL_VERSION`：安装指定发布版本，而不是 `latest`
+- `AMAGI_PROXY_PREFIX`：覆盖远程脚本和 release 下载使用的代理前缀
 - `AMAGI_REMOTE_REPO_OWNER`、`AMAGI_REMOTE_REPO_NAME`、`AMAGI_REMOTE_BASE_URL`：覆盖默认下载来源
 
 常用安装参数：
 
-- Linux/macOS：`--source local|remote`、`--version`、`--install-dir`、`--proxy`
-- PowerShell：`-Source Local|Remote`、`-Version`、`-InstallDir`、`-Proxy`
+- Linux/macOS：`--source local|remote`、`--version`、`--install-dir`、`--proxy`、`--proxy-prefix`
+- PowerShell：`-Source Local|Remote`、`-Version`、`-InstallDir`、`-Proxy`、`-ProxyPrefix`
 
 ## 2. 更新
 
@@ -106,10 +108,24 @@ PowerShell：
 irm https://raw.githubusercontent.com/bandange/amagi-rs/main/scripts/update.ps1 | iex
 ```
 
+使用代理远程更新：
+
+Linux/macOS：
+
+```bash
+curl -fsSL https://gh-proxy.com/https://raw.githubusercontent.com/bandange/amagi-rs/main/scripts/update.sh | bash -s -- --proxy
+```
+
+PowerShell：
+
+```powershell
+& ([scriptblock]::Create((irm "https://gh-proxy.com/https://raw.githubusercontent.com/bandange/amagi-rs/main/scripts/update.ps1"))) -Proxy
+```
+
 常用更新参数：
 
-- Linux/macOS：`--source local|remote`、`--version`、`--install-dir`
-- PowerShell：`-Source Local|Remote`、`-Version`、`-InstallDir`
+- Linux/macOS：`--source local|remote`、`--version`、`--install-dir`、`--proxy`、`--proxy-prefix`
+- PowerShell：`-Source Local|Remote`、`-Version`、`-InstallDir`、`-Proxy`、`-ProxyPrefix`
 
 ## 3. 从源码运行
 
