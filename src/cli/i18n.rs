@@ -456,51 +456,58 @@ fn arg_has_possible_values(command: &Command, id: &str) -> bool {
 fn help_template(catalog: &LocaleCatalog) -> String {
     format!(
         "{{before-help}}{{name}} {}\n{{about-with-newline}}{}: {{usage}}\n\n{{all-args}}{{after-help}}",
-        env!("CARGO_PKG_VERSION"),
+        build_type_label(catalog),
         catalog.headings.usage,
     )
 }
 
 fn version_output(catalog: &LocaleCatalog) -> String {
-    let labels = version_labels(catalog);
-
     format!(
-        "{}\n{}: {}\n{}: {}\n{}: {}",
-        env!("CARGO_PKG_VERSION"),
-        labels.build_time,
-        build_time(),
-        labels.toolchain,
-        build_toolchain(),
-        labels.target,
-        build_target(),
+        "{}\n{}\n{}: {}\n{}: {}",
+        build_type_label(catalog),
+        version_detail_line(catalog),
+        catalog.version.rustc,
+        build_rustc(),
+        catalog.version.target,
+        target_platform(),
     )
 }
 
-fn version_labels(catalog: &LocaleCatalog) -> VersionLabels {
-    match catalog.meta.code.as_str() {
-        "zh-CN" => VersionLabels {
-            build_time: "构建时间",
-            toolchain: "构建工具链",
-            target: "目标平台",
-        },
-        _ => VersionLabels {
-            build_time: "Build Time",
-            toolchain: "Build Toolchain",
-            target: "Target",
-        },
+fn version_detail_line(catalog: &LocaleCatalog) -> String {
+    match build_type() {
+        "release" | "daily" => format!(
+            "{}: {} ({} {})",
+            catalog.version.version,
+            env!("CARGO_PKG_VERSION"),
+            catalog.version.build_word,
+            build_time(),
+        ),
+        _ => format!("{}: {}", catalog.version.build_time, build_time()),
     }
+}
+
+fn build_type_label(catalog: &LocaleCatalog) -> &str {
+    match build_type() {
+        "release" => catalog.version.release_build.as_str(),
+        "daily" => catalog.version.daily_build.as_str(),
+        _ => catalog.version.local_build.as_str(),
+    }
+}
+
+fn build_type() -> &'static str {
+    option_env!("AMAGI_BUILD_TYPE").unwrap_or("local")
 }
 
 fn build_time() -> &'static str {
     option_env!("AMAGI_BUILD_TIME").unwrap_or("unknown")
 }
 
-fn build_toolchain() -> &'static str {
-    option_env!("AMAGI_BUILD_TOOLCHAIN").unwrap_or("unknown")
+fn build_rustc() -> &'static str {
+    option_env!("AMAGI_BUILD_RUSTC").unwrap_or("unknown")
 }
 
-fn build_target() -> &'static str {
-    option_env!("AMAGI_BUILD_TARGET").unwrap_or("unknown")
+fn target_platform() -> String {
+    format!("{}/{}", std::env::consts::OS, std::env::consts::ARCH)
 }
 
 fn custom_help_arg(catalog: &LocaleCatalog, heading: &str) -> Arg {
@@ -517,6 +524,7 @@ fn custom_version_arg(catalog: &LocaleCatalog, heading: &str) -> Arg {
     let help = leak_str(catalog.arg_help("root", "version"));
     Arg::new("version")
         .short('V')
+        .short_alias('v')
         .long("version")
         .action(ArgAction::Version)
         .help(help)
@@ -670,6 +678,7 @@ struct LocaleCatalog {
     meta: LocaleMeta,
     headings: LocaleHeadings,
     help: LocaleHelp,
+    version: LocaleVersionText,
     commands: BTreeMap<String, CommandText>,
     args: BTreeMap<String, String>,
     #[serde(default)]
@@ -755,12 +764,19 @@ struct LocaleHelp {
 
 #[derive(Debug, Deserialize)]
 #[serde(deny_unknown_fields)]
-struct CommandText {
-    about: String,
+struct LocaleVersionText {
+    release_build: String,
+    daily_build: String,
+    local_build: String,
+    version: String,
+    build_time: String,
+    build_word: String,
+    rustc: String,
+    target: String,
 }
 
-struct VersionLabels {
-    build_time: &'static str,
-    toolchain: &'static str,
-    target: &'static str,
+#[derive(Debug, Deserialize)]
+#[serde(deny_unknown_fields)]
+struct CommandText {
+    about: String,
 }

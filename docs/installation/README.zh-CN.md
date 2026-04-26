@@ -58,6 +58,8 @@ PowerShell：
 - `--proxy` 和 `-Proxy` 会启用默认代理前缀 `https://gh-proxy.com/`
 - 在远程安装和远程更新流程里，这个代理前缀会同时作用于脚本入口地址和 GitHub release 下载地址
 - `--proxy-prefix`、`-ProxyPrefix` 和 `AMAGI_PROXY_PREFIX` 可用于改成自定义代理前缀
+- Linux 远程安装时，shell 安装脚本会检测 libc 类型；在 glibc `>= 2.35` 时优先选择 `*-unknown-linux-gnu`，否则回退到 `*-unknown-linux-musl`
+- 如需手动覆盖 Linux 资产选择，可设置 `AMAGI_INSTALL_LINUX_LIBC=gnu` 或 `AMAGI_INSTALL_LINUX_LIBC=musl`
 
 验证：
 
@@ -70,6 +72,7 @@ amagi --version
 - `AMAGI_INSTALL_DIR`：覆盖安装目录
 - `AMAGI_PROFILE_FILE`：在 Linux/macOS 上只写入一个指定的 shell 启动文件
 - `AMAGI_INSTALL_VERSION`：安装指定发布版本，而不是 `latest`
+- `AMAGI_INSTALL_LINUX_LIBC`：在 Linux 上强制远程安装时选择 `gnu` 或 `musl` 资产
 - `AMAGI_PROXY_PREFIX`：覆盖远程脚本和 release 下载使用的代理前缀
 - `AMAGI_REMOTE_REPO_OWNER`、`AMAGI_REMOTE_REPO_NAME`、`AMAGI_REMOTE_BASE_URL`：覆盖默认下载来源
 

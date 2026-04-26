@@ -1,7 +1,11 @@
 {
   "meta": {
     "code": "zh-CN",
-    "aliases": ["zh", "zh-cn", "zh-hans"]
+    "aliases": [
+      "zh",
+      "zh-cn",
+      "zh-hans"
+    ]
   },
   "headings": {
     "usage": "用法",
@@ -12,6 +16,16 @@
   },
   "help": {
     "root_after_help": "使用 --lang zh 或 --lang en 切换 CLI 帮助语言。"
+  },
+  "version": {
+    "release_build": "正式发布版",
+    "daily_build": "每日构建版",
+    "local_build": "本地构建版",
+    "version": "版本",
+    "build_time": "构建时间",
+    "build_word": "构建于",
+    "rustc": "Rustc",
+    "target": "目标平台"
   },
   "commands": {
     "root": {

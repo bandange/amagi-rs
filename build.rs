@@ -6,6 +6,7 @@ fn main() {
     println!("cargo:rerun-if-changed=build.rs");
     println!("cargo:rerun-if-changed=src");
     println!("cargo:rerun-if-changed=Cargo.toml");
+    println!("cargo:rerun-if-env-changed=BUILD_TYPE");
     println!("cargo:rerun-if-env-changed=RUSTUP_TOOLCHAIN");
     println!("cargo:rerun-if-env-changed=RUSTC");
     println!("cargo:rerun-if-env-changed=TARGET");
@@ -14,12 +15,30 @@ fn main() {
     let rustc_version = command_output(&rustc, &["-V"]).unwrap_or_else(|| "unknown".to_owned());
     let target = env::var("TARGET").unwrap_or_else(|_| "unknown".to_owned());
     let build_time = resolve_build_time();
+    let build_type = env::var("BUILD_TYPE").unwrap_or_else(|_| "local".to_owned());
+    let display_version = resolve_display_version(&build_type, &build_time);
     let toolchain = resolve_toolchain(&rustc_version);
 
+    println!("cargo:rustc-env=AMAGI_DISPLAY_VERSION={display_version}");
+    println!("cargo:rustc-env=AMAGI_BUILD_TYPE={build_type}");
     println!("cargo:rustc-env=AMAGI_BUILD_RUSTC={rustc_version}");
     println!("cargo:rustc-env=AMAGI_BUILD_TARGET={target}");
     println!("cargo:rustc-env=AMAGI_BUILD_TIME={build_time}");
     println!("cargo:rustc-env=AMAGI_BUILD_TOOLCHAIN={toolchain}");
+}
+
+fn resolve_display_version(build_type: &str, build_time: &str) -> String {
+    let version = env::var("CARGO_PKG_VERSION").unwrap_or_else(|_| "0.0.0".to_owned());
+
+    match build_type {
+        "release" => format!("{version} (build {build_time})"),
+        "daily" => {
+            let git_hash = command_output("git", &["rev-parse", "--short", "HEAD"])
+                .unwrap_or_else(|| "unknown".to_owned());
+            format!("daily-{git_hash} (build {build_time})")
+        }
+        _ => format!("{version}-local (build {build_time})"),
+    }
 }
 
 fn resolve_toolchain(rustc_version: &str) -> String {

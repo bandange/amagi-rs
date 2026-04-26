@@ -72,6 +72,7 @@ Environment overrides:
   AMAGI_INSTALL_SOURCE
   AMAGI_INSTALL_DIR
   AMAGI_INSTALL_VERSION
+  AMAGI_INSTALL_LINUX_LIBC
   AMAGI_PROXY_PREFIX
 EOF
 }
@@ -775,16 +776,76 @@ arch_slug() {
   esac
 }
 
+version_at_least() {
+  local current="$1"
+  local minimum="$2"
+
+  [[ "$(printf '%s\n%s\n' "${minimum}" "${current}" | sort -V | head -n 1)" == "${minimum}" ]]
+}
+
+linux_libc_slug() {
+  local override="${AMAGI_INSTALL_LINUX_LIBC:-}"
+  local detected_version=""
+  local ldd_output=""
+
+  case "${override}" in
+    "")
+      ;;
+    gnu|glibc)
+      printf 'gnu\n'
+      return 0
+      ;;
+    musl)
+      printf 'musl\n'
+      return 0
+      ;;
+    *)
+      printf '[amagi] unsupported Linux libc override: %s\n' "${override}" >&2
+      exit 1
+      ;;
+  esac
+
+  if command -v ldd >/dev/null 2>&1; then
+    ldd_output="$(ldd --version 2>&1 || true)"
+    if printf '%s\n' "${ldd_output}" | grep -qi 'musl'; then
+      printf 'musl\n'
+      return 0
+    fi
+  fi
+
+  if command -v getconf >/dev/null 2>&1; then
+    detected_version="$(getconf GNU_LIBC_VERSION 2>/dev/null || true)"
+    if [[ "${detected_version}" =~ ([0-9]+\.[0-9]+) ]]; then
+      detected_version="${BASH_REMATCH[1]}"
+    else
+      detected_version=""
+    fi
+  fi
+
+  if [[ -z "${detected_version}" && "${ldd_output}" =~ ([0-9]+\.[0-9]+) ]]; then
+    detected_version="${BASH_REMATCH[1]}"
+  fi
+
+  if [[ -n "${detected_version}" ]] && version_at_least "${detected_version}" "2.35"; then
+    printf 'gnu\n'
+    return 0
+  fi
+
+  printf 'musl\n'
+}
+
 remote_asset_name() {
   local platform
   local arch
+  local linux_libc
 
   platform="$(platform_slug)"
   arch="$(arch_slug)"
 
   case "${platform}" in
     linux)
-      printf '%s-%s-unknown-linux-musl.tar.gz\n' "${BIN_NAME}" "${arch}"
+      linux_libc="$(linux_libc_slug)"
+      printf '%s-%s-unknown-linux-%s.tar.gz\n' "${BIN_NAME}" "${arch}" "${linux_libc}"
       ;;
     macos)
       printf '%s-%s-apple-darwin.tar.gz\n' "${BIN_NAME}" "${arch}"

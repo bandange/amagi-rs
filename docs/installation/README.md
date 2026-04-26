@@ -58,6 +58,8 @@ Notes:
 - `--proxy` and `-Proxy` enable the default proxy prefix `https://gh-proxy.com/`
 - in remote install and update flows, the proxy prefix is applied to both the script entry URL and GitHub release asset downloads
 - `--proxy-prefix`, `-ProxyPrefix`, and `AMAGI_PROXY_PREFIX` let you use a custom proxy prefix instead of the default
+- on Linux remote installs, the shell installer detects the libc family and selects `*-unknown-linux-gnu` on glibc `>= 2.35`; otherwise it falls back to `*-unknown-linux-musl`
+- set `AMAGI_INSTALL_LINUX_LIBC=gnu` or `AMAGI_INSTALL_LINUX_LIBC=musl` to override the Linux asset selection when needed
 
 Verify:
 
@@ -70,6 +72,7 @@ Optional install variables:
 - `AMAGI_INSTALL_DIR`: override the install directory
 - `AMAGI_PROFILE_FILE`: on Linux/macOS, write the shell hook into one specific profile file
 - `AMAGI_INSTALL_VERSION`: install a specific release instead of `latest`
+- `AMAGI_INSTALL_LINUX_LIBC`: on Linux, force `gnu` or `musl` remote asset selection
 - `AMAGI_PROXY_PREFIX`: override the proxy prefix used for remote script and release downloads
 - `AMAGI_REMOTE_REPO_OWNER`, `AMAGI_REMOTE_REPO_NAME`, `AMAGI_REMOTE_BASE_URL`: override the default download source
 

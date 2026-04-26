@@ -1,7 +1,10 @@
 {
   "meta": {
     "code": "en-US",
-    "aliases": ["en", "en-us"]
+    "aliases": [
+      "en",
+      "en-us"
+    ]
   },
   "headings": {
     "usage": "Usage",
@@ -12,6 +15,16 @@
   },
   "help": {
     "root_after_help": "Use --lang zh or --lang en to switch the CLI help language."
+  },
+  "version": {
+    "release_build": "Release",
+    "daily_build": "Daily Build",
+    "local_build": "Local Build",
+    "version": "Version",
+    "build_time": "Build Time",
+    "build_word": "built",
+    "rustc": "Rustc",
+    "target": "Target"
   },
   "commands": {
     "root": {
