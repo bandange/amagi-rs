@@ -4,6 +4,12 @@ on:
   schedule:
     - cron: '0 0 * * *'
   workflow_dispatch:
+    inputs:
+      force:
+        description: Force a rebuild even if the daily tag already matches HEAD
+        required: false
+        default: false
+        type: boolean
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref_name || 'scheduled' }}
@@ -15,8 +21,52 @@ env:
   BIN_NAME: amagi
 
 jobs:
+  changes:
+    name: detect changes
+    permissions:
+      contents: read
+    runs-on: ubuntu-22.04
+    outputs:
+      should_build: ${{ steps.detect.outputs.should_build }}
+      reason: ${{ steps.detect.outputs.reason }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Detect whether daily build is needed
+        id: detect
+        shell: bash
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ] && [ "${{ inputs.force }}" = "true" ]; then
+            echo "should_build=true" >> "$GITHUB_OUTPUT"
+            echo "reason=manual force rebuild requested" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          git fetch --force --tags origin
+
+          head_sha="$(git rev-parse HEAD)"
+          daily_sha="$(git rev-parse refs/tags/daily 2>/dev/null || true)"
+
+          if [ -z "$daily_sha" ]; then
+            echo "should_build=true" >> "$GITHUB_OUTPUT"
+            echo "reason=daily tag does not exist yet" >> "$GITHUB_OUTPUT"
+          elif [ "$head_sha" != "$daily_sha" ]; then
+            echo "should_build=true" >> "$GITHUB_OUTPUT"
+            echo "reason=HEAD differs from daily tag" >> "$GITHUB_OUTPUT"
+          else
+            echo "should_build=false" >> "$GITHUB_OUTPUT"
+            echo "reason=daily tag already points to HEAD" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Print decision
+        run: echo "${{ steps.detect.outputs.reason }}"
+
   build:
     name: ${{ matrix.name }}
+    needs: changes
+    if: needs.changes.outputs.should_build == 'true'
     permissions:
       contents: read
     runs-on: ${{ matrix.os }}
@@ -96,7 +146,10 @@ jobs:
           path: ${{ matrix.artifact }}
 
   release:
-    needs: build
+    if: needs.changes.outputs.should_build == 'true'
+    needs:
+      - changes
+      - build
     permissions:
       contents: write
     runs-on: ubuntu-22.04
