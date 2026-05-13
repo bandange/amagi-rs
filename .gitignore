@@ -6,6 +6,7 @@
 .env.local
 .env.*
 !.env.example
+!.env.example.zh-CN
 
 # Local scratch workspaces and reverse-engineering materials
 /dev

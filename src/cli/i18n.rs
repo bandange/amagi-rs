@@ -126,6 +126,10 @@ impl CliLanguage {
             code: catalog.meta.code.as_str(),
         })
     }
+
+    pub(crate) fn code(self) -> &'static str {
+        self.code
+    }
 }
 
 impl FromStr for CliLanguage {
@@ -142,7 +146,14 @@ impl FromStr for CliLanguage {
 }
 
 pub(crate) fn resolve_cli_language(args: &[OsString], dotenv: Option<&DotenvMap>) -> CliLanguage {
-    detect_arg_language(args)
+    resolve_runtime_language(detect_arg_language(args), dotenv)
+}
+
+pub(crate) fn resolve_runtime_language(
+    explicit: Option<CliLanguage>,
+    dotenv: Option<&DotenvMap>,
+) -> CliLanguage {
+    explicit
         .or_else(|| {
             std::env::var("AMAGI_LANG")
                 .ok()

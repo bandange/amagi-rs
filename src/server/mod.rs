@@ -1,9 +1,11 @@
 //! HTTP server bootstrap, routing, and request handlers.
 
+use std::net::SocketAddr;
+
 mod handlers;
 mod router;
-mod runtime;
-mod state;
+pub(crate) mod runtime;
+pub(crate) mod state;
 
 use tokio::net::TcpListener;
 use tracing::info;
@@ -12,6 +14,7 @@ use crate::APP_NAME;
 use crate::client::AmagiClient;
 use crate::config::ServeConfig;
 use crate::error::AppError;
+use crate::node;
 use crate::output::Printer;
 use runtime::ServerRuntimeConfig;
 
@@ -42,7 +45,8 @@ pub async fn serve(
         client,
         runtime,
     )?;
-    let app = router::build(state);
+    node::client::spawn_upstream_connector(state.clone());
+    let app = router::build(state.clone());
 
     printer.print_banner(APP_NAME, env!("CARGO_PKG_VERSION"))?;
     printer.print_server_ready(APP_NAME, env!("CARGO_PKG_VERSION"), &local_addr)?;
@@ -54,15 +58,20 @@ pub async fn serve(
         "http server listening"
     );
 
-    axum::serve(listener, app)
-        .with_graceful_shutdown(shutdown_signal())
-        .await?;
+    axum::serve(
+        listener,
+        app.into_make_service_with_connect_info::<SocketAddr>(),
+    )
+    .with_graceful_shutdown(shutdown_signal(state))
+    .await?;
 
     Ok(())
 }
 
-async fn shutdown_signal() {
+async fn shutdown_signal(state: state::AppState) {
     if tokio::signal::ctrl_c().await.is_ok() {
+        state.broadcast_shutdown_notice(Some("server shutdown"), Some(3_000));
+        let _ = state.announce_upstream_drain(Some("server shutdown"));
         info!("shutdown signal received");
     }
 }

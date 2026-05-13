@@ -6,6 +6,8 @@ use serde::Serialize;
 #[cfg(any(feature = "cli", feature = "server"))]
 #[derive(Debug, Clone)]
 pub struct OutputConfig {
+    /// Locale code used for CLI-facing text output.
+    pub locale: String,
     /// Output format used by CLI-facing messages.
     pub format: OutputFormat,
     /// Optional path used to persist CLI-facing output.

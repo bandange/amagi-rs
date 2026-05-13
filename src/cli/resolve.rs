@@ -46,7 +46,7 @@ where
 
 pub(super) fn app_config_from_plain_cli(cli: Cli) -> AppConfig {
     let Cli {
-        lang: _,
+        lang,
         output,
         output_file,
         pretty,
@@ -63,6 +63,9 @@ pub(super) fn app_config_from_plain_cli(cli: Cli) -> AppConfig {
         log_level,
         command,
     } = cli;
+    let output_locale = super::i18n::resolve_runtime_language(lang, None)
+        .code()
+        .to_owned();
 
     let client = ClientOptions {
         cookies: CookieConfig {
@@ -90,15 +93,33 @@ pub(super) fn app_config_from_plain_cli(cli: Cli) -> AppConfig {
             runtime_overrides: ServeRuntimeOverrides {
                 proxy_timeout_ms: serve.runtime.proxy_timeout_ms,
                 proxy_max_hops: serve.runtime.proxy_max_hops,
+                node_id: serve.runtime.node_id,
+                node_role: serve.runtime.node_role,
+                node_accept_downstream: serve.runtime.node_accept_downstream,
+                node_connect_upstream: serve.runtime.node_connect_upstream,
+                node_auth_token: serve.runtime.node_auth_token,
+                node_auth_credentials: serve.runtime.node_auth_credentials,
+                node_control_token: serve.runtime.node_control_token,
+                node_allow_insecure_ws: serve.runtime.node_allow_insecure_ws,
+                node_heartbeat_ms: serve.runtime.node_heartbeat_ms,
+                node_request_timeout_ms: serve.runtime.node_request_timeout_ms,
+                node_max_hops: serve.runtime.node_max_hops,
+                node_max_concurrent_tasks: serve.runtime.node_max_concurrent_tasks,
+                node_auto_claim_published_routes: serve.runtime.node_auto_claim_published_routes,
                 douyin_mode: serve.runtime.douyin_mode,
+                douyin_route: serve.runtime.douyin_route,
                 douyin_upstream: serve.runtime.douyin_upstream,
                 bilibili_mode: serve.runtime.bilibili_mode,
+                bilibili_route: serve.runtime.bilibili_route,
                 bilibili_upstream: serve.runtime.bilibili_upstream,
                 kuaishou_mode: serve.runtime.kuaishou_mode,
+                kuaishou_route: serve.runtime.kuaishou_route,
                 kuaishou_upstream: serve.runtime.kuaishou_upstream,
                 xiaohongshu_mode: serve.runtime.xiaohongshu_mode,
+                xiaohongshu_route: serve.runtime.xiaohongshu_route,
                 xiaohongshu_upstream: serve.runtime.xiaohongshu_upstream,
                 twitter_mode: serve.runtime.twitter_mode,
+                twitter_route: serve.runtime.twitter_route,
                 twitter_upstream: serve.runtime.twitter_upstream,
             },
         }),
@@ -107,6 +128,7 @@ pub(super) fn app_config_from_plain_cli(cli: Cli) -> AppConfig {
     AppConfig {
         command,
         output: OutputConfig {
+            locale: output_locale,
             format: output,
             file: output_file,
             pretty,
@@ -127,7 +149,7 @@ fn app_config_from_cli(
     dotenv: &DotenvMap,
 ) -> Result<AppConfig, AppError> {
     let Cli {
-        lang: _,
+        lang,
         output,
         output_file,
         pretty,
@@ -201,6 +223,9 @@ fn app_config_from_cli(
     };
 
     let output = OutputConfig {
+        locale: super::i18n::resolve_runtime_language(lang, Some(dotenv))
+            .code()
+            .to_owned(),
         format: resolve_output_format(output, matches, "output", dotenv)?,
         file: resolve_string(
             output_file,
@@ -263,11 +288,109 @@ fn app_config_from_cli(
                         "AMAGI_PROXY_MAX_HOPS",
                         dotenv,
                     )?,
+                    node_id: resolve_string(
+                        serve.runtime.node_id,
+                        serve_matches,
+                        "node_id",
+                        "AMAGI_NODE_ID",
+                        dotenv,
+                    ),
+                    node_role: resolve_string(
+                        serve.runtime.node_role,
+                        serve_matches,
+                        "node_role",
+                        "AMAGI_NODE_ROLE",
+                        dotenv,
+                    ),
+                    node_accept_downstream: resolve_optional_bool(
+                        serve.runtime.node_accept_downstream,
+                        serve_matches,
+                        "node_accept_downstream",
+                        "AMAGI_NODE_ACCEPT_DOWNSTREAM",
+                        dotenv,
+                    )?,
+                    node_connect_upstream: resolve_string(
+                        serve.runtime.node_connect_upstream,
+                        serve_matches,
+                        "node_connect_upstream",
+                        "AMAGI_NODE_CONNECT_UPSTREAM",
+                        dotenv,
+                    ),
+                    node_auth_token: resolve_string(
+                        serve.runtime.node_auth_token,
+                        serve_matches,
+                        "node_auth_token",
+                        "AMAGI_NODE_AUTH_TOKEN",
+                        dotenv,
+                    ),
+                    node_auth_credentials: resolve_string(
+                        serve.runtime.node_auth_credentials,
+                        serve_matches,
+                        "node_auth_credentials",
+                        "AMAGI_NODE_AUTH_CREDENTIALS",
+                        dotenv,
+                    ),
+                    node_control_token: resolve_string(
+                        serve.runtime.node_control_token,
+                        serve_matches,
+                        "node_control_token",
+                        "AMAGI_NODE_CONTROL_TOKEN",
+                        dotenv,
+                    ),
+                    node_allow_insecure_ws: resolve_optional_bool(
+                        serve.runtime.node_allow_insecure_ws,
+                        serve_matches,
+                        "node_allow_insecure_ws",
+                        "AMAGI_NODE_ALLOW_INSECURE_WS",
+                        dotenv,
+                    )?,
+                    node_heartbeat_ms: resolve_optional_u64(
+                        serve.runtime.node_heartbeat_ms,
+                        serve_matches,
+                        "node_heartbeat_ms",
+                        "AMAGI_NODE_HEARTBEAT_MS",
+                        dotenv,
+                    )?,
+                    node_request_timeout_ms: resolve_optional_u64(
+                        serve.runtime.node_request_timeout_ms,
+                        serve_matches,
+                        "node_request_timeout_ms",
+                        "AMAGI_NODE_REQUEST_TIMEOUT_MS",
+                        dotenv,
+                    )?,
+                    node_max_hops: resolve_optional_u32(
+                        serve.runtime.node_max_hops,
+                        serve_matches,
+                        "node_max_hops",
+                        "AMAGI_NODE_MAX_HOPS",
+                        dotenv,
+                    )?,
+                    node_max_concurrent_tasks: resolve_optional_u32(
+                        serve.runtime.node_max_concurrent_tasks,
+                        serve_matches,
+                        "node_max_concurrent_tasks",
+                        "AMAGI_NODE_MAX_CONCURRENT_TASKS",
+                        dotenv,
+                    )?,
+                    node_auto_claim_published_routes: resolve_optional_bool(
+                        serve.runtime.node_auto_claim_published_routes,
+                        serve_matches,
+                        "node_auto_claim_published_routes",
+                        "AMAGI_NODE_AUTO_CLAIM_PUBLISHED_ROUTES",
+                        dotenv,
+                    )?,
                     douyin_mode: resolve_string(
                         serve.runtime.douyin_mode,
                         serve_matches,
                         "douyin_mode",
                         "AMAGI_PLATFORM_DOUYIN_MODE",
+                        dotenv,
+                    ),
+                    douyin_route: resolve_string(
+                        serve.runtime.douyin_route,
+                        serve_matches,
+                        "douyin_route",
+                        "AMAGI_PLATFORM_DOUYIN_ROUTE",
                         dotenv,
                     ),
                     douyin_upstream: resolve_string(
@@ -284,6 +407,13 @@ fn app_config_from_cli(
                         "AMAGI_PLATFORM_BILIBILI_MODE",
                         dotenv,
                     ),
+                    bilibili_route: resolve_string(
+                        serve.runtime.bilibili_route,
+                        serve_matches,
+                        "bilibili_route",
+                        "AMAGI_PLATFORM_BILIBILI_ROUTE",
+                        dotenv,
+                    ),
                     bilibili_upstream: resolve_string(
                         serve.runtime.bilibili_upstream,
                         serve_matches,
@@ -296,6 +426,13 @@ fn app_config_from_cli(
                         serve_matches,
                         "kuaishou_mode",
                         "AMAGI_PLATFORM_KUAISHOU_MODE",
+                        dotenv,
+                    ),
+                    kuaishou_route: resolve_string(
+                        serve.runtime.kuaishou_route,
+                        serve_matches,
+                        "kuaishou_route",
+                        "AMAGI_PLATFORM_KUAISHOU_ROUTE",
                         dotenv,
                     ),
                     kuaishou_upstream: resolve_string(
@@ -312,6 +449,13 @@ fn app_config_from_cli(
                         "AMAGI_PLATFORM_XIAOHONGSHU_MODE",
                         dotenv,
                     ),
+                    xiaohongshu_route: resolve_string(
+                        serve.runtime.xiaohongshu_route,
+                        serve_matches,
+                        "xiaohongshu_route",
+                        "AMAGI_PLATFORM_XIAOHONGSHU_ROUTE",
+                        dotenv,
+                    ),
                     xiaohongshu_upstream: resolve_string(
                         serve.runtime.xiaohongshu_upstream,
                         serve_matches,
@@ -324,6 +468,13 @@ fn app_config_from_cli(
                         serve_matches,
                         "twitter_mode",
                         "AMAGI_PLATFORM_TWITTER_MODE",
+                        dotenv,
+                    ),
+                    twitter_route: resolve_string(
+                        serve.runtime.twitter_route,
+                        serve_matches,
+                        "twitter_route",
+                        "AMAGI_PLATFORM_TWITTER_ROUTE",
                         dotenv,
                     ),
                     twitter_upstream: resolve_string(
@@ -405,6 +556,20 @@ fn resolve_optional_u32(
     dotenv: &DotenvMap,
 ) -> Result<Option<u32>, AppError> {
     resolve_optional_number(current, matches, arg_id, env_name, dotenv)
+}
+
+fn resolve_optional_bool(
+    current: Option<bool>,
+    matches: &clap::ArgMatches,
+    arg_id: &str,
+    env_name: &str,
+    dotenv: &DotenvMap,
+) -> Result<Option<bool>, AppError> {
+    if prefers_existing_value(matches, arg_id) {
+        return Ok(current);
+    }
+
+    parse_bool(env_or_dotenv(env_name, dotenv), env_name).map(|value| value.or(current))
 }
 
 fn resolve_bool(

@@ -357,17 +357,44 @@ amagi serve [OPTIONS]
 | `--host <HOST>` | 主机名或 IP | `127.0.0.1` | `AMAGI_HOST` | 服务绑定地址 |
 | `--port <PORT>` | `u16` | `4567` | `AMAGI_PORT` | 服务绑定端口 |
 | `--proxy-timeout-ms <MS>` | `u64` | `15000` | `AMAGI_PROXY_TIMEOUT_MS` | 节点间代理请求超时时间 |
-| `--proxy-max-hops <COUNT>` | `u32` | `1` | `AMAGI_PROXY_MAX_HOPS` | 单次请求允许的最大代理跳数 |
+| `--proxy-max-hops <COUNT>` | `u32` | `4` | `AMAGI_PROXY_MAX_HOPS` | HTTP upstream 代理允许的最大 hop 数 |
+| `--node-id <ID>` | 字符串 | 无 | `AMAGI_NODE_ID` | 启用节点传输后的当前节点 ID |
+| `--node-role <ROLE>` | `root`、`worker`、`relay`、`hybrid` | 自动推断 | `AMAGI_NODE_ROLE` | 节点角色；影响上下游连接语义 |
+| `--node-accept-downstream <BOOL>` | `bool` | 按角色推断 | `AMAGI_NODE_ACCEPT_DOWNSTREAM` | 是否接受下游 WSS 节点连接 |
+| `--node-connect-upstream <URL>` | URL | 无 | `AMAGI_NODE_CONNECT_UPSTREAM` | 当前节点主动连接的上游 `wss://` 地址 |
+| `--node-auth-token <TOKEN>` | 字符串 | 无 | `AMAGI_NODE_AUTH_TOKEN` | 节点最小鉴权流程使用的共享 token |
+| `--node-auth-credentials <MAP>` | `node=token,...` | 无 | `AMAGI_NODE_AUTH_CREDENTIALS` | 可选逐节点凭据表 |
+| `--node-control-token <TOKEN>` | 字符串 | 回退到 `--node-auth-token` | `AMAGI_NODE_CONTROL_TOKEN` | 内部控制面 Bearer token |
+| `--node-allow-insecure-ws <BOOL>` | `bool` | `false` | `AMAGI_NODE_ALLOW_INSECURE_WS` | 是否允许 `ws://` 上游而不是 `wss://` |
+| `--node-heartbeat-ms <MS>` | `u64` | `10000` | `AMAGI_NODE_HEARTBEAT_MS` | 节点心跳间隔 |
+| `--node-request-timeout-ms <MS>` | `u64` | `15000` | `AMAGI_NODE_REQUEST_TIMEOUT_MS` | 单个节点任务的超时预算 |
+| `--node-max-hops <COUNT>` | `u32` | `4` | `AMAGI_NODE_MAX_HOPS` | 节点转发允许的最大 hop 数 |
+| `--node-max-concurrent-tasks <COUNT>` | `u32` | `8` | `AMAGI_NODE_MAX_CONCURRENT_TASKS` | 当前节点可并发执行的节点任务上限 |
+| `--node-auto-claim-published-routes <BOOL>` | `bool` | `false` | `AMAGI_NODE_AUTO_CLAIM_PUBLISHED_ROUTES` | 上连后是否自动向上游 claim 本地可执行平台 |
 | `--douyin-mode <MODE>` | `enabled`、`local`、`upstream`、`disabled` | `local` | `AMAGI_PLATFORM_DOUYIN_MODE` | 抖音服务模式；`enabled` 映射为本地处理 |
+| `--douyin-route <TARGET>` | `local`、`disabled`、`node:<id>` | 无 | `AMAGI_PLATFORM_DOUYIN_ROUTE` | 抖音静态路由目标；可显式绑定指定 node |
 | `--douyin-upstream <URL>` | URL | 无 | `AMAGI_PLATFORM_DOUYIN_UPSTREAM` | 抖音处于 `upstream` 模式时使用的上游节点地址 |
 | `--bilibili-mode <MODE>` | `enabled`、`local`、`upstream`、`disabled` | `local` | `AMAGI_PLATFORM_BILIBILI_MODE` | Bilibili 服务模式；`enabled` 映射为本地处理 |
+| `--bilibili-route <TARGET>` | `local`、`disabled`、`node:<id>` | 无 | `AMAGI_PLATFORM_BILIBILI_ROUTE` | Bilibili 静态路由目标；可显式绑定指定 node |
 | `--bilibili-upstream <URL>` | URL | 无 | `AMAGI_PLATFORM_BILIBILI_UPSTREAM` | Bilibili 处于 `upstream` 模式时使用的上游节点地址 |
 | `--kuaishou-mode <MODE>` | `enabled`、`local`、`upstream`、`disabled` | `local` | `AMAGI_PLATFORM_KUAISHOU_MODE` | 快手服务模式；`enabled` 映射为本地处理 |
+| `--kuaishou-route <TARGET>` | `local`、`disabled`、`node:<id>` | 无 | `AMAGI_PLATFORM_KUAISHOU_ROUTE` | 快手静态路由目标；可显式绑定指定 node |
 | `--kuaishou-upstream <URL>` | URL | 无 | `AMAGI_PLATFORM_KUAISHOU_UPSTREAM` | 快手处于 `upstream` 模式时使用的上游节点地址 |
 | `--xiaohongshu-mode <MODE>` | `enabled`、`local`、`upstream`、`disabled` | `local` | `AMAGI_PLATFORM_XIAOHONGSHU_MODE` | 小红书服务模式；`enabled` 映射为本地处理 |
+| `--xiaohongshu-route <TARGET>` | `local`、`disabled`、`node:<id>` | 无 | `AMAGI_PLATFORM_XIAOHONGSHU_ROUTE` | 小红书静态路由目标；可显式绑定指定 node |
 | `--xiaohongshu-upstream <URL>` | URL | 无 | `AMAGI_PLATFORM_XIAOHONGSHU_UPSTREAM` | 小红书处于 `upstream` 模式时使用的上游节点地址 |
 | `--twitter-mode <MODE>` | `enabled`、`local`、`upstream`、`disabled` | `local` | `AMAGI_PLATFORM_TWITTER_MODE` | Twitter/X 服务模式；`enabled` 映射为本地处理 |
+| `--twitter-route <TARGET>` | `local`、`disabled`、`node:<id>` | 无 | `AMAGI_PLATFORM_TWITTER_ROUTE` | Twitter/X 静态路由目标；可显式绑定指定 node |
 | `--twitter-upstream <URL>` | URL | 无 | `AMAGI_PLATFORM_TWITTER_UPSTREAM` | Twitter/X 处于 `upstream` 模式时使用的上游节点地址 |
+
+补充说明：
+
+- 只要提供任意 `--node-*` 参数，运行时就会尝试解析完整节点配置。
+- 一旦启用节点传输，`--node-id` 与 `--node-auth-token` 必须同时存在。
+- `--node-role worker` 或 `relay` 时，必须配置 `--node-connect-upstream`。
+- `--node-connect-upstream` 默认要求 `wss://`；只有 `--node-allow-insecure-ws true` 时才允许 `ws://`。
+- `--*-route node:<id>` 也要求当前进程已经具备节点传输配置。
+- `--*-route node:<id>` 表示显式绑定某个节点，不是新的平台模式。
 
 ## 11. 环境变量总表
 
@@ -410,15 +437,33 @@ dotenv、进程环境变量和显式命令行参数的优先级为：
 | `AMAGI_PORT` | 服务端监听端口 |
 | `AMAGI_PROXY_TIMEOUT_MS` | 节点间代理超时 |
 | `AMAGI_PROXY_MAX_HOPS` | 最大代理跳数 |
+| `AMAGI_NODE_ID` | 当前节点 ID |
+| `AMAGI_NODE_ROLE` | 当前节点角色 |
+| `AMAGI_NODE_ACCEPT_DOWNSTREAM` | 是否接受下游节点连接 |
+| `AMAGI_NODE_CONNECT_UPSTREAM` | 上游 WSS 节点地址 |
+| `AMAGI_NODE_AUTH_TOKEN` | 节点鉴权 token |
+| `AMAGI_NODE_AUTH_CREDENTIALS` | 逐节点凭据表 |
+| `AMAGI_NODE_CONTROL_TOKEN` | 内部控制面 token |
+| `AMAGI_NODE_ALLOW_INSECURE_WS` | 是否允许 `ws://` 上游 |
+| `AMAGI_NODE_HEARTBEAT_MS` | 节点心跳间隔 |
+| `AMAGI_NODE_REQUEST_TIMEOUT_MS` | 节点任务超时预算 |
+| `AMAGI_NODE_MAX_HOPS` | 节点转发最大 hop 数 |
+| `AMAGI_NODE_MAX_CONCURRENT_TASKS` | 本地节点最大并发任务数 |
+| `AMAGI_NODE_AUTO_CLAIM_PUBLISHED_ROUTES` | 是否自动 claim 本地可执行平台 |
 | `AMAGI_PLATFORM_DOUYIN_MODE` | 抖音服务模式 |
+| `AMAGI_PLATFORM_DOUYIN_ROUTE` | 抖音静态路由目标 |
 | `AMAGI_PLATFORM_DOUYIN_UPSTREAM` | 抖音上游节点地址 |
 | `AMAGI_PLATFORM_BILIBILI_MODE` | Bilibili 服务模式 |
+| `AMAGI_PLATFORM_BILIBILI_ROUTE` | Bilibili 静态路由目标 |
 | `AMAGI_PLATFORM_BILIBILI_UPSTREAM` | Bilibili 上游节点地址 |
 | `AMAGI_PLATFORM_KUAISHOU_MODE` | 快手服务模式 |
+| `AMAGI_PLATFORM_KUAISHOU_ROUTE` | 快手静态路由目标 |
 | `AMAGI_PLATFORM_KUAISHOU_UPSTREAM` | 快手上游节点地址 |
 | `AMAGI_PLATFORM_XIAOHONGSHU_MODE` | 小红书服务模式 |
+| `AMAGI_PLATFORM_XIAOHONGSHU_ROUTE` | 小红书静态路由目标 |
 | `AMAGI_PLATFORM_XIAOHONGSHU_UPSTREAM` | 小红书上游节点地址 |
 | `AMAGI_PLATFORM_TWITTER_MODE` | Twitter/X 服务模式 |
+| `AMAGI_PLATFORM_TWITTER_ROUTE` | Twitter/X 静态路由目标 |
 | `AMAGI_PLATFORM_TWITTER_UPSTREAM` | Twitter/X 上游节点地址 |
 
 ## 12. 维护规则

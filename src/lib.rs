@@ -27,6 +27,9 @@ pub mod error;
 /// Typed event bus shared across the client, CLI, and server flows.
 #[cfg(feature = "client")]
 pub mod events;
+/// Node-network support for server-mode multi-node deployments.
+#[cfg(feature = "server")]
+pub mod node;
 /// Human-readable and machine-readable output helpers.
 #[cfg(any(feature = "cli", feature = "server"))]
 pub mod output;

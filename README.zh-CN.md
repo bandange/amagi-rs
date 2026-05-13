@@ -82,6 +82,7 @@ cargo run -- serve --host 127.0.0.1 --port 4567
 常用文件和变量：
 
 - [`.env.example`](.env.example)
+- [`.env.example.zh-CN`](.env.example.zh-CN)
 - `AMAGI_USER_ENV_FILE`
 - `AMAGI_DOUYIN_COOKIE`
 - `AMAGI_BILIBILI_COOKIE`
@@ -107,7 +108,7 @@ cargo run -- serve --host 127.0.0.1 --port 4567
 示例：
 
 ```toml
-amagi = { version = "0.1.4", default-features = false, features = ["client"] }
+amagi = { version = "0.1.5", default-features = false, features = ["client"] }
 ```
 
 ## 文档

@@ -20,12 +20,20 @@ fn main() {
                 std::process::exit(1);
             }
             Err(_) => {
-                eprintln!("[amagi] error: cli runtime thread panicked");
+                amagi::output::print_startup_message(
+                    amagi::APP_NAME,
+                    "cli runtime thread panicked",
+                    "CLI 运行时线程发生 panic",
+                );
                 std::process::exit(1);
             }
         },
         Err(error) => {
-            eprintln!("[amagi] error: failed to spawn cli runtime thread: {error}");
+            amagi::output::print_startup_message(
+                amagi::APP_NAME,
+                &format!("failed to spawn cli runtime thread: {error}"),
+                &format!("启动 CLI 运行时线程失败: {error}"),
+            );
             std::process::exit(1);
         }
     }

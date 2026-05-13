@@ -1,7 +1,7 @@
 use std::fmt;
 use std::str::FromStr;
 
-use serde::Serialize;
+use serde::{Deserialize, Serialize};
 
 /// Supported HTTP methods for published API endpoints.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize)]
@@ -20,7 +20,7 @@ pub enum HttpMethod {
 }
 
 /// Supported social platforms.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
 #[serde(rename_all = "lowercase")]
 pub enum Platform {
     /// Bilibili APIs.

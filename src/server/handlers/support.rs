@@ -32,9 +32,10 @@ enum RequestCookieOverride {
 pub(super) fn fetch_error_response(error: AppError) -> (StatusCode, Json<FetchErrorResponse>) {
     let status = match &error {
         AppError::Io(_) | AppError::InvalidRequestConfig(_) => StatusCode::INTERNAL_SERVER_ERROR,
-        AppError::Json(_) | AppError::Http(_) | AppError::UpstreamResponse { .. } => {
-            StatusCode::BAD_GATEWAY
-        }
+        AppError::Json(_)
+        | AppError::Http(_)
+        | AppError::UpstreamResponse { .. }
+        | AppError::UpstreamReconnect { .. } => StatusCode::BAD_GATEWAY,
     };
 
     (

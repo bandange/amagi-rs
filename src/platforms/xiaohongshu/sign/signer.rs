@@ -45,26 +45,6 @@ impl XiaohongshuSigner {
         }
     }
 
-    /// Create a deterministic signer for tests and reproducible output.
-    pub fn with_seed(seed: u64) -> Self {
-        Self {
-            config: Config::default(),
-            random: PseudoRandom::new(seed),
-            now_ms_override: None,
-            browser_state: None,
-        }
-    }
-
-    /// Create a deterministic signer pinned to a fixed current time in milliseconds.
-    pub fn with_seed_and_time(seed: u64, now_ms: u64) -> Self {
-        Self {
-            config: Config::default(),
-            random: PseudoRandom::new(seed),
-            now_ms_override: Some(now_ms),
-            browser_state: None,
-        }
-    }
-
     /// Create a signer with a legacy browser state placeholder bound in advance.
     pub fn with_browser_state(browser_state: XiaohongshuBrowserState) -> Self {
         let mut signer = Self::new();

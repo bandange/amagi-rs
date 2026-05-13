@@ -13,6 +13,8 @@ use crate::config::AppConfig;
 use crate::env::dotenv_values;
 use crate::error::AppError;
 
+pub(crate) use i18n::resolve_runtime_language;
+
 #[cfg(feature = "server")]
 pub use args::ServeArgs;
 pub use args::{

@@ -24,6 +24,13 @@ pub enum AppError {
         /// Human-readable error detail.
         message: String,
     },
+    /// One upstream node requested that the session reconnect after a delay.
+    UpstreamReconnect {
+        /// Requested reconnect delay in milliseconds.
+        delay_ms: u64,
+        /// Human-readable reason supplied by the upstream node.
+        message: String,
+    },
 }
 
 impl fmt::Display for AppError {
@@ -42,6 +49,12 @@ impl fmt::Display for AppError {
                 status: None,
                 message,
             } => f.write_str(message),
+            Self::UpstreamReconnect { delay_ms, message } => {
+                write!(
+                    f,
+                    "upstream requested reconnect after {delay_ms}ms: {message}"
+                )
+            }
         }
     }
 }
@@ -53,7 +66,9 @@ impl std::error::Error for AppError {
             #[cfg(feature = "client")]
             Self::Json(error) => Some(error),
             Self::Http(error) => Some(error),
-            Self::InvalidRequestConfig(_) | Self::UpstreamResponse { .. } => None,
+            Self::InvalidRequestConfig(_)
+            | Self::UpstreamResponse { .. }
+            | Self::UpstreamReconnect { .. } => None,
         }
     }
 }

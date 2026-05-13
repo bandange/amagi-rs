@@ -16,7 +16,7 @@ If you embed the web service in your own Rust application:
 
 ```toml
 [dependencies]
-amagi = { version = "0.1.4", default-features = false, features = ["server"] }
+amagi = { version = "0.1.5", default-features = false, features = ["server"] }
 tokio = { version = "1", features = ["macros", "rt-multi-thread"] }
 ```
 
@@ -74,6 +74,11 @@ The web runtime reads the same shared environment variables as the SDK:
 - `AMAGI_HOST`
 - `AMAGI_PORT`
 
+On top of those shared variables, `amagi serve` also supports a node-aware set
+of service-mode parameters. These can be provided through environment variables
+or `.env`, and can also be overridden by the corresponding `amagi serve` CLI
+options.
+
 `amagi serve` also loads layered dotenv configuration automatically during startup.
 
 Default dotenv lookup order:
@@ -90,7 +95,60 @@ Override variable:
 
 - `AMAGI_USER_ENV_FILE`
 
-### 2.1 Per-request Cookie Override Headers
+### 2.1 Node-aware Service Parameters
+
+These parameters fall into three groups: proxy controls, node transport, and
+per-platform routing.
+
+#### 2.1.1 Proxy And Node Transport
+
+| Variable | Default | Description |
+| --- | --- | --- |
+| `AMAGI_PROXY_TIMEOUT_MS` | `15000` | request timeout shared by HTTP upstream proxying and node dispatch |
+| `AMAGI_PROXY_MAX_HOPS` | `4` | maximum HTTP proxy hop count |
+| `AMAGI_NODE_ID` | none | stable node id once node transport is enabled |
+| `AMAGI_NODE_ROLE` | inferred | node role; supports `root`, `worker`, `relay`, `hybrid` |
+| `AMAGI_NODE_ACCEPT_DOWNSTREAM` | role-derived | whether downstream node sessions are accepted; defaults to `true` for `root` / `relay` and `false` for `worker` / `hybrid` |
+| `AMAGI_NODE_CONNECT_UPSTREAM` | none | upstream `wss://` endpoint this node connects to |
+| `AMAGI_NODE_AUTH_TOKEN` | none | shared node auth token; required once node transport is configured |
+| `AMAGI_NODE_AUTH_CREDENTIALS` | none | optional per-node credential map, for example `worker-a=secret-a,worker-b=secret-b` |
+| `AMAGI_NODE_CONTROL_TOKEN` | falls back to `AMAGI_NODE_AUTH_TOKEN` | bearer token for internal control APIs |
+| `AMAGI_NODE_ALLOW_INSECURE_WS` | `false` | allow insecure `ws://` upstream transport |
+| `AMAGI_NODE_HEARTBEAT_MS` | `10000` | node heartbeat interval |
+| `AMAGI_NODE_REQUEST_TIMEOUT_MS` | `15000` | timeout budget for one node task |
+| `AMAGI_NODE_MAX_HOPS` | `4` | maximum node-routing hop count |
+| `AMAGI_NODE_MAX_CONCURRENT_TASKS` | `8` | maximum number of concurrent node tasks executed locally |
+| `AMAGI_NODE_AUTO_CLAIM_PUBLISHED_ROUTES` | `false` | automatically claim locally executable platforms upstream after connect |
+
+#### 2.1.2 Per-platform Routing Parameters
+
+`<PLATFORM>` currently maps to:
+
+- `DOUYIN`
+- `BILIBILI`
+- `KUAISHOU`
+- `XIAOHONGSHU`
+- `TWITTER`
+
+| Variable family | Description |
+| --- | --- |
+| `AMAGI_PLATFORM_<PLATFORM>_MODE` | serving mode for the platform; supports `enabled`, `local`, `upstream`, `disabled`, where `enabled` aliases `local` |
+| `AMAGI_PLATFORM_<PLATFORM>_ROUTE` | static route target for the platform; supports `local`, `disabled`, or `node:<id>` |
+| `AMAGI_PLATFORM_<PLATFORM>_UPSTREAM` | static HTTP upstream base URL for the platform; used as an HTTP fallback inside the generic `upstream` path when configured |
+
+#### 2.1.3 Validation Rules
+
+- As soon as any node-transport setting is present, the runtime attempts to resolve the full node configuration.
+- When node transport is enabled, `AMAGI_NODE_ID` and `AMAGI_NODE_AUTH_TOKEN` are both required.
+- `AMAGI_NODE_ROLE=worker` and `relay` require `AMAGI_NODE_CONNECT_UPSTREAM`.
+- `AMAGI_NODE_CONNECT_UPSTREAM` must use `wss://` unless `AMAGI_NODE_ALLOW_INSECURE_WS=true`.
+- `*_ROUTE=node:<id>` also requires node-transport configuration to exist.
+- `*_ROUTE=node:<id>` means "pin this platform to one node", not "switch to a separate platform mode".
+
+For request-routing, advertisement, drain / isolate, and control-plane behavior,
+pair this section with the `serve` command table in the CLI reference.
+
+### 2.2 Per-request Cookie Override Headers
 
 Besides startup environment variables, `amagi serve` also accepts per-request
 cookie overrides through HTTP headers:

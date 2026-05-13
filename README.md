@@ -82,6 +82,7 @@ User-level dotenv path:
 Useful files and variables:
 
 - [`.env.example`](.env.example)
+- [`.env.example.zh-CN`](.env.example.zh-CN)
 - `AMAGI_USER_ENV_FILE`
 - `AMAGI_DOUYIN_COOKIE`
 - `AMAGI_BILIBILI_COOKIE`
@@ -107,7 +108,7 @@ Optional features:
 Example:
 
 ```toml
-amagi = { version = "0.1.4", default-features = false, features = ["client"] }
+amagi = { version = "0.1.5", default-features = false, features = ["client"] }
 ```
 
 ## Documentation

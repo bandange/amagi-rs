@@ -44,30 +44,6 @@ impl XiaohongshuSession {
         }
     }
 
-    /// Create a deterministic session for tests and repeatable signing.
-    pub fn with_seed(seed: u64, page_load_timestamp: u64) -> Self {
-        let config = Config::default();
-        let mut random = PseudoRandom::new(seed);
-        let sequence_value = random_range(
-            &mut random,
-            config.session_sequence_init_min,
-            config.session_sequence_init_max,
-        );
-        let window_props_length = random_range(
-            &mut random,
-            config.session_window_props_init_min,
-            config.session_window_props_init_max,
-        );
-
-        Self {
-            config,
-            random,
-            page_load_timestamp,
-            sequence_value,
-            window_props_length,
-        }
-    }
-
     /// Return the next signing state for a request URI.
     pub fn current_state(&mut self, uri: &str) -> XiaohongshuSignState {
         self.sequence_value += random_range(

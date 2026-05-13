@@ -55,12 +55,21 @@ impl Printer {
     pub fn print_run_ready(&self, app_name: &str, version: &str) -> Result<(), AppError> {
         match self.config.format {
             OutputFormat::Text => self.with_writer(|writer| {
-                writeln!(writer, "mode: cli")?;
-                writeln!(writer, "status: ready")?;
-                writeln!(
-                    writer,
-                    "next: run `amagi run douyin emoji-list`, `amagi run kuaishou emoji-list`, or start `amagi serve`"
-                )?;
+                if self.uses_chinese_locale() {
+                    writeln!(writer, "模式: 命令行")?;
+                    writeln!(writer, "状态: 就绪")?;
+                    writeln!(
+                        writer,
+                        "下一步: 运行 `amagi run douyin emoji-list`、`amagi run kuaishou emoji-list`，或启动 `amagi serve`"
+                    )?;
+                } else {
+                    writeln!(writer, "mode: cli")?;
+                    writeln!(writer, "status: ready")?;
+                    writeln!(
+                        writer,
+                        "next: run `amagi run douyin emoji-list`, `amagi run kuaishou emoji-list`, or start `amagi serve`"
+                    )?;
+                }
                 Ok(())
             }),
             OutputFormat::Json => self.write_json(&json!({
@@ -92,13 +101,23 @@ impl Printer {
 
         match self.config.format {
             OutputFormat::Text => self.with_writer(|writer| {
-                writeln!(writer, "mode: server")?;
-                writeln!(writer, "status: listening")?;
-                writeln!(writer, "addr: {bind_addr}")?;
-                writeln!(writer, "root: {root}")?;
-                writeln!(writer, "health: {health}")?;
-                writeln!(writer, "douyin_emoji: {douyin_emoji}")?;
-                writeln!(writer, "kuaishou_emoji: {kuaishou_emoji}")?;
+                if self.uses_chinese_locale() {
+                    writeln!(writer, "模式: 服务")?;
+                    writeln!(writer, "状态: 监听中")?;
+                    writeln!(writer, "地址: {bind_addr}")?;
+                    writeln!(writer, "根地址: {root}")?;
+                    writeln!(writer, "健康检查: {health}")?;
+                    writeln!(writer, "抖音表情: {douyin_emoji}")?;
+                    writeln!(writer, "快手表情: {kuaishou_emoji}")?;
+                } else {
+                    writeln!(writer, "mode: server")?;
+                    writeln!(writer, "status: listening")?;
+                    writeln!(writer, "addr: {bind_addr}")?;
+                    writeln!(writer, "root: {root}")?;
+                    writeln!(writer, "health: {health}")?;
+                    writeln!(writer, "douyin_emoji: {douyin_emoji}")?;
+                    writeln!(writer, "kuaishou_emoji: {kuaishou_emoji}")?;
+                }
                 Ok(())
             }),
             OutputFormat::Json => self.write_json(&json!({
@@ -147,6 +166,10 @@ impl Printer {
             writeln!(writer)?;
             Ok(())
         })
+    }
+
+    fn uses_chinese_locale(&self) -> bool {
+        self.config.locale == "zh-CN"
     }
 
     fn with_writer<F>(&self, write: F) -> Result<(), AppError>

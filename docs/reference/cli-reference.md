@@ -357,17 +357,44 @@ amagi serve [OPTIONS]
 | `--host <HOST>` | host or IP | `127.0.0.1` | `AMAGI_HOST` | bind address |
 | `--port <PORT>` | `u16` | `4567` | `AMAGI_PORT` | bind port |
 | `--proxy-timeout-ms <MS>` | `u64` | `15000` | `AMAGI_PROXY_TIMEOUT_MS` | timeout used by node-to-node proxy requests |
-| `--proxy-max-hops <COUNT>` | `u32` | `1` | `AMAGI_PROXY_MAX_HOPS` | maximum proxy hop count |
+| `--proxy-max-hops <COUNT>` | `u32` | `4` | `AMAGI_PROXY_MAX_HOPS` | maximum HTTP upstream proxy hop count |
+| `--node-id <ID>` | string | none | `AMAGI_NODE_ID` | stable node id once node transport is enabled |
+| `--node-role <ROLE>` | `root`, `worker`, `relay`, `hybrid` | inferred | `AMAGI_NODE_ROLE` | node role that shapes upstream/downstream behavior |
+| `--node-accept-downstream <BOOL>` | `bool` | role-derived | `AMAGI_NODE_ACCEPT_DOWNSTREAM` | whether this node accepts downstream WSS sessions |
+| `--node-connect-upstream <URL>` | URL | none | `AMAGI_NODE_CONNECT_UPSTREAM` | upstream `wss://` endpoint this node connects to |
+| `--node-auth-token <TOKEN>` | string | none | `AMAGI_NODE_AUTH_TOKEN` | shared token for the minimum node-auth flow |
+| `--node-auth-credentials <MAP>` | `node=token,...` | none | `AMAGI_NODE_AUTH_CREDENTIALS` | optional per-node credential table |
+| `--node-control-token <TOKEN>` | string | falls back to `--node-auth-token` | `AMAGI_NODE_CONTROL_TOKEN` | bearer token for internal control APIs |
+| `--node-allow-insecure-ws <BOOL>` | `bool` | `false` | `AMAGI_NODE_ALLOW_INSECURE_WS` | allow `ws://` instead of requiring `wss://` |
+| `--node-heartbeat-ms <MS>` | `u64` | `10000` | `AMAGI_NODE_HEARTBEAT_MS` | node heartbeat interval |
+| `--node-request-timeout-ms <MS>` | `u64` | `15000` | `AMAGI_NODE_REQUEST_TIMEOUT_MS` | timeout budget for one node task |
+| `--node-max-hops <COUNT>` | `u32` | `4` | `AMAGI_NODE_MAX_HOPS` | maximum node-routing hop count |
+| `--node-max-concurrent-tasks <COUNT>` | `u32` | `8` | `AMAGI_NODE_MAX_CONCURRENT_TASKS` | maximum number of concurrent node tasks executed locally |
+| `--node-auto-claim-published-routes <BOOL>` | `bool` | `false` | `AMAGI_NODE_AUTO_CLAIM_PUBLISHED_ROUTES` | auto-claim locally executable platforms upstream after connect |
 | `--douyin-mode <MODE>` | `enabled`, `local`, `upstream`, `disabled` | `local` | `AMAGI_PLATFORM_DOUYIN_MODE` | Douyin serving mode; `enabled` maps to local handling |
+| `--douyin-route <TARGET>` | `local`, `disabled`, `node:<id>` | none | `AMAGI_PLATFORM_DOUYIN_ROUTE` | static Douyin route target; can pin the platform to one node |
 | `--douyin-upstream <URL>` | URL | none | `AMAGI_PLATFORM_DOUYIN_UPSTREAM` | upstream node base URL used when Douyin runs in `upstream` mode |
 | `--bilibili-mode <MODE>` | `enabled`, `local`, `upstream`, `disabled` | `local` | `AMAGI_PLATFORM_BILIBILI_MODE` | Bilibili serving mode; `enabled` maps to local handling |
+| `--bilibili-route <TARGET>` | `local`, `disabled`, `node:<id>` | none | `AMAGI_PLATFORM_BILIBILI_ROUTE` | static Bilibili route target; can pin the platform to one node |
 | `--bilibili-upstream <URL>` | URL | none | `AMAGI_PLATFORM_BILIBILI_UPSTREAM` | upstream node base URL used when Bilibili runs in `upstream` mode |
 | `--kuaishou-mode <MODE>` | `enabled`, `local`, `upstream`, `disabled` | `local` | `AMAGI_PLATFORM_KUAISHOU_MODE` | Kuaishou serving mode; `enabled` maps to local handling |
+| `--kuaishou-route <TARGET>` | `local`, `disabled`, `node:<id>` | none | `AMAGI_PLATFORM_KUAISHOU_ROUTE` | static Kuaishou route target; can pin the platform to one node |
 | `--kuaishou-upstream <URL>` | URL | none | `AMAGI_PLATFORM_KUAISHOU_UPSTREAM` | upstream node base URL used when Kuaishou runs in `upstream` mode |
 | `--xiaohongshu-mode <MODE>` | `enabled`, `local`, `upstream`, `disabled` | `local` | `AMAGI_PLATFORM_XIAOHONGSHU_MODE` | Xiaohongshu serving mode; `enabled` maps to local handling |
+| `--xiaohongshu-route <TARGET>` | `local`, `disabled`, `node:<id>` | none | `AMAGI_PLATFORM_XIAOHONGSHU_ROUTE` | static Xiaohongshu route target; can pin the platform to one node |
 | `--xiaohongshu-upstream <URL>` | URL | none | `AMAGI_PLATFORM_XIAOHONGSHU_UPSTREAM` | upstream node base URL used when Xiaohongshu runs in `upstream` mode |
 | `--twitter-mode <MODE>` | `enabled`, `local`, `upstream`, `disabled` | `local` | `AMAGI_PLATFORM_TWITTER_MODE` | Twitter/X serving mode; `enabled` maps to local handling |
+| `--twitter-route <TARGET>` | `local`, `disabled`, `node:<id>` | none | `AMAGI_PLATFORM_TWITTER_ROUTE` | static Twitter/X route target; can pin the platform to one node |
 | `--twitter-upstream <URL>` | URL | none | `AMAGI_PLATFORM_TWITTER_UPSTREAM` | upstream node base URL used when Twitter/X runs in `upstream` mode |
+
+Notes:
+
+- As soon as any `--node-*` value is provided, the runtime attempts to resolve the full node configuration.
+- Once node transport is enabled, `--node-id` and `--node-auth-token` are both required.
+- `--node-role worker` and `relay` require `--node-connect-upstream`.
+- `--node-connect-upstream` must use `wss://` unless `--node-allow-insecure-ws true` is set.
+- `--*-route node:<id>` also requires node-transport configuration on the current process.
+- `--*-route node:<id>` means "pin this platform to one node", not "switch to a separate platform mode".
 
 ## 11. Environment Variables
 
@@ -410,15 +437,33 @@ Supported variables:
 | `AMAGI_PORT` | server bind port |
 | `AMAGI_PROXY_TIMEOUT_MS` | node-to-node proxy timeout |
 | `AMAGI_PROXY_MAX_HOPS` | maximum proxy hop count |
+| `AMAGI_NODE_ID` | current node id |
+| `AMAGI_NODE_ROLE` | current node role |
+| `AMAGI_NODE_ACCEPT_DOWNSTREAM` | whether downstream node sessions are accepted |
+| `AMAGI_NODE_CONNECT_UPSTREAM` | upstream WSS node endpoint |
+| `AMAGI_NODE_AUTH_TOKEN` | node auth token |
+| `AMAGI_NODE_AUTH_CREDENTIALS` | per-node credential table |
+| `AMAGI_NODE_CONTROL_TOKEN` | internal control-plane token |
+| `AMAGI_NODE_ALLOW_INSECURE_WS` | allow insecure `ws://` upstream transport |
+| `AMAGI_NODE_HEARTBEAT_MS` | node heartbeat interval |
+| `AMAGI_NODE_REQUEST_TIMEOUT_MS` | node task timeout budget |
+| `AMAGI_NODE_MAX_HOPS` | maximum node-routing hop count |
+| `AMAGI_NODE_MAX_CONCURRENT_TASKS` | maximum local concurrent node tasks |
+| `AMAGI_NODE_AUTO_CLAIM_PUBLISHED_ROUTES` | auto-claim locally executable platforms upstream |
 | `AMAGI_PLATFORM_DOUYIN_MODE` | Douyin serving mode |
+| `AMAGI_PLATFORM_DOUYIN_ROUTE` | static Douyin route target |
 | `AMAGI_PLATFORM_DOUYIN_UPSTREAM` | Douyin upstream node base URL |
 | `AMAGI_PLATFORM_BILIBILI_MODE` | Bilibili serving mode |
+| `AMAGI_PLATFORM_BILIBILI_ROUTE` | static Bilibili route target |
 | `AMAGI_PLATFORM_BILIBILI_UPSTREAM` | Bilibili upstream node base URL |
 | `AMAGI_PLATFORM_KUAISHOU_MODE` | Kuaishou serving mode |
+| `AMAGI_PLATFORM_KUAISHOU_ROUTE` | static Kuaishou route target |
 | `AMAGI_PLATFORM_KUAISHOU_UPSTREAM` | Kuaishou upstream node base URL |
 | `AMAGI_PLATFORM_XIAOHONGSHU_MODE` | Xiaohongshu serving mode |
+| `AMAGI_PLATFORM_XIAOHONGSHU_ROUTE` | static Xiaohongshu route target |
 | `AMAGI_PLATFORM_XIAOHONGSHU_UPSTREAM` | Xiaohongshu upstream node base URL |
 | `AMAGI_PLATFORM_TWITTER_MODE` | Twitter/X serving mode |
+| `AMAGI_PLATFORM_TWITTER_ROUTE` | static Twitter/X route target |
 | `AMAGI_PLATFORM_TWITTER_UPSTREAM` | Twitter/X upstream node base URL |
 
 ## 12. Maintenance Rules

@@ -16,7 +16,7 @@
 
 ```toml
 [dependencies]
-amagi = { version = "0.1.4", default-features = false, features = ["server"] }
+amagi = { version = "0.1.5", default-features = false, features = ["server"] }
 tokio = { version = "1", features = ["macros", "rt-multi-thread"] }
 ```
 
@@ -74,6 +74,9 @@ Web 运行时读取和 SDK 相同的共享环境变量：
 - `AMAGI_HOST`
 - `AMAGI_PORT`
 
+在此基础上，`amagi serve` 还支持一组只对服务模式生效的节点相关参数。
+这些参数既可以通过环境变量 / `.env` 提供，也可以通过 `amagi serve` 的对应 CLI 选项覆盖。
+
 `amagi serve` 在启动时也会自动加载分层 dotenv 配置。
 
 默认 dotenv 查找顺序：
@@ -90,7 +93,58 @@ Web 运行时读取和 SDK 相同的共享环境变量：
 
 - `AMAGI_USER_ENV_FILE`
 
-### 2.1 单次请求 Cookie 覆盖头
+### 2.1 服务模式节点相关参数
+
+这些参数主要分成三组：代理控制、节点传输、平台路由。
+
+#### 2.1.1 代理与节点传输
+
+| 变量 | 默认值 | 说明 |
+| --- | --- | --- |
+| `AMAGI_PROXY_TIMEOUT_MS` | `15000` | 服务模式下 HTTP upstream 与节点分发共用的请求超时 |
+| `AMAGI_PROXY_MAX_HOPS` | `4` | HTTP 代理 hop 上限 |
+| `AMAGI_NODE_ID` | 无 | 启用节点传输后的当前节点 ID |
+| `AMAGI_NODE_ROLE` | 自动推断 | 节点角色；支持 `root`、`worker`、`relay`、`hybrid` |
+| `AMAGI_NODE_ACCEPT_DOWNSTREAM` | 按角色推断 | 是否接受下游节点连接；`root` / `relay` 默认 `true`，`worker` / `hybrid` 默认 `false` |
+| `AMAGI_NODE_CONNECT_UPSTREAM` | 无 | 当前节点主动连接的上游 `wss://` 地址 |
+| `AMAGI_NODE_AUTH_TOKEN` | 无 | 节点鉴权 token；一旦启用节点传输则必填 |
+| `AMAGI_NODE_AUTH_CREDENTIALS` | 无 | 可选逐节点凭据表，例如 `worker-a=secret-a,worker-b=secret-b` |
+| `AMAGI_NODE_CONTROL_TOKEN` | 回退到 `AMAGI_NODE_AUTH_TOKEN` | 内部控制面 Bearer token |
+| `AMAGI_NODE_ALLOW_INSECURE_WS` | `false` | 是否允许不安全的 `ws://` 上游连接 |
+| `AMAGI_NODE_HEARTBEAT_MS` | `10000` | 节点心跳间隔 |
+| `AMAGI_NODE_REQUEST_TIMEOUT_MS` | `15000` | 单个节点任务的超时预算 |
+| `AMAGI_NODE_MAX_HOPS` | `4` | 节点转发 hop 上限 |
+| `AMAGI_NODE_MAX_CONCURRENT_TASKS` | `8` | 当前节点可同时执行的节点任务上限 |
+| `AMAGI_NODE_AUTO_CLAIM_PUBLISHED_ROUTES` | `false` | 上连后是否自动向上游 claim 本地可执行平台 |
+
+#### 2.1.2 平台路由参数
+
+`<PLATFORM>` 当前对应：
+
+- `DOUYIN`
+- `BILIBILI`
+- `KUAISHOU`
+- `XIAOHONGSHU`
+- `TWITTER`
+
+| 变量族 | 说明 |
+| --- | --- |
+| `AMAGI_PLATFORM_<PLATFORM>_MODE` | 平台服务模式；支持 `enabled`、`local`、`upstream`、`disabled`，其中 `enabled` 等价于 `local` |
+| `AMAGI_PLATFORM_<PLATFORM>_ROUTE` | 平台静态路由目标；支持 `local`、`disabled`、`node:<id>` |
+| `AMAGI_PLATFORM_<PLATFORM>_UPSTREAM` | 平台静态 HTTP upstream 基地址；当平台处于通用 `upstream` 路径时可作为 HTTP 回退目标 |
+
+#### 2.1.3 使用约束
+
+- 只要配置了任意节点传输参数，运行时就会尝试解析整套节点配置。
+- 启用节点传输时，`AMAGI_NODE_ID` 和 `AMAGI_NODE_AUTH_TOKEN` 必须同时存在。
+- `AMAGI_NODE_ROLE=worker` 或 `relay` 时，必须配置 `AMAGI_NODE_CONNECT_UPSTREAM`。
+- `AMAGI_NODE_CONNECT_UPSTREAM` 默认要求 `wss://`；只有在 `AMAGI_NODE_ALLOW_INSECURE_WS=true` 时才允许 `ws://`。
+- 只要使用了 `*_ROUTE=node:<id>`，也必须同时具备节点传输配置。
+- `*_ROUTE=node:<id>` 代表显式绑定某个 node，不等价于新的平台模式。
+
+如果你想进一步了解这些参数如何影响请求转发、advertisement、drain / isolate 和控制面行为，请结合 CLI 参考里的 `serve` 参数表一起看。
+
+### 2.2 单次请求 Cookie 覆盖头
 
 除了启动时的环境变量和 dotenv，`amagi serve` 还支持在单次 HTTP 请求中通过请求头
 覆盖平台 Cookie：
