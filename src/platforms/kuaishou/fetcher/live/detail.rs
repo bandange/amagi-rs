@@ -8,7 +8,10 @@ use super::super::{
         KuaishouLiveRoomPlayItem, KuaishouLiveStreamInfo, KuaishouUserProfileUserInfo,
         empty_kuaishou_banned_status, empty_kuaishou_verified_status,
     },
-    support::{bool_value, number_value, pick_first_non_empty_string, string_value},
+    support::{
+        bool_value, normalize_kuaishou_hls_play_url, number_value, pick_first_non_empty_string,
+        string_value,
+    },
 };
 
 pub(super) fn empty_live_room_info(principal_id: &str) -> KuaishouLiveRoomInfo {
@@ -113,6 +116,7 @@ pub(super) fn map_live_detail_to_live_room_play_item(
         string_value(config.get("hlsPlayUrl")),
         string_value(live_stream.get("hlsPlayUrl")),
     ]);
+    let hls_play_url = normalize_kuaishou_hls_play_url(&hls_play_url);
     let play_urls = live_stream
         .get("playUrls")
         .cloned()
@@ -220,6 +224,10 @@ pub(super) fn map_reco_item_to_live_room_play_item(
         .and_then(Value::as_object)
         .cloned()
         .unwrap_or_default();
+    let hls_play_url = normalize_kuaishou_hls_play_url(&pick_first_non_empty_string(&[
+        string_value(live_stream.get("hlsPlayUrl")),
+        string_value(config.get("hlsPlayUrl")),
+    ]));
     let mut config_value = Value::Object(config.clone());
 
     if let Some(config_object) = config_value.as_object_mut() {
@@ -231,6 +239,7 @@ pub(super) fn map_reco_item_to_live_room_play_item(
                     .unwrap_or_default(),
             ),
         );
+        config_object.insert("hlsPlayUrl".to_owned(), Value::String(hls_play_url.clone()));
     }
 
     KuaishouLiveRoomPlayItem {
@@ -245,10 +254,7 @@ pub(super) fn map_reco_item_to_live_room_play_item(
                 .cloned()
                 .unwrap_or_else(|| Value::Object(Map::new())),
             url: string_value(live_stream.get("url")).unwrap_or_default(),
-            hls_play_url: pick_first_non_empty_string(&[
-                string_value(live_stream.get("hlsPlayUrl")),
-                string_value(config.get("hlsPlayUrl")),
-            ]),
+            hls_play_url,
             location: string_value(live_stream.get("location")),
             stream_type: string_value(live_stream.get("type")).unwrap_or_else(|| "live".to_owned()),
             live_guess: bool_value(live_stream.get("liveGuess")).unwrap_or(false),

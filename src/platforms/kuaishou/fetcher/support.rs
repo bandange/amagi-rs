@@ -1,3 +1,4 @@
+use reqwest::Url;
 use serde_json::{Map, Value};
 
 pub(super) fn empty_object() -> Value {
@@ -74,4 +75,50 @@ pub(super) fn pick_first_non_empty_string(values: &[Option<String>]) -> String {
         .find(|value| !value.trim().is_empty())
         .cloned()
         .unwrap_or_default()
+}
+
+pub(super) fn normalize_kuaishou_hls_play_url(url: &str) -> String {
+    let Ok(mut parsed) = Url::parse(url) else {
+        return url.to_owned();
+    };
+
+    let original_pairs = parsed
+        .query_pairs()
+        .map(|(key, value)| (key.into_owned(), value.into_owned()))
+        .collect::<Vec<_>>();
+    let has_tsc_param = original_pairs.iter().any(|(key, _)| key == "tsc");
+    let mut normalized_pairs = Vec::with_capacity(original_pairs.len() + 1);
+    let mut changed = false;
+
+    for (key, value) in original_pairs {
+        if key == "sidc" {
+            if let Some((sidc_value, suffix_value)) = value.split_once("tsc=") {
+                let normalized_sidc = sidc_value.trim_end_matches(['&', '?']);
+                normalized_pairs.push((key, normalized_sidc.to_owned()));
+
+                if !has_tsc_param && !suffix_value.trim().is_empty() {
+                    normalized_pairs.push(("tsc".to_owned(), suffix_value.to_owned()));
+                }
+
+                changed = true;
+                continue;
+            }
+        }
+
+        normalized_pairs.push((key, value));
+    }
+
+    if !changed {
+        return url.to_owned();
+    }
+
+    parsed.set_query(None);
+    {
+        let mut query_pairs = parsed.query_pairs_mut();
+        for (key, value) in normalized_pairs {
+            query_pairs.append_pair(&key, &value);
+        }
+    }
+
+    parsed.to_string()
 }

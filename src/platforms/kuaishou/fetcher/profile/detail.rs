@@ -2,7 +2,10 @@ use serde_json::{Map, Value};
 
 use super::super::{
     super::types::KuaishouUserProfileUserInfo,
-    support::{bool_value, number_value, pick_first_non_empty_string, string_value},
+    support::{
+        bool_value, normalize_kuaishou_hls_play_url, number_value, pick_first_non_empty_string,
+        string_value,
+    },
 };
 
 pub(super) fn map_live_detail_to_user_profile_live_info(
@@ -24,6 +27,10 @@ pub(super) fn map_live_detail_to_user_profile_live_info(
         config.and_then(|value| string_value(value.get("coverUrl"))),
         config.and_then(|value| string_value(value.get("rtCoverUrl"))),
     ]);
+    let hls_play_url = normalize_kuaishou_hls_play_url(&pick_first_non_empty_string(&[
+        live_stream.and_then(|value| string_value(value.get("hlsPlayUrl"))),
+        config.and_then(|value| string_value(value.get("hlsPlayUrl"))),
+    ]));
     let play_urls = live_stream
         .and_then(|value| value.get("playUrls"))
         .cloned()
@@ -86,6 +93,7 @@ pub(super) fn map_live_detail_to_user_profile_live_info(
     let mut value = detail_data.clone();
     value.insert("id".to_owned(), Value::String(live_stream_id));
     value.insert("poster".to_owned(), Value::String(poster));
+    value.insert("hlsPlayUrl".to_owned(), Value::String(hls_play_url));
     value.insert("playUrls".to_owned(), play_urls);
     value.insert("caption".to_owned(), Value::String(caption));
     value.insert("statrtTime".to_owned(), Value::Number(start_time.into()));
