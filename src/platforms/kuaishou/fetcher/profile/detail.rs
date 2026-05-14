@@ -3,8 +3,8 @@ use serde_json::{Map, Value};
 use super::super::{
     super::types::KuaishouUserProfileUserInfo,
     support::{
-        bool_value, normalize_kuaishou_hls_play_url, number_value, pick_first_non_empty_string,
-        string_value,
+        bool_value, normalize_kuaishou_hls_play_url, normalize_kuaishou_hls_urls_in_value,
+        number_value, pick_first_non_empty_string, string_value,
     },
 };
 
@@ -90,33 +90,38 @@ pub(super) fn map_live_detail_to_user_profile_live_info(
         .and_then(|value| string_value(value.get("type")))
         .unwrap_or_else(|| "live".to_owned());
 
-    let mut value = detail_data.clone();
-    value.insert("id".to_owned(), Value::String(live_stream_id));
-    value.insert("poster".to_owned(), Value::String(poster));
-    value.insert("hlsPlayUrl".to_owned(), Value::String(hls_play_url));
-    value.insert("playUrls".to_owned(), play_urls);
-    value.insert("caption".to_owned(), Value::String(caption));
-    value.insert("statrtTime".to_owned(), Value::Number(start_time.into()));
-    value.insert(
+    let mut value = Value::Object(detail_data.clone());
+    normalize_kuaishou_hls_urls_in_value(&mut value);
+    let Some(value_object) = value.as_object_mut() else {
+        return value;
+    };
+
+    value_object.insert("id".to_owned(), Value::String(live_stream_id));
+    value_object.insert("poster".to_owned(), Value::String(poster));
+    value_object.insert("hlsPlayUrl".to_owned(), Value::String(hls_play_url));
+    value_object.insert("playUrls".to_owned(), play_urls);
+    value_object.insert("caption".to_owned(), Value::String(caption));
+    value_object.insert("statrtTime".to_owned(), Value::Number(start_time.into()));
+    value_object.insert(
         "author".to_owned(),
         serde_json::to_value(author).unwrap_or_else(|_| super::super::support::empty_object()),
     );
-    value.insert("gameInfo".to_owned(), game_info);
-    value.insert("hasRedPack".to_owned(), Value::Bool(has_red_pack));
-    value.insert("hasBet".to_owned(), Value::Bool(has_bet));
-    value.insert(
+    value_object.insert("gameInfo".to_owned(), game_info);
+    value_object.insert("hasRedPack".to_owned(), Value::Bool(has_red_pack));
+    value_object.insert("hasBet".to_owned(), Value::Bool(has_bet));
+    value_object.insert(
         "followed".to_owned(),
         Value::Bool(author.follow_status == "FOLLOWING"),
     );
-    value.insert("expTag".to_owned(), Value::String(exp_tag));
-    value.insert("hotIcon".to_owned(), Value::String(hot_icon));
-    value.insert("living".to_owned(), Value::Bool(living));
-    value.insert("quality".to_owned(), Value::String(quality));
-    value.insert("qualityLabel".to_owned(), Value::String(quality_label));
-    value.insert("watchingCount".to_owned(), watching_count);
-    value.insert("landscape".to_owned(), Value::Bool(landscape));
-    value.insert("likeCount".to_owned(), like_count);
-    value.insert("type".to_owned(), Value::String(live_type));
+    value_object.insert("expTag".to_owned(), Value::String(exp_tag));
+    value_object.insert("hotIcon".to_owned(), Value::String(hot_icon));
+    value_object.insert("living".to_owned(), Value::Bool(living));
+    value_object.insert("quality".to_owned(), Value::String(quality));
+    value_object.insert("qualityLabel".to_owned(), Value::String(quality_label));
+    value_object.insert("watchingCount".to_owned(), watching_count);
+    value_object.insert("landscape".to_owned(), Value::Bool(landscape));
+    value_object.insert("likeCount".to_owned(), like_count);
+    value_object.insert("type".to_owned(), Value::String(live_type));
 
-    Value::Object(value)
+    value
 }

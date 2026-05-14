@@ -2,6 +2,8 @@ use serde_json::{Map, Value};
 
 use crate::platforms::kuaishou::{KuaishouJsonObject, KuaishouJsonValue, KuaishouUserWorkList};
 
+use super::support::normalize_kuaishou_hls_urls_in_value;
+
 pub(super) fn json_value_to_value(value: &KuaishouJsonValue) -> Value {
     match value {
         KuaishouJsonValue::Null => Value::Null,
@@ -32,26 +34,29 @@ pub(super) fn resolve_kuaishou_user_work_list(
     principal_id: &str,
     payload: &Value,
 ) -> KuaishouUserWorkList {
-    let data = payload
-        .get("data")
-        .and_then(Value::as_object)
-        .cloned()
-        .unwrap_or_default();
+    let data = payload.get("data").and_then(Value::as_object);
     let list = data
-        .get("list")
+        .and_then(|value| value.get("list"))
+        .or_else(|| payload.get("feeds"))
         .and_then(Value::as_array)
         .cloned()
         .unwrap_or_default();
     let pcursor = data
-        .get("pcursor")
+        .and_then(|value| value.get("pcursor"))
+        .or_else(|| payload.get("pcursor"))
         .and_then(Value::as_str)
         .unwrap_or_default()
         .to_owned();
     let has_more = data
-        .get("hasMore")
+        .and_then(|value| value.get("hasMore"))
+        .or_else(|| payload.get("hasMore"))
         .and_then(Value::as_bool)
-        .unwrap_or_else(|| !pcursor.is_empty());
-    let result = data.get("result").and_then(Value::as_i64).unwrap_or(0);
+        .unwrap_or_else(|| !pcursor.is_empty() && pcursor != "no_more");
+    let result = data
+        .and_then(|value| value.get("result"))
+        .or_else(|| payload.get("result"))
+        .and_then(Value::as_i64)
+        .unwrap_or(0);
 
     KuaishouUserWorkList {
         principal_id: principal_id.to_owned(),
@@ -64,8 +69,10 @@ pub(super) fn resolve_kuaishou_user_work_list(
 }
 
 pub(super) fn unwrap_data_payload(payload: &Value) -> Value {
-    payload
+    let mut value = payload
         .get("data")
         .cloned()
-        .unwrap_or_else(|| payload.clone())
+        .unwrap_or_else(|| payload.clone());
+    normalize_kuaishou_hls_urls_in_value(&mut value);
+    value
 }

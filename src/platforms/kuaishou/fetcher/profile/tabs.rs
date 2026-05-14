@@ -32,22 +32,28 @@ pub(super) fn resolve_public_tab_data(
     payload: Option<&Value>,
     fallback: &KuaishouUserProfilePublicTabData,
 ) -> KuaishouUserProfilePublicTabData {
-    let Some(data) = payload
-        .and_then(|value| value_field(value, "data"))
+    let Some(payload) = payload else {
+        return fallback.clone();
+    };
+    let data = payload
+        .get("data")
         .and_then(Value::as_object)
-    else {
+        .or_else(|| payload.as_object());
+    let Some(data) = data else {
+        return fallback.clone();
+    };
+    let list = data
+        .get("list")
+        .or_else(|| data.get("feeds"))
+        .and_then(Value::as_array);
+
+    if i64_value(data.get("result")).unwrap_or_default() != 1 || list.is_none() {
         return fallback.clone();
     };
 
-    if i64_value(data.get("result")).unwrap_or_default() != 1
-        || !matches!(data.get("list"), Some(Value::Array(_)))
-    {
-        return fallback.clone();
-    }
-
     KuaishouUserProfilePublicTabData {
         live: data.get("live").cloned().or_else(|| fallback.live.clone()),
-        list: array_value(data.get("list")),
+        list: list.cloned().unwrap_or_default(),
         pcursor: string_value(data.get("pcursor")).unwrap_or_else(|| fallback.pcursor.clone()),
     }
 }

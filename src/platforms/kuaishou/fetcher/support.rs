@@ -122,3 +122,25 @@ pub(super) fn normalize_kuaishou_hls_play_url(url: &str) -> String {
 
     parsed.to_string()
 }
+
+pub(super) fn normalize_kuaishou_hls_urls_in_value(value: &mut Value) {
+    match value {
+        Value::Object(object) => {
+            for (key, inner) in object.iter_mut() {
+                if key == "hlsPlayUrl" {
+                    if let Some(url) = inner.as_str() {
+                        *inner = Value::String(normalize_kuaishou_hls_play_url(url));
+                    }
+                } else {
+                    normalize_kuaishou_hls_urls_in_value(inner);
+                }
+            }
+        }
+        Value::Array(values) => {
+            for inner in values {
+                normalize_kuaishou_hls_urls_in_value(inner);
+            }
+        }
+        _ => {}
+    }
+}

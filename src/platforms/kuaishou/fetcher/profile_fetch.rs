@@ -1,4 +1,7 @@
+use serde_json::{Value, json};
+
 use crate::error::AppError;
+use crate::platforms::http::JsonTransport;
 
 use super::{
     super::types::{KuaishouUserProfile, KuaishouUserWorkList},
@@ -25,7 +28,6 @@ impl KuaishouFetcher {
 
         let user_info_request = requests::user_info_by_id(base_url, principal_id)?;
         let sensitive_request = requests::user_sensitive_info(base_url, principal_id)?;
-        let public_request = requests::profile_public(base_url, principal_id, None, None)?;
         let private_request = requests::profile_private(base_url, principal_id)?;
         let liked_request = requests::profile_liked(base_url, principal_id)?;
         let playback_request = requests::playback_list(base_url, principal_id)?;
@@ -52,7 +54,7 @@ impl KuaishouFetcher {
         ) = tokio::join!(
             self.send_live_api_request(&user_info_request, &referer_path, false),
             self.send_live_api_request(&sensitive_request, &referer_path, true),
-            self.send_live_api_request(&public_request, &referer_path, true),
+            self.fetch_profile_feed_payload(principal_id, None),
             self.send_live_api_request(&private_request, &referer_path, true),
             self.send_live_api_request(&liked_request, &referer_path, true),
             self.send_live_api_request(&playback_request, &referer_path, true),
@@ -106,16 +108,38 @@ impl KuaishouFetcher {
     pub async fn fetch_user_work_list(
         &self,
         principal_id: &str,
-        count: Option<u32>,
+        _count: Option<u32>,
         pcursor: Option<&str>,
     ) -> Result<KuaishouUserWorkList, AppError> {
-        let referer_path = format!("profile/{principal_id}");
-        let request =
-            requests::user_work_list(self.live_base_url.as_ref(), principal_id, count, pcursor)?;
         let payload = self
-            .send_live_api_request(&request, &referer_path, true)
+            .fetch_profile_feed_payload(principal_id, pcursor)
             .await?;
 
         Ok(resolve_kuaishou_user_work_list(principal_id, &payload))
+    }
+
+    async fn fetch_profile_feed_payload(
+        &self,
+        principal_id: &str,
+        pcursor: Option<&str>,
+    ) -> Result<Value, AppError> {
+        let mut profile = self.request_profile().clone();
+        profile.headers.insert(
+            "Referer".into(),
+            format!("https://www.kuaishou.com/profile/{principal_id}"),
+        );
+
+        JsonTransport::new(profile)?
+            .send_json(
+                "https://www.kuaishou.com/rest/v/profile/feed",
+                &json!({
+                    "user_id": principal_id,
+                    "pcursor": pcursor.unwrap_or_default(),
+                    // The current web profile feed ignores page-size overrides and
+                    // always returns the default page size from the upstream API.
+                    "page": "profile",
+                }),
+            )
+            .await
     }
 }

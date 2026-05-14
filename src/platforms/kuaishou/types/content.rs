@@ -68,7 +68,7 @@ pub struct KuaishouWorkCommentsData {
     pub vision_comment_list: Value,
 }
 
-/// Paginated user work-list result derived from Kuaishou `profile/public`.
+/// Paginated user work-list result derived from Kuaishou web `profile/feed`.
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct KuaishouUserWorkList {
     /// Requested profile principal id.

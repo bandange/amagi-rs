@@ -184,7 +184,11 @@ impl PlatformClient {
 
         headers.insert(
             cookie_header.to_owned(),
-            self.cookie.clone().unwrap_or_default(),
+            self.cookie
+                .as_deref()
+                .map(strip_matching_quotes)
+                .unwrap_or_default()
+                .to_owned(),
         );
         headers.extend(self.request.headers.clone());
 
@@ -196,4 +200,19 @@ impl PlatformClient {
             headers,
         }
     }
+}
+
+fn strip_matching_quotes(value: &str) -> &str {
+    let trimmed = value.trim();
+
+    if trimmed.len() >= 2 {
+        let quote = trimmed.as_bytes()[0];
+        let last = trimmed.as_bytes()[trimmed.len() - 1];
+
+        if (quote == b'"' || quote == b'\'') && last == quote {
+            return &trimmed[1..trimmed.len() - 1];
+        }
+    }
+
+    trimmed
 }
