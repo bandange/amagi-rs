@@ -108,7 +108,7 @@ Optional features:
 Example:
 
 ```toml
-amagi = { version = "0.1.5", default-features = false, features = ["client"] }
+amagi = { version = "0.1.6", default-features = false, features = ["client"] }
 ```
 
 ## Documentation

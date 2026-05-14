@@ -18,7 +18,7 @@
 
 ```toml
 [dependencies]
-amagi = { version = "0.1.5", default-features = false, features = ["catalog"] }
+amagi = { version = "0.1.6", default-features = false, features = ["catalog"] }
 ```
 
 ## 2. 快速开始
