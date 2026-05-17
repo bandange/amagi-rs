@@ -92,7 +92,7 @@ fn platform_client_for_request(
     platform: Platform,
     headers: &HeaderMap,
 ) -> crate::client::PlatformClient {
-    let mut client = state.client.platform(platform);
+    let mut client = state.platform_client(platform);
 
     match request_cookie_override(headers, platform) {
         RequestCookieOverride::UseConfigured => client,

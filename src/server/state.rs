@@ -4,7 +4,7 @@ use std::collections::HashMap;
 use std::sync::atomic::{AtomicU32, Ordering};
 use std::sync::{Arc, RwLock};
 
-use crate::client::AmagiClient;
+use crate::client::{AmagiClient, CookieConfig, PlatformClient};
 use crate::config::ServeConfig;
 use crate::error::AppError;
 use crate::node::NodeRole;
@@ -32,6 +32,8 @@ pub struct AppState {
     pub serve: ServeConfig,
     /// Shared SDK-style client carrying catalog and request defaults.
     pub client: AmagiClient,
+    /// Runtime cookie snapshot used by server-mode requests.
+    pub configured_cookies: Arc<RwLock<CookieConfig>>,
     /// Node-aware runtime routing configuration.
     pub runtime: ServerRuntimeConfig,
     /// Shared HTTP client used for node-to-node proxying.
@@ -71,6 +73,7 @@ impl AppState {
             app_name,
             version,
             serve,
+            configured_cookies: Arc::new(RwLock::new(client.options().cookies.clone())),
             client,
             runtime,
             proxy_client,
@@ -82,6 +85,29 @@ impl AppState {
             local_node_capacity_override: Arc::new(RwLock::new(None)),
             local_node_active_tasks: Arc::new(AtomicU32::new(0)),
         })
+    }
+
+    /// Replace the current runtime cookie snapshot.
+    pub fn replace_cookies(&self, cookies: CookieConfig) -> bool {
+        let mut guard = self
+            .configured_cookies
+            .write()
+            .expect("runtime cookies should be writable");
+        let changed = *guard != cookies;
+        *guard = cookies;
+        changed
+    }
+
+    /// Return a platform client view bound to the current runtime cookies.
+    pub fn platform_client(&self, platform: Platform) -> PlatformClient {
+        let mut client = self.client.platform(platform);
+        client.cookie = self
+            .configured_cookies
+            .read()
+            .expect("runtime cookies should be readable")
+            .for_platform(platform)
+            .map(str::to_owned);
+        client
     }
 
     /// Return the serving mode for a platform.

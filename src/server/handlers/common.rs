@@ -124,7 +124,7 @@ pub async fn root(State(state): State<AppState>) -> Json<RootResponse> {
     let platforms = Platform::ALL
         .into_iter()
         .map(|platform| {
-            let client = state.client.platform(platform);
+            let client = state.platform_client(platform);
             let route_node = state.platform_route_node(platform);
             let route_source = route_node.as_ref().map(|_| {
                 if state.platform_route_is_runtime(platform) {
@@ -261,7 +261,7 @@ pub async fn platform_catalog_by_name(
 }
 
 fn platform_catalog(platform: Platform, state: &AppState) -> PlatformCatalogResponse {
-    let spec = state.client.platform(platform).spec();
+    let spec = state.platform_client(platform).spec();
     catalog_from_spec(spec)
 }
 
