@@ -1,0 +1,23 @@
+[package]
+name = "amagi-docs"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+homepage.workspace = true
+repository.workspace = true
+documentation.workspace = true
+description = "Documentation site workspace crate for Amagi-rs."
+publish = false
+
+[lib]
+path = "src/lib.rs"
+
+[[bin]]
+name = "amagi-docs"
+path = "src/main.rs"
+
+[dependencies]
+dioxus = { version = "0.7.0", default-features = false, features = ["web", "minimal", "document", "router"] }
+material-color-utilities-rs = { git = "https://github.com/haiyewei/material-color-utilities-rs", rev = "d6f6dd1df3635c408835481087b47a842bd28050" }
+pulldown-cmark = "0.13.4"
+web-sys = { version = "0.3.77", features = ["Location", "Storage", "Window"] }

@@ -1,0 +1,41 @@
+[package]
+name = "amagi"
+version.workspace = true
+edition.workspace = true
+description = "Rust SDK, CLI, and Web API service skeleton for multi-platform social web adapters."
+publish = true
+license.workspace = true
+readme = "../../README.md"
+documentation.workspace = true
+homepage.workspace = true
+repository.workspace = true
+keywords = ["sdk", "cli", "api", "social", "axum"]
+categories = ["api-bindings", "command-line-utilities"]
+exclude = ["dev/**", "target/**", "tmp/**"]
+build = "build.rs"
+
+[features]
+default = ["client", "cli", "server"]
+core = ["dep:amagi-core"]
+adapters = ["core", "dep:amagi-adapters"]
+platforms = ["adapters"]
+catalog = ["adapters"]
+client = ["catalog", "dep:amagi-client"]
+server = ["client", "dep:amagi-server", "dep:amagi-cli", "amagi-cli/server"]
+cli = ["client", "dep:amagi-cli", "dep:tokio"]
+
+[dependencies]
+amagi-core = { workspace = true, optional = true }
+amagi-adapters = { workspace = true, optional = true, features = ["cli"] }
+amagi-client = { workspace = true, optional = true }
+amagi-server = { workspace = true, optional = true }
+amagi-cli = { workspace = true, optional = true }
+tokio = { workspace = true, optional = true }
+
+[[bin]]
+name = "amagi"
+path = "src/main.rs"
+required-features = ["cli"]
+
+[package.metadata.docs.rs]
+all-features = true

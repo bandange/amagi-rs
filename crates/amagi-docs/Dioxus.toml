@@ -1,0 +1,20 @@
+[application]
+name = "amagi-docs"
+default_platform = "web"
+out_dir = "dist"
+asset_dir = "assets"
+public_dir = "assets"
+
+[web.app]
+title = "Amagi-rs Docs"
+
+[web.watcher]
+reload_html = true
+watch_path = ["src", "assets", "../../docs"]
+
+[web.resource]
+style = ["main.css"]
+script = ["highlight.min.js", "syntax-highlight.js"]
+
+[web.resource.dev]
+script = []

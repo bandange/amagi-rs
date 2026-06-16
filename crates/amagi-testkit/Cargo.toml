@@ -1,0 +1,22 @@
+[package]
+name = "amagi-testkit"
+version.workspace = true
+edition.workspace = true
+publish = false
+
+[features]
+default = ["full"]
+full = ["client", "server", "cli", "adapters", "platforms", "catalog"]
+core = ["amagi/core"]
+adapters = ["amagi/adapters", "dep:serde_json"]
+platforms = ["amagi/platforms", "dep:serde_json"]
+catalog = ["amagi/catalog"]
+client = ["amagi/client"]
+server = ["amagi/server", "dep:amagi-client", "dep:amagi-server"]
+cli = ["amagi/cli"]
+
+[dependencies]
+amagi = { path = "../amagi", default-features = false }
+amagi-client = { workspace = true, optional = true }
+amagi-server = { workspace = true, optional = true }
+serde_json = { workspace = true, optional = true }

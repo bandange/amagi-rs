@@ -1,58 +1,35 @@
-[package]
-name = "amagi"
+[workspace]
+members = [
+    "crates/amagi",
+    "crates/amagi-core",
+    "crates/amagi-adapters",
+    "crates/amagi-client",
+    "crates/amagi-server",
+    "crates/amagi-cli",
+    "crates/amagi-testkit",
+    "crates/amagi-docs",
+]
+resolver = "3"
+
+[workspace.package]
 version = "0.1.6"
 edition = "2024"
-description = "Rust SDK, CLI, and Web API service skeleton for multi-platform social web adapters."
 license = "GPL-3.0-only"
-readme = "README.md"
-documentation = "https://docs.rs/amagi"
 homepage = "https://github.com/bandange/amagi-rs"
 repository = "https://github.com/bandange/amagi-rs"
-keywords = ["sdk", "cli", "api", "social", "axum"]
-categories = ["api-bindings", "command-line-utilities"]
-exclude = ["dev/**", "target/**", "tmp/**"]
+documentation = "https://docs.rs/amagi"
 
-[features]
-default = ["client", "cli", "server"]
-catalog = []
-client = [
-    "catalog",
-    "dep:dotenvy",
-    "dep:reqwest",
-    "dep:serde_json",
-    "dep:tokio",
-]
-cli = [
-    "client",
-    "dep:clap",
-    "dep:futures-util",
-    "dep:hmac",
-    "dep:serde_json",
-    "dep:sha2",
-    "dep:tokio",
-    "dep:tokio-tungstenite",
-    "dep:tracing",
-    "dep:tracing-subscriber",
-]
-server = [
-    "client",
-    "dep:axum",
-    "dep:futures-util",
-    "dep:hmac",
-    "dep:serde_json",
-    "dep:sha2",
-    "dep:tokio",
-    "dep:tokio-tungstenite",
-    "dep:tower-http",
-    "dep:tracing",
-]
+[workspace.dependencies]
+amagi-core = { path = "crates/amagi-core", version = "0.1.6" }
+amagi-adapters = { path = "crates/amagi-adapters", version = "0.1.6" }
+amagi-client = { path = "crates/amagi-client", version = "0.1.6" }
+amagi-server = { path = "crates/amagi-server", version = "0.1.6" }
+amagi-cli = { path = "crates/amagi-cli", version = "0.1.6" }
 
-[dependencies]
-axum = { version = "0.8.9", features = ["ws"], optional = true }
-clap = { version = "4.6.1", features = ["derive", "env"], optional = true }
-dotenvy = { version = "0.15.7", optional = true }
-futures-util = { version = "0.3.32", optional = true }
-hmac = { version = "0.13.0", optional = true }
+axum = { version = "0.8.9", features = ["ws"] }
+clap = { version = "4.6.1", features = ["derive", "env"] }
+dotenvy = "0.15.7"
+futures-util = "0.3.32"
 reqwest = { version = "0.13.3", default-features = false, features = [
     "json",
     "form",
@@ -60,31 +37,17 @@ reqwest = { version = "0.13.3", default-features = false, features = [
     "brotli",
     "deflate",
     "rustls",
-], optional = true }
+] }
 serde = { version = "1.0.228", features = ["derive"] }
-serde_json = { version = "1.0.149", optional = true }
-sha2 = { version = "0.11.0", optional = true }
+serde_json = "1.0.149"
 tokio = { version = "1.52.3", features = [
     "macros",
     "rt-multi-thread",
     "signal",
     "net",
     "time",
-], optional = true }
-tokio-tungstenite = { version = "0.29.0", features = [
-    "rustls-tls-webpki-roots",
-], optional = true }
-tower-http = { version = "0.6.10", features = ["trace"], optional = true }
-tracing = { version = "0.1.44", optional = true }
-tracing-subscriber = { version = "0.3.23", features = [
-    "env-filter",
-    "json",
-], optional = true }
-
-[[bin]]
-name = "amagi"
-path = "src/main.rs"
-required-features = ["cli"]
-
-[package.metadata.docs.rs]
-all-features = true
+] }
+tokio-tungstenite = { version = "0.29.0", features = ["rustls-tls-webpki-roots"] }
+tower-http = { version = "0.6.10", features = ["trace"] }
+tracing = "0.1.44"
+tracing-subscriber = { version = "0.3.23", features = ["env-filter", "json"] }

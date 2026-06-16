@@ -1,0 +1,16 @@
+[package]
+name = "amagi-client"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+homepage.workspace = true
+repository.workspace = true
+documentation.workspace = true
+description = "SDK-style client facade for amagi platform adapters."
+publish = true
+
+[dependencies]
+amagi-core.workspace = true
+amagi-adapters.workspace = true
+serde.workspace = true
+tokio.workspace = true

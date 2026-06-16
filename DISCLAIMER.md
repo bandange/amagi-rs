@@ -1,5 +1,7 @@
 # Disclaimer
 
+Chinese version: [DISCLAIMER.zh-CN.md](DISCLAIMER.zh-CN.md)
+
 This repository is licensed under the GNU General Public License v3.0 only.
 This disclaimer supplements that license and does not modify, limit, or add
 restrictions to the rights granted under it.

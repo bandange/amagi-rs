@@ -1,13 +1,13 @@
-# amagi
+# Amagi-rs
 
 Chinese README: [`README.zh-CN.md`](README.zh-CN.md)
 
-`amagi` is a Rust SDK, CLI, and JSON Web API service for multi-platform social web adapters.
+Amagi-rs is a Rust API, CLI, and JSON API service for multi-platform social service adapters.
 
 ## What It Does
 
 - Run CLI tasks against Bilibili, Douyin, Kuaishou, Twitter/X, and Xiaohongshu
-- Start a local JSON Web API with `amagi serve`
+- Start a local JSON API service with `amagi serve`
 - Reuse the same capability as a Rust crate with feature flags
 
 ## Quick Start
@@ -55,16 +55,16 @@ amagi run twitter user-profile <screen_name>
 amagi serve --host 127.0.0.1 --port 4567
 ```
 
-For install, update, uninstall, and shell integration details, see the [installation guide](docs/installation/README.md).
+For install, update, uninstall, and shell integration details, see the [installation guide](docs/en/installation.md).
 
 ## Run From Source
 
 If you do not want to install the binary, run it directly in the repository. This requires a local Rust toolchain.
 
 ```bash
-cargo run -- run
-cargo run -- run douyin video-work <aweme_id>
-cargo run -- serve --host 127.0.0.1 --port 4567
+cargo run -p amagi -- run
+cargo run -p amagi -- run douyin video-work <aweme_id>
+cargo run -p amagi -- serve --host 127.0.0.1 --port 4567
 ```
 
 ## Configuration
@@ -92,7 +92,7 @@ Useful files and variables:
 - `AMAGI_HOST`
 - `AMAGI_PORT`
 
-For the full environment and CLI option list, see the [CLI reference](docs/reference/cli-reference.md).
+For the full environment and CLI option list, see the [CLI reference](docs/en/reference/cli.md).
 
 ## Crate Features
 
@@ -100,7 +100,9 @@ Default features: `client`, `cli`, `server`
 
 Optional features:
 
-- `catalog`: static catalog and route metadata only
+- `adapters`: Rust-native adapter modules, fetchers, and static API specs
+- `platforms`: compatibility alias for `adapters`
+- `catalog`: compatibility alias for static API spec metadata
 - `client`: Rust client types and upstream fetchers
 - `cli`: command-line runtime
 - `server`: Axum-based HTTP service
@@ -113,16 +115,22 @@ amagi = { version = "0.1.6", default-features = false, features = ["client"] }
 
 ## Documentation
 
-- Installation guide: [docs/installation/README.md](docs/installation/README.md)
-- CLI reference: [docs/reference/cli-reference.md](docs/reference/cli-reference.md)
-- SDK reference: [docs/reference/sdk-reference.md](docs/reference/sdk-reference.md)
-- Web API reference: [docs/reference/web-api-reference.md](docs/reference/web-api-reference.md)
-- API catalog reference: [docs/reference/api-catalog-reference.md](docs/reference/api-catalog-reference.md)
+Documentation is grouped by language. Start from the [docs index](docs/README.md), or open a language section directly.
+
+English:
+
+- [Installation guide](docs/en/installation.md)
+- [CLI reference](docs/en/reference/cli.md)
+- [Rust API reference](docs/en/reference/rust-api.md)
+- [Service API reference](docs/en/reference/web-api.md)
+- [API spec reference](docs/en/reference/api-catalog.md)
+- [Testing layout](docs/en/testing.md)
 
 Chinese documentation:
 
-- Installation guide: [docs/installation/README.zh-CN.md](docs/installation/README.zh-CN.md)
-- CLI reference: [docs/reference/cli-reference.zh-CN.md](docs/reference/cli-reference.zh-CN.md)
-- SDK reference: [docs/reference/sdk-reference.zh-CN.md](docs/reference/sdk-reference.zh-CN.md)
-- Web API reference: [docs/reference/web-api-reference.zh-CN.md](docs/reference/web-api-reference.zh-CN.md)
-- API catalog reference: [docs/reference/api-catalog-reference.zh-CN.md](docs/reference/api-catalog-reference.zh-CN.md)
+- [安装指南](docs/中文/安装指南.md)
+- [命令行参考](docs/中文/参考/命令行参考.md)
+- [Rust API 参考](docs/中文/参考/Rust API 参考.md)
+- [服务接口参考](docs/中文/参考/服务接口参考.md)
+- [接口规格参考](docs/中文/参考/接口规格参考.md)
+- [测试分层](docs/中文/测试分层.md)

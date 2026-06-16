@@ -1,0 +1,22 @@
+[package]
+name = "amagi-adapters"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+homepage.workspace = true
+repository.workspace = true
+documentation.workspace = true
+description = "Rust-native social platform adapters for amagi."
+publish = true
+
+[features]
+default = []
+cli = ["dep:clap"]
+
+[dependencies]
+amagi-core.workspace = true
+clap = { workspace = true, optional = true }
+reqwest.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+tokio.workspace = true
