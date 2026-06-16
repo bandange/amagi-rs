@@ -904,7 +904,10 @@ fn rewrite_doc_link(current_path: &str, dest_url: &str) -> Option<String> {
         normalize_doc_path(&format!("{base_dir}/{path}"))
     };
 
-    doc_route_for_path(&target_path).map(|route| format!("{route}{suffix}"))
+    let current_route = doc_route_for_path(current_path).unwrap_or_else(|| "/".to_string());
+
+    doc_route_for_path(&target_path)
+        .map(|route| format!("{}{}", relative_route_href(&current_route, &route), suffix))
 }
 
 fn split_link_suffix(dest_url: &str) -> (&str, &str) {
@@ -963,6 +966,39 @@ fn route_path_for(language: Language, slug: &str) -> String {
     } else {
         format!("/{}", language.code())
     }
+}
+
+fn relative_route_href(current_route: &str, target_route: &str) -> String {
+    let mut base_segments = route_segments(current_route);
+    base_segments.pop();
+    let target_segments = route_segments(target_route);
+
+    let common_len = base_segments
+        .iter()
+        .zip(target_segments.iter())
+        .take_while(|(left, right)| left == right)
+        .count();
+
+    let mut parts = Vec::new();
+    parts.extend(std::iter::repeat_n(
+        "..",
+        base_segments.len().saturating_sub(common_len),
+    ));
+    parts.extend(target_segments[common_len..].iter().copied());
+
+    if parts.is_empty() {
+        ".".to_string()
+    } else {
+        parts.join("/")
+    }
+}
+
+fn route_segments(route: &str) -> Vec<&str> {
+    route
+        .trim_matches('/')
+        .split('/')
+        .filter(|segment| !segment.is_empty())
+        .collect()
 }
 
 fn docs_theme_css() -> String {
@@ -1055,11 +1091,11 @@ mod tests {
     fn rewrites_same_language_markdown_links_to_routes() {
         assert_eq!(
             rewrite_doc_link("README.zh-CN.md", "docs/中文/参考/命令行参考.md").as_deref(),
-            Some("/zh/cli")
+            Some("zh/cli")
         );
         assert_eq!(
             rewrite_doc_link("README.md", "docs/en/installation.md").as_deref(),
-            Some("/en/installation")
+            Some("en/installation")
         );
     }
 
@@ -1067,11 +1103,11 @@ mod tests {
     fn rewrites_root_readme_language_links_to_routes() {
         assert_eq!(
             rewrite_doc_link("README.md", "README.zh-CN.md").as_deref(),
-            Some("/zh")
+            Some("zh")
         );
         assert_eq!(
             rewrite_doc_link("README.zh-CN.md", "README.md").as_deref(),
-            Some("/en")
+            Some("en")
         );
     }
 
@@ -1080,11 +1116,11 @@ mod tests {
         assert_eq!(
             rewrite_doc_link("docs/中文/参考/命令行参考.md", "../../en/reference/cli.md")
                 .as_deref(),
-            Some("/en/cli")
+            Some("../en/cli")
         );
         assert_eq!(
             rewrite_doc_link("docs/en/testing.md", "../中文/测试分层.md#fixtures").as_deref(),
-            Some("/zh/testing#fixtures")
+            Some("../zh/testing#fixtures")
         );
     }
 
@@ -1092,12 +1128,29 @@ mod tests {
     fn rewrites_root_disclaimer_links_to_routes() {
         assert_eq!(
             rewrite_doc_link("DISCLAIMER.md", "DISCLAIMER.zh-CN.md").as_deref(),
-            Some("/zh/disclaimer")
+            Some("../zh/disclaimer")
         );
         assert_eq!(
             rewrite_doc_link("DISCLAIMER.zh-CN.md", "DISCLAIMER.md").as_deref(),
-            Some("/en/disclaimer")
+            Some("../en/disclaimer")
         );
+    }
+
+    #[test]
+    fn rewrites_markdown_links_as_project_path_safe_relative_routes() {
+        assert_eq!(
+            rewrite_doc_link(
+                "docs/中文/参考/Rust API 参考.md",
+                "../../en/reference/rust-api.md",
+            )
+            .as_deref(),
+            Some("../en/rust-api")
+        );
+        assert_eq!(
+            relative_route_href("/zh/rust-api", "/en/rust-api"),
+            "../en/rust-api"
+        );
+        assert_eq!(relative_route_href("/zh", "/en"), "en");
     }
 
     #[test]
