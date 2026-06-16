@@ -14,6 +14,11 @@ concurrency:
 env:
   CARGO_TERM_COLOR: always
 
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
 jobs:
   fmt:
     name: fmt
@@ -76,3 +81,76 @@ jobs:
 
       - name: Cargo doc
         run: cargo doc --locked --no-deps --all-features
+
+  docs-site:
+    name: docs site
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: wasm32-unknown-unknown
+
+      - name: Cache Rust dependencies
+        uses: Swatinem/rust-cache@v2
+
+      - name: Install Dioxus CLI
+        run: |
+          curl -fsSL https://dioxus.dev/install.sh | bash
+          dx --version
+
+      - name: Build docs site
+        env:
+          DOCS_BASE_PATH: /${{ github.event.repository.name }}/
+        run: dx build --package amagi-docs --base-path "$DOCS_BASE_PATH"
+
+      - name: Prepare Pages artifact
+        env:
+          DOCS_BASE_PATH: /${{ github.event.repository.name }}
+        run: |
+          docs_out="target/dx/amagi-docs/debug/web/public"
+          python3 - <<'PY'
+          import os
+          from pathlib import Path
+
+          docs_out = Path("target/dx/amagi-docs/debug/web/public")
+          base_path = os.environ["DOCS_BASE_PATH"].rstrip("/")
+          index = docs_out / "index.html"
+          html = index.read_text()
+          html = html.replace('href="main.css"', f'href="{base_path}/main.css"')
+          html = html.replace('src="highlight.min.js"', f'src="{base_path}/highlight.min.js"')
+          html = html.replace('src="syntax-highlight.js"', f'src="{base_path}/syntax-highlight.js"')
+          index.write_text(html)
+          (docs_out / "404.html").write_text(html)
+          (docs_out / ".nojekyll").write_text("")
+          PY
+
+      - name: Configure Pages
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        uses: actions/configure-pages@v5
+
+      - name: Upload Pages artifact
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: target/dx/amagi-docs/debug/web/public
+
+  deploy-docs:
+    name: deploy docs
+    needs:
+      - fmt
+      - check
+      - test
+      - doc
+      - docs-site
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-22.04
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

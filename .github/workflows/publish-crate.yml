@@ -12,6 +12,7 @@ concurrency:
 
 env:
   CARGO_TERM_COLOR: always
+  PUBLISH_CRATES: amagi-core amagi-adapters amagi-client amagi-server amagi-cli amagi
 
 jobs:
   publish:
@@ -29,10 +30,19 @@ jobs:
       - name: Cache Rust dependencies
         uses: Swatinem/rust-cache@v2
 
-      - name: Verify package
-        run: cargo publish --locked --dry-run
+      - name: Verify packages
+        shell: bash
+        run: |
+          for crate in $PUBLISH_CRATES; do
+            cargo publish -p "$crate" --locked --dry-run
+          done
 
       - name: Publish to crates.io
         env:
           CARGO_REGISTRY_TOKEN: ${{ secrets.CARGO_REGISTRY_TOKEN }}
-        run: cargo publish --locked
+        shell: bash
+        run: |
+          for crate in $PUBLISH_CRATES; do
+            cargo publish -p "$crate" --locked
+            sleep 60
+          done
