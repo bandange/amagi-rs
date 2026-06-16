@@ -3,7 +3,7 @@
 [![Cargo CI](https://github.com/bandange/amagi-rs/actions/workflows/cargo.yml/badge.svg)](https://github.com/bandange/amagi-rs/actions/workflows/cargo.yml)
 [![Crates.io](https://img.shields.io/crates/v/amagi.svg)](https://crates.io/crates/amagi)
 [![docs.rs](https://docs.rs/amagi/badge.svg)](https://docs.rs/amagi)
-[![License: GPL-3.0-only](https://img.shields.io/badge/license-GPL--3.0--only-blue.svg)](LICENSE)
+[![License: GPL-3.0-only](https://img.shields.io/badge/license-GPL--3.0--only-blue.svg)](https://github.com/bandange/amagi-rs/blob/main/LICENSE)
 
 Amagi-rs is a Rust API, command-line tool, and local JSON API service for
 multi-platform social service adapters.
@@ -200,4 +200,4 @@ Read the full [disclaimer](DISCLAIMER.md) before use.
 
 ## License
 
-Licensed under [GPL-3.0-only](LICENSE).
+Licensed under [GPL-3.0-only](https://github.com/bandange/amagi-rs/blob/main/LICENSE).
