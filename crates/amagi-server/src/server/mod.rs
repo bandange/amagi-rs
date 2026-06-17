@@ -12,7 +12,7 @@ use tokio::net::TcpListener;
 use tracing::{debug, info, warn};
 
 use amagi_client::{AmagiClient, ClientOptions, CookieConfig};
-use amagi_core::{APP_NAME, AppError, ServerReadyPrinter};
+use amagi_core::{APP_NAME, AppError, ServerReadyPrinter, build_info};
 
 use crate::ServeConfig;
 use crate::node;
@@ -89,7 +89,7 @@ where
     P: ServerReadyPrinter + ?Sized,
 {
     serve_with_ready(config, client, |local_addr| {
-        printer.print_server_ready_message(APP_NAME, env!("CARGO_PKG_VERSION"), local_addr)
+        printer.print_server_ready_message(APP_NAME, build_info::DISPLAY_VERSION, local_addr)
     })
     .await
 }
@@ -129,7 +129,7 @@ where
 
     let state = state::AppState::new(
         APP_NAME,
-        env!("CARGO_PKG_VERSION"),
+        build_info::DISPLAY_VERSION,
         config.clone(),
         client,
         runtime,

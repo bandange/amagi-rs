@@ -8,6 +8,7 @@ repository.workspace = true
 documentation.workspace = true
 description = "Shared core types and configuration helpers for amagi."
 publish = true
+build = "build.rs"
 
 [dependencies]
 dotenvy.workspace = true

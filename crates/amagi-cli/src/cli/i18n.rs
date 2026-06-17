@@ -491,7 +491,7 @@ fn version_detail_line(catalog: &LocaleCatalog) -> String {
         "release" | "daily" => format!(
             "{}: {} ({} {})",
             catalog.version.version,
-            env!("CARGO_PKG_VERSION"),
+            display_version(),
             catalog.version.build_word,
             build_time(),
         ),
@@ -508,19 +508,23 @@ fn build_type_label(catalog: &LocaleCatalog) -> &str {
 }
 
 fn build_type() -> &'static str {
-    option_env!("AMAGI_BUILD_TYPE").unwrap_or("local")
+    amagi_core::build_info::BUILD_TYPE
+}
+
+fn display_version() -> &'static str {
+    amagi_core::build_info::DISPLAY_VERSION
 }
 
 fn build_time() -> &'static str {
-    option_env!("AMAGI_BUILD_TIME").unwrap_or("unknown")
+    amagi_core::build_info::BUILD_TIME
 }
 
 fn build_rustc() -> &'static str {
-    option_env!("AMAGI_BUILD_RUSTC").unwrap_or("unknown")
+    amagi_core::build_info::BUILD_RUSTC
 }
 
 fn target_platform() -> String {
-    format!("{}/{}", std::env::consts::OS, std::env::consts::ARCH)
+    amagi_core::build_info::BUILD_TARGET.to_owned()
 }
 
 fn custom_help_arg(catalog: &LocaleCatalog, heading: &str) -> Arg {

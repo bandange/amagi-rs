@@ -25,7 +25,7 @@ pub use amagi_client::{
 pub use amagi_core::{
     APP_NAME, ApiMethodSpec, ApiOperationSpec, AppError, ClientOptions, CookieConfig, DEFAULT_HOST,
     DEFAULT_PORT, HttpMethod, ParsePlatformError, Platform, PlatformApiSpec, PlatformSpec,
-    RequestConfig, RequestProfile,
+    RequestConfig, RequestProfile, build_info,
 };
 
 /// Compatibility exports for the former internal `catalog` module.

@@ -133,6 +133,32 @@ jobs:
             cargo build --release --locked --bin "$BIN_NAME" --target ${{ matrix.target }}
           fi
 
+      - name: Verify runnable version metadata
+        if: ${{ matrix.cross != true }}
+        shell: bash
+        run: |
+          binary="target/${{ matrix.target }}/release/${BIN_NAME}"
+          if [ "${{ runner.os }}" = "Windows" ]; then
+            binary="${binary}.exe"
+          fi
+
+          version_output="$(AMAGI_LANG=en "${binary}" --version)"
+          printf '%s\n' "${version_output}"
+          grep -F "Daily Build" <<<"${version_output}"
+          grep -E "Version: daily-[0-9a-f]+ \\(built [0-9]{4}-[0-9]{2}-[0-9]{2}T" <<<"${version_output}"
+          grep -E "Rustc: rustc [0-9]" <<<"${version_output}"
+          grep -F "Target: ${{ matrix.target }}" <<<"${version_output}"
+
+      - name: Verify cross build metadata strings
+        if: ${{ matrix.cross == true }}
+        shell: bash
+        run: |
+          binary="target/${{ matrix.target }}/release/${BIN_NAME}"
+          strings "${binary}" > version-strings.txt
+          grep -E "daily-[0-9a-f]+" version-strings.txt
+          grep -E "rustc [0-9]" version-strings.txt
+          grep -E "[0-9]{4}-[0-9]{2}-[0-9]{2}T" version-strings.txt
+
       - name: Package (tar.gz)
         if: runner.os != 'Windows'
         run: tar -czvf ${{ matrix.artifact }} -C target/${{ matrix.target }}/release ${{ env.BIN_NAME }}

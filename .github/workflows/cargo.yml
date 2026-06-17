@@ -52,6 +52,19 @@ jobs:
       - name: Cargo check
         run: cargo check --locked --all-features
 
+      - name: Version metadata smoke
+        shell: bash
+        env:
+          AMAGI_LANG: en
+          BUILD_TYPE: daily
+        run: |
+          version_output="$(cargo run --locked -p amagi --bin amagi -- --version)"
+          printf '%s\n' "${version_output}"
+          grep -F "Daily Build" <<<"${version_output}"
+          grep -E "Version: daily-[0-9a-f]+ \\(built [0-9]{4}-[0-9]{2}-[0-9]{2}T" <<<"${version_output}"
+          grep -E "Rustc: rustc [0-9]" <<<"${version_output}"
+          grep -F "Target:" <<<"${version_output}"
+
   test:
     name: test
     runs-on: ubuntu-24.04

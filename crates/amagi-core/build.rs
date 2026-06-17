@@ -4,7 +4,6 @@ use std::time::{SystemTime, UNIX_EPOCH};
 
 fn main() {
     println!("cargo:rerun-if-changed=build.rs");
-    println!("cargo:rerun-if-changed=src");
     println!("cargo:rerun-if-changed=Cargo.toml");
     println!("cargo:rerun-if-env-changed=BUILD_TYPE");
     println!("cargo:rerun-if-env-changed=RUSTUP_TOOLCHAIN");
@@ -16,7 +15,7 @@ fn main() {
     let target = env::var("TARGET").unwrap_or_else(|_| "unknown".to_owned());
     let build_time = resolve_build_time();
     let build_type = env::var("BUILD_TYPE").unwrap_or_else(|_| "local".to_owned());
-    let display_version = resolve_display_version(&build_type, &build_time);
+    let display_version = resolve_display_version(&build_type);
     let toolchain = resolve_toolchain(&rustc_version);
 
     println!("cargo:rustc-env=AMAGI_DISPLAY_VERSION={display_version}");
@@ -27,17 +26,17 @@ fn main() {
     println!("cargo:rustc-env=AMAGI_BUILD_TOOLCHAIN={toolchain}");
 }
 
-fn resolve_display_version(build_type: &str, build_time: &str) -> String {
+fn resolve_display_version(build_type: &str) -> String {
     let version = env::var("CARGO_PKG_VERSION").unwrap_or_else(|_| "0.0.0".to_owned());
 
     match build_type {
-        "release" => format!("{version} (build {build_time})"),
+        "release" => version,
         "daily" => {
             let git_hash = command_output("git", &["rev-parse", "--short", "HEAD"])
                 .unwrap_or_else(|| "unknown".to_owned());
-            format!("daily-{git_hash} (build {build_time})")
+            format!("daily-{git_hash}")
         }
-        _ => format!("{version}-local (build {build_time})"),
+        _ => format!("{version}-local"),
     }
 }
 

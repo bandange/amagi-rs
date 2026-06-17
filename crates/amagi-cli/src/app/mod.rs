@@ -13,7 +13,7 @@ use crate::config::{AppConfig, CommandConfig, RunConfig, RunTask};
 use crate::output::Printer;
 use crate::telemetry;
 use amagi_client::AmagiClient;
-use amagi_core::AppError;
+use amagi_core::{AppError, build_info};
 
 /// Initialize shared services and execute the selected runtime command.
 ///
@@ -54,8 +54,8 @@ async fn run_command(
     config: &RunConfig,
 ) -> Result<(), AppError> {
     if matches!(config.task, RunTask::Ready) && !config.quiet {
-        printer.print_banner(APP_NAME, env!("CARGO_PKG_VERSION"))?;
-        printer.print_run_ready(APP_NAME, env!("CARGO_PKG_VERSION"))?;
+        printer.print_banner(APP_NAME, build_info::DISPLAY_VERSION)?;
+        printer.print_run_ready(APP_NAME, build_info::DISPLAY_VERSION)?;
     }
 
     match &config.task {
