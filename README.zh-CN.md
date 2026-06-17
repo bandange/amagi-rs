@@ -56,6 +56,8 @@ curl -fsSL https://gh-proxy.com/https://raw.githubusercontent.com/bandange/amagi
 
 更新、卸载、PATH 和 shell 集成细节请看
 [安装指南](https://bandange.github.io/amagi-rs/zh/installation)。
+如果要安装最新每日构建版本，请给安装脚本传入
+`--source remote --version daily`。
 
 ## 使用 CLI
 

@@ -59,6 +59,8 @@ curl -fsSL https://gh-proxy.com/https://raw.githubusercontent.com/bandange/amagi
 
 For update, uninstall, PATH, and shell integration details, see the
 [installation guide](https://bandange.github.io/amagi-rs/en/installation).
+To install the latest Daily Build instead of the latest stable release, pass
+`--source remote --version daily` to the installer.
 
 ## Use The CLI
 

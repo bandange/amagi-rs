@@ -39,6 +39,35 @@ PowerShell:
 irm https://raw.githubusercontent.com/bandange/amagi-rs/main/scripts/install.ps1 | iex
 ```
 
+Install the latest Daily Build:
+
+Linux/macOS from a repository checkout:
+
+```bash
+bash scripts/install.sh --source remote --version daily
+```
+
+Linux/macOS remote one-liner:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/bandange/amagi-rs/main/scripts/install.sh | bash -s -- --source remote --version daily
+```
+
+PowerShell from a repository checkout:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\scripts\install.ps1 -Source Remote -Version daily
+```
+
+PowerShell remote one-liner:
+
+```powershell
+& ([scriptblock]::Create((irm "https://raw.githubusercontent.com/bandange/amagi-rs/main/scripts/install.ps1"))) -Source Remote -Version daily
+```
+
+Daily Build uses the GitHub release tag `daily`. It is a prerelease build from
+the latest successful Daily Build workflow run.
+
 Use proxy mode:
 
 Linux/macOS:
@@ -71,7 +100,7 @@ Optional install variables:
 
 - `AMAGI_INSTALL_DIR`: override the install directory
 - `AMAGI_PROFILE_FILE`: on Linux/macOS, write the shell hook into one specific profile file
-- `AMAGI_INSTALL_VERSION`: install a specific release instead of `latest`
+- `AMAGI_INSTALL_VERSION`: install a specific release tag instead of `latest`, such as `daily`
 - `AMAGI_INSTALL_LINUX_LIBC`: on Linux, force `gnu` or `musl` remote asset selection
 - `AMAGI_PROXY_PREFIX`: override the proxy prefix used for remote script and release downloads
 - `AMAGI_REMOTE_REPO_OWNER`, `AMAGI_REMOTE_REPO_NAME`, `AMAGI_REMOTE_BASE_URL`: override the default download source
