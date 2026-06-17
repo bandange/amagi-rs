@@ -173,6 +173,42 @@ pub(super) async fn run_task(
                 "cli fetch completed"
             );
         }
+        TwitterRunTask::LiveRoomInfo {
+            screen_name,
+            user_id,
+        } => {
+            let result = match (screen_name.as_deref(), user_id.as_deref()) {
+                (Some(_), Some(_)) => {
+                    return Err(AppError::InvalidRequestConfig(
+                        "twitter live-room-info accepts either `screen_name` or `--user-id`, not both"
+                            .into(),
+                    ));
+                }
+                (Some(screen_name), None) => {
+                    let screen_name = resolve_user_reference(screen_name)?;
+                    fetcher.fetch_live_room_info(&screen_name).await?
+                }
+                (None, Some(user_id)) => {
+                    let user_id = normalize_user_id(user_id)?;
+                    fetcher.fetch_live_room_info_by_user_id(user_id).await?
+                }
+                (None, None) => {
+                    return Err(AppError::InvalidRequestConfig(
+                        "twitter live-room-info requires a screen name or `--user-id`".into(),
+                    ));
+                }
+            };
+            printer.print_payload(&result)?;
+            info!(
+                app = APP_NAME,
+                mode = "cli",
+                platform = "twitter",
+                method = "liveRoomInfo",
+                user_id = result.user_id.as_str(),
+                screen_name = result.screen_name.as_deref().unwrap_or_default(),
+                "cli fetch completed"
+            );
+        }
         TwitterRunTask::SearchUsers {
             query,
             count,
@@ -195,4 +231,15 @@ pub(super) async fn run_task(
     }
 
     Ok(())
+}
+
+fn normalize_user_id(value: &str) -> Result<&str, AppError> {
+    let trimmed = value.trim();
+    if !trimmed.is_empty() && trimmed.bytes().all(|byte| byte.is_ascii_digit()) {
+        return Ok(trimmed);
+    }
+
+    Err(AppError::InvalidRequestConfig(format!(
+        "twitter user id `{value}` must be numeric"
+    )))
 }

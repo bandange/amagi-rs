@@ -1,6 +1,7 @@
 mod content;
 mod resolve;
 mod space;
+mod stream;
 mod user;
 
 use crate::config::TwitterRunTask;
@@ -24,7 +25,9 @@ pub(super) async fn run_task(
         | TwitterRunTask::UserBookmarks { .. }
         | TwitterRunTask::UserFollowed { .. }
         | TwitterRunTask::UserRecommended { .. }
+        | TwitterRunTask::LiveRoomInfo { .. }
         | TwitterRunTask::SearchUsers { .. } => user::run_task(printer, client, task).await,
+        TwitterRunTask::LiveRoomStream { .. } => stream::run_task(printer, client, task).await,
         TwitterRunTask::SearchTweets { .. }
         | TwitterRunTask::TweetDetail { .. }
         | TwitterRunTask::TweetReplies { .. }

@@ -103,7 +103,7 @@ Compatibility wrappers remain available with the former catalog/method names:
 | `bilibili` | 27 | video, comments, user, dynamics, bangumi, live, articles, auth, tools, captcha, emoji |
 | `douyin` | 19 | works, comments, user, search, music, live, auth, emoji, danmaku |
 | `kuaishou` | 6 | works, comments, user, live, emoji |
-| `twitter` | 9 | search, user graph, tweets, Spaces |
+| `twitter` | 22 | search, user graph, live room info, live room streams, tweets, Spaces |
 | `xiaohongshu` | 7 | feed, notes, comments, user, search, emoji |
 
 ## 6. Bilibili API Spec
@@ -192,6 +192,11 @@ Platform base path: `/api/twitter`
 | `userMedia` | `用户媒体` | `fetchUserMedia` | `GET` | `/user/{screen_name}/media` | `user` | Fetch a Twitter/X user's media timeline by screen name. |
 | `userFollowers` | `用户粉丝` | `fetchUserFollowers` | `GET` | `/user/{screen_name}/followers` | `user` | Fetch a Twitter/X user's followers by screen name. |
 | `userFollowing` | `用户关注` | `fetchUserFollowing` | `GET` | `/user/{screen_name}/following` | `user` | Fetch a Twitter/X user's following list by screen name. |
+| `liveRoomInfo` | `直播间信息` | `fetchLiveRoomInfo` | `GET` | `/user/{screen_name}/live-room-info` | `user, live` | Fetch Twitter/X live room information by screen name. |
+| `liveRoomInfoByUserId` | `按用户ID获取直播间信息` | `fetchLiveRoomInfoByUserId` | `GET` | `/user-id/{user_id}/live-room-info` | `live` | Fetch Twitter/X live room information by numeric user id. |
+| `liveRoomStream` | `直播间播放流` | `fetchLiveRoomStream` | `GET` | `/live-room/{broadcast_id}/stream` | `live, stream` | Resolve a Twitter/X live-room master HLS stream by broadcast id. |
+| `liveRoomStreamByMediaKey` | `按媒体Key获取直播间播放流` | `fetchLiveRoomStreamByMediaKey` | `GET` | `/live-media/{media_key}/stream` | `live, stream` | Resolve a Twitter/X live-room master HLS stream by media key. |
+| `liveRoomStreamByTweetId` | `按推文ID获取直播间播放流` | `fetchLiveRoomStreamByTweetId` | `GET` | `/tweet/{tweet_id}/live-room-stream` | `live, stream` | Resolve a Twitter/X live-room master HLS stream from a tweet broadcast card. |
 | `tweetDetail` | `推文详情` | `fetchTweetDetail` | `GET` | `/tweet/{tweet_id}` | `tweet` | Fetch a Twitter/X tweet by tweet id. |
 | `spaceDetail` | `Space详情` | `fetchSpaceDetail` | `GET` | `/space/{space_id}` | `space` | Fetch a Twitter/X Space by space id. |
 

@@ -351,6 +351,22 @@ fn map_twitter_command(command: TwitterCommand) -> RunTask {
         TwitterCommand::UserRecommended { count, cursor } => {
             TwitterRunTask::UserRecommended { count, cursor }
         }
+        TwitterCommand::LiveRoomInfo {
+            screen_name,
+            user_id,
+        } => TwitterRunTask::LiveRoomInfo {
+            screen_name,
+            user_id,
+        },
+        TwitterCommand::LiveRoomStream {
+            broadcast_id,
+            media_key,
+            tweet_id,
+        } => TwitterRunTask::LiveRoomStream {
+            broadcast_id,
+            media_key,
+            tweet_id,
+        },
         TwitterCommand::SearchUsers {
             query,
             count,

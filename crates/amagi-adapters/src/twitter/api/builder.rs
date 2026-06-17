@@ -7,6 +7,10 @@ use amagi_core::AppError;
 
 const TWITTER_GRAPHQL_BASE_URL: &str = "https://x.com/i/api/graphql";
 const TWITTER_GUEST_ACTIVATE_URL: &str = "https://api.twitter.com/1.1/guest/activate.json";
+const TWITTER_USER_LIVE_ROOM_INFO_URL: &str = "https://x.com/i/api/fleets/v1/avatar_content";
+const TWITTER_BROADCAST_SHOW_URL: &str = "https://api.x.com/1.1/broadcasts/show.json";
+const TWITTER_LIVE_VIDEO_STREAM_STATUS_BASE_URL: &str =
+    "https://api.x.com/1.1/live_video_stream/status";
 
 const USER_BY_SCREEN_NAME_OPERATION_ID: &str = "IGgvgiOx4QZndDHuD3x9TQ";
 const USER_BY_REST_ID_OPERATION_ID: &str = "VQfQ9wwYdk6j_u2O4vt64Q";
@@ -64,6 +68,54 @@ impl TwitterApiUrls {
     /// Return the guest-token activation URL.
     pub fn guest_activate(&self) -> &str {
         self.guest_activate_url.as_ref()
+    }
+
+    /// Build the user live-room info URL for one numeric Twitter/X user id.
+    #[doc(alias = "getUserLiveRoomInfo")]
+    pub fn user_live_room_info(&self, user_id: &str) -> Result<String, AppError> {
+        let mut url = Url::parse(TWITTER_USER_LIVE_ROOM_INFO_URL).map_err(|error| {
+            AppError::InvalidRequestConfig(format!("invalid twitter url: {error}"))
+        })?;
+        {
+            let mut query = url.query_pairs_mut();
+            query.append_pair("user_ids", user_id);
+            query.append_pair("only_spaces", "true");
+        }
+        Ok(url.to_string())
+    }
+
+    /// Build the broadcast metadata URL for one Twitter/X broadcast id.
+    #[doc(alias = "getBroadcastShow")]
+    pub fn broadcast_show(&self, broadcast_id: &str) -> Result<String, AppError> {
+        let mut url = Url::parse(TWITTER_BROADCAST_SHOW_URL).map_err(|error| {
+            AppError::InvalidRequestConfig(format!("invalid twitter url: {error}"))
+        })?;
+        {
+            let mut query = url.query_pairs_mut();
+            query.append_pair("ids", broadcast_id);
+            query.append_pair("include_events", "false");
+        }
+        Ok(url.to_string())
+    }
+
+    /// Build the live-video stream status URL for one Twitter/X broadcast media key.
+    #[doc(alias = "getLiveVideoStreamStatus")]
+    pub fn live_video_stream_status(&self, media_key: &str) -> Result<String, AppError> {
+        let base = format!(
+            "{}/{}",
+            TWITTER_LIVE_VIDEO_STREAM_STATUS_BASE_URL.trim_end_matches('/'),
+            media_key
+        );
+        let mut url = Url::parse(&base).map_err(|error| {
+            AppError::InvalidRequestConfig(format!("invalid twitter url: {error}"))
+        })?;
+        {
+            let mut query = url.query_pairs_mut();
+            query.append_pair("client", "web");
+            query.append_pair("use_syndication_guest_id", "true");
+            query.append_pair("cookie_set_host", "x.com");
+        }
+        Ok(url.to_string())
     }
 
     /// Build the user-profile URL for one screen name.

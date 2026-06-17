@@ -261,6 +261,12 @@
     "run.twitter.user-recommended": {
       "about": "Fetch the recommended home timeline for the authenticated Twitter/X account."
     },
+    "run.twitter.live-room-info": {
+      "about": "Fetch current live room information for a Twitter/X account."
+    },
+    "run.twitter.live-room-stream": {
+      "about": "Resolve a Twitter/X live room master HLS stream."
+    },
     "run.twitter.search-users": {
       "about": "Search Twitter/X users."
     },
@@ -352,6 +358,8 @@
     "user_id": "Target user id.",
     "keyword": "Search keyword.",
     "screen_name": "Target user's screen name.",
+    "broadcast_id": "Target broadcast id.",
+    "media_key": "Target live media key.",
     "tweet_id": "Target tweet id.",
     "sort_by": "Optional reply sort order.",
     "space_id": "Target Space id.",

@@ -322,8 +322,13 @@ Base path: `/api/twitter`
 | `GET` | `/api/twitter/user/{screen_name}/media` | `screen_name` | query: `count?`, `cursor?` | Fetch a user's media timeline |
 | `GET` | `/api/twitter/user/{screen_name}/followers` | `screen_name` | query: `count?`, `cursor?` | Fetch a user's followers |
 | `GET` | `/api/twitter/user/{screen_name}/following` | `screen_name` | query: `count?`, `cursor?` | Fetch a user's following list |
+| `GET` | `/api/twitter/user/{screen_name}/live-room-info` | `screen_name` | none | Fetch current live room information for a user |
+| `GET` | `/api/twitter/user-id/{user_id}/live-room-info` | `user_id` | none | Fetch current live room information by numeric user id |
+| `GET` | `/api/twitter/live-room/{broadcast_id}/stream` | `broadcast_id` | none | Resolve a live room master HLS stream by broadcast id |
+| `GET` | `/api/twitter/live-media/{media_key}/stream` | `media_key` | none | Resolve a live room master HLS stream by media key |
 | `GET` | `/api/twitter/search/tweets` | none | query: `query`, `search_type?`, `count?`, `cursor?` | Search tweets |
 | `GET` | `/api/twitter/tweet/{tweet_id}` | `tweet_id` | none | Fetch a tweet detail payload |
+| `GET` | `/api/twitter/tweet/{tweet_id}/live-room-stream` | `tweet_id` | none | Resolve a live room master HLS stream from a tweet broadcast card |
 | `GET` | `/api/twitter/space/{space_id}` | `space_id` | none | Fetch a Space detail payload |
 
 Supported query enums:

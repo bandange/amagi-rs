@@ -325,6 +325,22 @@ fn twitter_routes() -> Router<AppState> {
             "/user/{screen_name}/following",
             get(handlers::twitter_user_following),
         )
+        .route(
+            "/user/{screen_name}/live-room-info",
+            get(handlers::twitter_user_live_room_info),
+        )
+        .route(
+            "/user-id/{user_id}/live-room-info",
+            get(handlers::twitter_user_live_room_info_by_id),
+        )
+        .route(
+            "/live-room/{broadcast_id}/stream",
+            get(handlers::twitter_live_room_stream),
+        )
+        .route(
+            "/live-media/{media_key}/stream",
+            get(handlers::twitter_live_room_stream_by_media_key),
+        )
         .route("/user/likes", get(handlers::twitter_user_likes))
         .route("/user/bookmarks", get(handlers::twitter_user_bookmarks))
         .route("/user/followed", get(handlers::twitter_user_followed))
@@ -332,6 +348,10 @@ fn twitter_routes() -> Router<AppState> {
         .route("/search/tweets", get(handlers::twitter_search_tweets))
         .route("/search/users", get(handlers::twitter_search_users))
         .route("/tweet/{tweet_id}", get(handlers::twitter_tweet_detail))
+        .route(
+            "/tweet/{tweet_id}/live-room-stream",
+            get(handlers::twitter_tweet_live_room_stream),
+        )
         .route(
             "/tweet/{tweet_id}/replies",
             get(handlers::twitter_tweet_replies),

@@ -87,6 +87,20 @@ pub enum TwitterCommand {
         #[arg(long)]
         cursor: Option<String>,
     },
+    #[command(name = "live-room-info")]
+    LiveRoomInfo {
+        screen_name: Option<String>,
+        #[arg(long)]
+        user_id: Option<String>,
+    },
+    #[command(name = "live-room-stream")]
+    LiveRoomStream {
+        broadcast_id: Option<String>,
+        #[arg(long)]
+        media_key: Option<String>,
+        #[arg(long)]
+        tweet_id: Option<String>,
+    },
     #[command(name = "search-users")]
     SearchUsers {
         query: String,

@@ -127,6 +127,7 @@ dependencies = [
  "amagi",
  "amagi-client",
  "amagi-server",
+ "dotenvy",
  "serde_json",
 ]
 

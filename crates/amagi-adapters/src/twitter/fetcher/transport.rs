@@ -35,6 +35,16 @@ impl TwitterFetcher {
         Ok(value)
     }
 
+    pub(super) async fn fetch_web_api_value(
+        &self,
+        url: &str,
+        referer: Option<&str>,
+    ) -> Result<Value, AppError> {
+        let headers = self.web_api_headers(referer)?;
+        let body = self.send_text_request(Method::GET, url, headers).await?;
+        serde_json::from_str(&body).map_err(AppError::from)
+    }
+
     async fn activate_guest_token(&self) -> Result<String, AppError> {
         let mut headers = self.request_profile.headers.clone();
         headers.remove("Cookie");
@@ -108,6 +118,38 @@ impl TwitterFetcher {
             "x-client-transaction-id".into(),
             self.client_transaction_id(url).await?,
         );
+
+        header_map_from_headers(&headers)
+    }
+
+    fn web_api_headers(&self, referer: Option<&str>) -> Result<HeaderMap, AppError> {
+        let mut headers = self.request_profile.headers.clone();
+        headers.insert(
+            "Authorization".into(),
+            format!("Bearer {TWITTER_WEB_BEARER_TOKEN}"),
+        );
+        headers.insert("x-twitter-active-user".into(), "yes".into());
+        headers.insert(
+            "x-twitter-client-language".into(),
+            self.language().to_owned(),
+        );
+        headers.insert("Origin".into(), self.web_base_url.to_string());
+        headers
+            .entry("Referer".into())
+            .or_insert_with(|| format!("{}/", self.web_base_url.trim_end_matches('/')));
+
+        if let Some(referer) = referer {
+            headers.insert("Referer".into(), referer.to_owned());
+        }
+
+        if let Some(cookie) = self.cookie_header() {
+            headers.insert("Cookie".into(), cookie.to_owned());
+
+            if let Some(csrf_token) = extract_csrf_token(cookie) {
+                headers.insert("x-csrf-token".into(), csrf_token);
+                headers.insert("x-twitter-auth-type".into(), "OAuth2Session".into());
+            }
+        }
 
         header_map_from_headers(&headers)
     }

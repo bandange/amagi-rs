@@ -307,6 +307,11 @@ let fetcher = create_bound_bilibili_fetcher(
 | `fetch_user_media` | `screen_name: &str, count: Option<u32>, cursor: Option<&str>` | 获取用户媒体流 |
 | `fetch_user_followers` | `screen_name: &str, count: Option<u32>, cursor: Option<&str>` | 获取用户粉丝列表 |
 | `fetch_user_following` | `screen_name: &str, count: Option<u32>, cursor: Option<&str>` | 获取用户关注列表 |
+| `fetch_live_room_info` | `screen_name: &str` | 按用户标识查询当前直播状态和直播间信息 |
+| `fetch_live_room_info_by_user_id` | `user_id: &str` | 按 numeric user id 查询当前直播状态和直播间信息 |
+| `fetch_live_room_stream` | `broadcast_id: &str` | 按 broadcast id 解析直播间 master HLS 播放流 |
+| `fetch_live_room_stream_by_media_key` | `media_key: &str` | 按 media key 解析直播间 master HLS 播放流 |
+| `fetch_live_room_stream_by_tweet_id` | `tweet_id: &str` | 从推文 broadcast 卡片解析直播间 master HLS 播放流 |
 | `fetch_space_detail` | `space_id: &str` | 获取 Space 详情 |
 
 `TwitterTweetSearchMode` 支持的值：

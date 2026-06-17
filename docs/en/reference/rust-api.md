@@ -312,6 +312,11 @@ Main fetcher type: `TwitterFetcher`
 | `fetch_user_media` | `screen_name: &str, count: Option<u32>, cursor: Option<&str>` | Fetch a user's media timeline |
 | `fetch_user_followers` | `screen_name: &str, count: Option<u32>, cursor: Option<&str>` | Fetch a user's followers |
 | `fetch_user_following` | `screen_name: &str, count: Option<u32>, cursor: Option<&str>` | Fetch a user's following list |
+| `fetch_live_room_info` | `screen_name: &str` | Fetch current live room information by user reference |
+| `fetch_live_room_info_by_user_id` | `user_id: &str` | Fetch current live room information by numeric user id |
+| `fetch_live_room_stream` | `broadcast_id: &str` | Resolve a live room master HLS stream by broadcast id |
+| `fetch_live_room_stream_by_media_key` | `media_key: &str` | Resolve a live room master HLS stream by media key |
+| `fetch_live_room_stream_by_tweet_id` | `tweet_id: &str` | Resolve a live room master HLS stream from a tweet broadcast card |
 | `fetch_space_detail` | `space_id: &str` | Fetch a Space detail payload |
 
 Supported `TwitterTweetSearchMode` values:

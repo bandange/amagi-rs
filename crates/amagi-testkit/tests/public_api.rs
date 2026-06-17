@@ -137,6 +137,26 @@ fn api_spec_json_field_names_stay_downstream_compatible() {
     assert!(first_operation.get("operation_key").is_none());
 }
 
+#[cfg(any(feature = "adapters", feature = "platforms", feature = "client"))]
+#[test]
+fn douyin_public_test_interfaces_are_available() {
+    amagi_testkit::douyin::assert_public_url_builders_cover_all_endpoints().unwrap();
+    amagi_testkit::douyin::assert_sign_helpers_generate_nonempty_values().unwrap();
+}
+
+#[cfg(any(feature = "adapters", feature = "platforms", feature = "client"))]
+#[test]
+fn twitter_public_test_interfaces_are_available() {
+    amagi_testkit::twitter::assert_live_room_info_public_surface();
+    amagi_testkit::twitter::assert_live_room_stream_public_surface();
+
+    let info = amagi_testkit::twitter::sample_live_room_info();
+    let stream = amagi_testkit::twitter::sample_live_room_stream();
+
+    amagi_testkit::twitter::assert_live_room_info_contract(&info, &info.user_id);
+    amagi_testkit::twitter::assert_live_room_stream_contract(&stream, &stream.media_key, true);
+}
+
 #[cfg(feature = "server")]
 #[test]
 fn server_compatibility_surface_is_available() {

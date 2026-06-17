@@ -8,7 +8,8 @@ use super::super::support::{FetchResult, fetch_error_response, twitter_fetcher};
 use super::types::{TwitterTimelineQuery, TwitterUserSearchQuery};
 use crate::server::state::AppState;
 use amagi_adapters::twitter::{
-    TwitterTweetPage, TwitterUserListPage, TwitterUserPage, TwitterUserProfile, TwitterUserTimeline,
+    TwitterLiveRoomInfo, TwitterTweetPage, TwitterUserListPage, TwitterUserPage,
+    TwitterUserProfile, TwitterUserTimeline,
 };
 
 /// Fetch a Twitter/X user profile through the web API.
@@ -89,6 +90,32 @@ pub async fn twitter_user_following(
 ) -> FetchResult<TwitterUserListPage> {
     twitter_fetcher(&state, &headers)
         .fetch_user_following(&screen_name, query.count, query.cursor.as_deref())
+        .await
+        .map(Json)
+        .map_err(fetch_error_response)
+}
+
+/// Fetch a Twitter/X user's current live-room information through the web API.
+pub async fn twitter_user_live_room_info(
+    Path(screen_name): Path<String>,
+    headers: HeaderMap,
+    State(state): State<AppState>,
+) -> FetchResult<TwitterLiveRoomInfo> {
+    twitter_fetcher(&state, &headers)
+        .fetch_live_room_info(&screen_name)
+        .await
+        .map(Json)
+        .map_err(fetch_error_response)
+}
+
+/// Fetch a Twitter/X user's current live-room information by numeric user id.
+pub async fn twitter_user_live_room_info_by_id(
+    Path(user_id): Path<String>,
+    headers: HeaderMap,
+    State(state): State<AppState>,
+) -> FetchResult<TwitterLiveRoomInfo> {
+    twitter_fetcher(&state, &headers)
+        .fetch_live_room_info_by_user_id(&user_id)
         .await
         .map(Json)
         .map_err(fetch_error_response)

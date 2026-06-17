@@ -11,7 +11,8 @@ pub use api::{TwitterApiUrls, create_twitter_api_urls};
 pub use bound::{BoundTwitterFetcher, create_bound_twitter_fetcher};
 pub use fetcher::TwitterFetcher;
 pub use types::{
-    TwitterHashtagEntity, TwitterMediaEntity, TwitterSpaceDetail, TwitterSymbolEntity,
+    TwitterHashtagEntity, TwitterLiveBroadcastDetail, TwitterLiveRoomInfo, TwitterLiveRoomStream,
+    TwitterLiveVideoBroadcast, TwitterMediaEntity, TwitterSpaceDetail, TwitterSymbolEntity,
     TwitterTimestampEntity, TwitterTweet, TwitterTweetEntities, TwitterTweetPage,
     TwitterTweetRepliesSortMode, TwitterTweetSearchMode, TwitterTweetSearchPage, TwitterUrlEntity,
     TwitterUserListPage, TwitterUserMentionEntity, TwitterUserPage, TwitterUserProfile,

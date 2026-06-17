@@ -11,7 +11,7 @@ core = ["amagi/core"]
 adapters = ["amagi/adapters", "dep:serde_json"]
 platforms = ["amagi/platforms", "dep:serde_json"]
 catalog = ["amagi/catalog"]
-client = ["amagi/client"]
+client = ["amagi/client", "dep:dotenvy", "dep:serde_json"]
 server = ["amagi/server", "dep:amagi-client", "dep:amagi-server"]
 cli = ["amagi/cli"]
 
@@ -19,4 +19,5 @@ cli = ["amagi/cli"]
 amagi = { path = "../amagi", default-features = false }
 amagi-client = { workspace = true, optional = true }
 amagi-server = { workspace = true, optional = true }
+dotenvy = { workspace = true, optional = true }
 serde_json = { workspace = true, optional = true }

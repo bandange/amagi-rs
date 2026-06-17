@@ -90,6 +90,22 @@ pub enum TwitterRunTask {
         /// Optional pagination cursor.
         cursor: Option<String>,
     },
+    /// Fetch live room information for a Twitter/X account.
+    LiveRoomInfo {
+        /// Target screen name.
+        screen_name: Option<String>,
+        /// Target numeric Twitter/X user id.
+        user_id: Option<String>,
+    },
+    /// Fetch a Twitter/X live-room playback stream.
+    LiveRoomStream {
+        /// Target broadcast id.
+        broadcast_id: Option<String>,
+        /// Target broadcast media key.
+        media_key: Option<String>,
+        /// Target tweet id containing a broadcast card.
+        tweet_id: Option<String>,
+    },
     /// Search users by query text.
     SearchUsers {
         /// Search keyword or screen name fragment.

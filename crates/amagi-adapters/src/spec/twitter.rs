@@ -1,9 +1,11 @@
-use super::{TAG_SEARCH, TAG_SPACE, TAG_USER};
+use super::{TAG_LIVE, TAG_SEARCH, TAG_SPACE, TAG_USER};
 use amagi_core::{ApiOperationSpec, HttpMethod};
 
 const TAG_TWEET: &[&str] = &["tweet"];
+const TAG_USER_LIVE: &[&str] = &["user", "live"];
+const TAG_LIVE_STREAM: &[&str] = &["live", "stream"];
 
-pub(super) const TWITTER_METHODS: [ApiOperationSpec; 17] = [
+pub(super) const TWITTER_METHODS: [ApiOperationSpec; 22] = [
     ApiOperationSpec {
         method_key: "searchTweets",
         chinese_name: "搜索推文",
@@ -102,6 +104,51 @@ pub(super) const TWITTER_METHODS: [ApiOperationSpec; 17] = [
         http_method: HttpMethod::Get,
         description: "Fetch the authenticated Twitter/X recommended feed.",
         tags: TAG_USER,
+    },
+    ApiOperationSpec {
+        method_key: "liveRoomInfo",
+        chinese_name: "直播间信息",
+        fetcher_name: "fetchLiveRoomInfo",
+        route: "/user/{screen_name}/live-room-info",
+        http_method: HttpMethod::Get,
+        description: "Fetch Twitter/X live room information by screen name.",
+        tags: TAG_USER_LIVE,
+    },
+    ApiOperationSpec {
+        method_key: "liveRoomInfoByUserId",
+        chinese_name: "按用户ID获取直播间信息",
+        fetcher_name: "fetchLiveRoomInfoByUserId",
+        route: "/user-id/{user_id}/live-room-info",
+        http_method: HttpMethod::Get,
+        description: "Fetch Twitter/X live room information by numeric user id.",
+        tags: TAG_LIVE,
+    },
+    ApiOperationSpec {
+        method_key: "liveRoomStream",
+        chinese_name: "直播间播放流",
+        fetcher_name: "fetchLiveRoomStream",
+        route: "/live-room/{broadcast_id}/stream",
+        http_method: HttpMethod::Get,
+        description: "Resolve a Twitter/X live-room master HLS stream by broadcast id.",
+        tags: TAG_LIVE_STREAM,
+    },
+    ApiOperationSpec {
+        method_key: "liveRoomStreamByMediaKey",
+        chinese_name: "按媒体Key获取直播间播放流",
+        fetcher_name: "fetchLiveRoomStreamByMediaKey",
+        route: "/live-media/{media_key}/stream",
+        http_method: HttpMethod::Get,
+        description: "Resolve a Twitter/X live-room master HLS stream by media key.",
+        tags: TAG_LIVE_STREAM,
+    },
+    ApiOperationSpec {
+        method_key: "liveRoomStreamByTweetId",
+        chinese_name: "按推文ID获取直播间播放流",
+        fetcher_name: "fetchLiveRoomStreamByTweetId",
+        route: "/tweet/{tweet_id}/live-room-stream",
+        http_method: HttpMethod::Get,
+        description: "Resolve a Twitter/X live-room master HLS stream from a tweet broadcast card.",
+        tags: TAG_LIVE_STREAM,
     },
     ApiOperationSpec {
         method_key: "searchUsers",

@@ -101,6 +101,8 @@ const TWITTER_COMMANDS: &[&str] = &[
     "user-bookmarks",
     "user-followed",
     "user-recommended",
+    "live-room-info",
+    "live-room-stream",
     "search-users",
     "tweet-detail",
     "tweet-replies",

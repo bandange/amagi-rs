@@ -262,6 +262,12 @@
     "run.twitter.user-recommended": {
       "about": "获取当前已登录 Twitter/X 账户的推荐时间线。"
     },
+    "run.twitter.live-room-info": {
+      "about": "查询 Twitter/X 账户当前直播状态和直播间信息。"
+    },
+    "run.twitter.live-room-stream": {
+      "about": "解析 Twitter/X 直播间 master HLS 播放流。"
+    },
     "run.twitter.search-users": {
       "about": "搜索 Twitter/X 用户。"
     },
@@ -353,6 +359,8 @@
     "user_id": "目标用户 ID。",
     "keyword": "搜索关键词。",
     "screen_name": "目标用户的 screen_name。",
+    "broadcast_id": "目标 broadcast id。",
+    "media_key": "目标直播 media key。",
     "tweet_id": "目标推文 ID。",
     "sort_by": "可选的回复排序方式。",
     "space_id": "目标 Space ID。",
