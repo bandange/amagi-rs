@@ -123,6 +123,7 @@ jobs:
       - name: Prepare Pages artifact
         env:
           DOCS_BASE_PATH: /${{ github.event.repository.name }}
+          DOCS_ASSET_VERSION: ${{ github.sha }}
         run: |
           docs_out="target/dx/amagi-docs/debug/web/public"
           python3 - <<'PY'
@@ -131,14 +132,42 @@ jobs:
 
           docs_out = Path("target/dx/amagi-docs/debug/web/public")
           base_path = os.environ["DOCS_BASE_PATH"].rstrip("/")
+          asset_version = os.environ["DOCS_ASSET_VERSION"]
+          version_suffix = f"?v={asset_version}"
           index = docs_out / "index.html"
-          html = index.read_text()
-          html = html.replace('href="main.css"', f'href="{base_path}/main.css"')
-          html = html.replace('src="highlight.min.js"', f'src="{base_path}/highlight.min.js"')
-          html = html.replace('src="syntax-highlight.js"', f'src="{base_path}/syntax-highlight.js"')
-          index.write_text(html)
-          (docs_out / "404.html").write_text(html)
-          (docs_out / ".nojekyll").write_text("")
+          html = index.read_text(encoding="utf-8")
+
+          def replace_required(content, old, new, description):
+              if old not in content:
+                  raise RuntimeError(f"Could not find {description}: {old}")
+              return content.replace(old, new)
+
+          replacements = {
+              'href="main.css"': f'href="{base_path}/main.css{version_suffix}"',
+              'src="highlight.min.js"': f'src="{base_path}/highlight.min.js{version_suffix}"',
+              'src="syntax-highlight.js"': f'src="{base_path}/syntax-highlight.js{version_suffix}"',
+              f'src="{base_path}/wasm/amagi-docs.js"': f'src="{base_path}/wasm/amagi-docs.js{version_suffix}"',
+          }
+          for old, new in replacements.items():
+              html = replace_required(html, old, new, "docs asset")
+          for expected in replacements.values():
+              if expected not in html:
+                  raise RuntimeError(f"Missing versioned docs asset: {expected}")
+          index.write_text(html, encoding="utf-8")
+          (docs_out / "404.html").write_text(html, encoding="utf-8")
+          (docs_out / ".nojekyll").write_text("", encoding="utf-8")
+
+          wasm_loader = docs_out / "wasm" / "amagi-docs.js"
+          js = wasm_loader.read_text(encoding="utf-8")
+          js = replace_required(
+              js,
+              f'module_or_path: "{base_path}/wasm/amagi-docs_bg.wasm"',
+              f'module_or_path: "{base_path}/wasm/amagi-docs_bg.wasm{version_suffix}"',
+              "Dioxus wasm loader",
+          )
+          if f"{base_path}/wasm/amagi-docs_bg.wasm{version_suffix}" not in js:
+              raise RuntimeError("Missing versioned Dioxus wasm module path")
+          wasm_loader.write_text(js, encoding="utf-8")
           PY
 
       - name: Configure Pages
