@@ -248,27 +248,27 @@ Prefix:
 amagi run twitter <TASK> ...
 ```
 
-| Task | Description | Status | Required Positional Parameters | Optional / Named Parameters |
-| --- | --- | --- | --- | --- |
-| `search-tweets` | Search Twitter/X tweets | 2.0发布待测试 | `<query>` | `--search-type <mode>`, `--count <u32>`, `--cursor <string>` |
-| `search-users` | Search Twitter/X users | 2.0发布待测试 | `<query>` | `--count <u32>`, `--cursor <string>` |
-| `user-profile` | Fetch one Twitter/X user profile | 2.0发布待测试 | `<screen_name>` | none |
-| `user-timeline` | Fetch one Twitter/X user timeline | 2.0发布待测试 | `<screen_name>` | `--count <u32>`, `--cursor <string>` |
-| `user-replies` | Fetch one Twitter/X user replies timeline | 2.0发布待测试 | `<screen_name>` | `--count <u32>`, `--cursor <string>` |
-| `user-media` | Fetch one Twitter/X user media timeline | 2.0发布待测试 | `<screen_name>` | `--count <u32>`, `--cursor <string>` |
-| `user-followers` | Fetch one Twitter/X user followers page | 2.0发布待测试 | `<screen_name>` | `--count <u32>`, `--cursor <string>` |
-| `user-following` | Fetch one Twitter/X user following page | 2.0发布待测试 | `<screen_name>` | `--count <u32>`, `--cursor <string>` |
-| `user-likes` | Fetch liked tweets for the authenticated Twitter/X account | 2.0发布待测试 | none | `--count <u32>`, `--cursor <string>` |
-| `user-bookmarks` | Fetch bookmarks for the authenticated Twitter/X account | 2.0发布待测试 | none | `--count <u32>`, `--cursor <string>` |
-| `user-followed` | Fetch the followed home timeline for the authenticated Twitter/X account | 2.0发布待测试 | none | `--count <u32>`, `--cursor <string>` |
-| `user-recommended` | Fetch the recommended home timeline for the authenticated Twitter/X account | 2.0发布待测试 | none | `--count <u32>`, `--cursor <string>` |
-| `live-room-info` | Fetch current live room information for a Twitter/X account | 2.0发布待测试 | optional `<screen_name>` | `--user-id <user_id>`; choose either `screen_name` or `--user-id` |
-| `live-room-stream` | Resolve a Twitter/X live room master HLS stream | 2.0发布待测试 | optional `<broadcast_id>` | `--media-key <media_key>` or `--tweet-id <tweet_id>`; choose exactly one input |
-| `tweet-detail` | Fetch one Twitter/X tweet detail | 2.0发布待测试 | `<tweet_id>` | none |
-| `tweet-replies` | Fetch replies for one Twitter/X tweet | 2.0发布待测试 | `<tweet_id>` | `--cursor <string>`, `--sort-by <sort_by>` |
-| `tweet-likers` | Fetch users who liked one Twitter/X tweet | 2.0发布待测试 | `<tweet_id>` | `--count <u32>`, `--cursor <string>` |
-| `tweet-retweeters` | Fetch users who retweeted one Twitter/X tweet | 2.0发布待测试 | `<tweet_id>` | `--count <u32>`, `--cursor <string>` |
-| `space-detail` | Fetch one Twitter/X Space detail | 2.0发布待测试 | `<space_id>` | none |
+| Task | Description | Status | Test Time | Required Positional Parameters | Optional / Named Parameters |
+| --- | --- | --- | --- | --- | --- |
+| `search-tweets` | Search Twitter/X tweets | Test passed | 2026-06-17 22:23:38 CST | `<query>` | `--search-type <mode>`, `--count <u32>`, `--cursor <string>` |
+| `search-users` | Search Twitter/X users | Test passed | 2026-06-17 22:23:38 CST | `<query>` | `--count <u32>`, `--cursor <string>` |
+| `user-profile` | Fetch one Twitter/X user profile | Test passed | 2026-06-17 22:23:38 CST | `<screen_name>` | none |
+| `user-timeline` | Fetch one Twitter/X user timeline | Test passed | 2026-06-17 22:23:38 CST | `<screen_name>` | `--count <u32>`, `--cursor <string>` |
+| `user-replies` | Fetch one Twitter/X user replies timeline | Test passed | 2026-06-17 22:23:38 CST | `<screen_name>` | `--count <u32>`, `--cursor <string>` |
+| `user-media` | Fetch one Twitter/X user media timeline | Test passed | 2026-06-17 22:23:38 CST | `<screen_name>` | `--count <u32>`, `--cursor <string>` |
+| `user-followers` | Fetch one Twitter/X user followers page | Test passed | 2026-06-17 22:23:38 CST | `<screen_name>` | `--count <u32>`, `--cursor <string>` |
+| `user-following` | Fetch one Twitter/X user following page | Test passed | 2026-06-17 22:23:38 CST | `<screen_name>` | `--count <u32>`, `--cursor <string>` |
+| `user-likes` | Fetch liked tweets for the authenticated Twitter/X account | Test passed | 2026-06-17 22:23:38 CST | none | `--count <u32>`, `--cursor <string>` |
+| `user-bookmarks` | Fetch bookmarks for the authenticated Twitter/X account | Test passed | 2026-06-17 22:23:38 CST | none | `--count <u32>`, `--cursor <string>` |
+| `user-followed` | Fetch the followed home timeline for the authenticated Twitter/X account | Test passed | 2026-06-17 22:23:38 CST | none | `--count <u32>`, `--cursor <string>` |
+| `user-recommended` | Fetch the recommended home timeline for the authenticated Twitter/X account | Test passed | 2026-06-17 22:23:38 CST | none | `--count <u32>`, `--cursor <string>` |
+| `live-room-info` | Fetch current live room information for a Twitter/X account | Test passed | 2026-06-17 22:23:38 CST | optional `<screen_name>` | `--user-id <user_id>`; choose either `screen_name` or `--user-id` |
+| `live-room-stream` | Resolve a Twitter/X live room master HLS stream | Test passed | 2026-06-17 22:23:38 CST | optional `<broadcast_id>` | `--media-key <media_key>` or `--tweet-id <tweet_id>`; choose exactly one input |
+| `tweet-detail` | Fetch one Twitter/X tweet detail | Test passed | 2026-06-17 22:23:38 CST | `<tweet_id>` | none |
+| `tweet-replies` | Fetch replies for one Twitter/X tweet | Test passed | 2026-06-17 22:23:38 CST | `<tweet_id>` | `--cursor <string>`, `--sort-by <sort_by>` |
+| `tweet-likers` | Fetch users who liked one Twitter/X tweet | Test passed | 2026-06-17 22:23:38 CST | `<tweet_id>` | `--count <u32>`, `--cursor <string>` |
+| `tweet-retweeters` | Fetch users who retweeted one Twitter/X tweet | Test passed | 2026-06-17 22:23:38 CST | `<tweet_id>` | `--count <u32>`, `--cursor <string>` |
+| `space-detail` | Fetch one Twitter/X Space detail | 2.0 release test skipped: missing `AMAGI_PRIVATE_TWITTER_SPACE_ID` | 2026-06-17 22:23:38 CST | `<space_id>` | none |
 
 CLI verification status meanings:
 
