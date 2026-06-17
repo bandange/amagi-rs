@@ -166,27 +166,27 @@ Prefix:
 amagi run douyin <TASK> ...
 ```
 
-| Task | Description | Status | Required Positional Parameters | Optional / Named Parameters |
-| --- | --- | --- | --- | --- |
-| `parse-work` | Parse one Douyin work | 2.0发布待测试 | `<aweme_id>` | none |
-| `video-work` | Fetch one Douyin video work | 2.0发布待测试 | `<aweme_id>` | none |
-| `image-album-work` | Fetch one Douyin image album work | 2.0发布待测试 | `<aweme_id>` | none |
-| `slides-work` | Fetch one Douyin slides work | 2.0发布待测试 | `<aweme_id>` | none |
-| `text-work` | Fetch one Douyin text work | 2.0发布待测试 | `<aweme_id>` | none |
-| `work-comments` | Fetch comments for one Douyin work | 2.0发布待测试 | `<aweme_id>` | `--number <u32>`, `--cursor <u64>` |
-| `comment-replies` | Fetch replies for one Douyin comment | 2.0发布待测试 | `<aweme_id> <comment_id>` | `--number <u32>`, `--cursor <u64>` |
-| `user-profile` | Fetch one Douyin user profile | 2.0发布待测试 | `<sec_uid>` | none |
-| `user-video-list` | Fetch one Douyin user video list | 2.0发布待测试 | `<sec_uid>` | `--number <u32>`, `--max-cursor <string>` |
-| `user-favorite-list` | Fetch one Douyin user favorite list | 2.0发布待测试 | `<sec_uid>` | `--number <u32>`, `--max-cursor <string>` |
-| `user-recommend-list` | Fetch one Douyin user recommend list | 2.0发布待测试 | `<sec_uid>` | `--number <u32>`, `--max-cursor <string>` |
-| `search` | Search Douyin content | 2.0发布待测试 | `<query>` | `--type <search_type>`, `--number <u32>`, `--search-id <string>` |
-| `suggest-words` | Fetch Douyin suggest words | 2.0发布待测试 | `<query>` | none |
-| `music-info` | Fetch Douyin music metadata | 2.0发布待测试 | `<music_id>` | none |
-| `live-room-info` | Fetch Douyin live room info | 2.0发布待测试 | `<room_id>` | required named `--web-rid <string>` |
-| `login-qrcode` | Request a Douyin login QR code | 2.0发布待测试 | none | `--verify-fp <string>` |
-| `emoji-list` | Fetch the Douyin emoji list | 2.0发布待测试 | none | none |
-| `dynamic-emoji-list` | Fetch the Douyin dynamic emoji list | 2.0发布待测试 | none | none |
-| `danmaku-list` | Fetch the Douyin danmaku list | 2.0发布待测试 | `<aweme_id>` | required `--duration <u64>`, `--start-time <u64>`, `--end-time <u64>` |
+| Task | Description | Status | Test Time | Required Positional Parameters | Optional / Named Parameters |
+| --- | --- | --- | --- | --- | --- |
+| `parse-work` | Parse one Douyin work | Test passed | 2026-06-17 21:39:25 CST | `<aweme_id>` | none |
+| `video-work` | Fetch one Douyin video work | Test passed | 2026-06-17 21:39:25 CST | `<aweme_id>` | none |
+| `image-album-work` | Fetch one Douyin image album work | Test passed | 2026-06-17 21:39:25 CST | `<aweme_id>` | none |
+| `slides-work` | Fetch one Douyin slides work | Test passed | 2026-06-17 21:39:25 CST | `<aweme_id>` | none |
+| `text-work` | Fetch one Douyin text work | Test passed | 2026-06-17 21:39:25 CST | `<aweme_id>` | none |
+| `work-comments` | Fetch comments for one Douyin work | Test passed | 2026-06-17 21:39:25 CST | `<aweme_id>` | `--number <u32>`, `--cursor <u64>` |
+| `comment-replies` | Fetch replies for one Douyin comment | Test passed: current seed had no comments, so reply request was skipped | 2026-06-17 21:39:25 CST | `<aweme_id> <comment_id>` | `--number <u32>`, `--cursor <u64>` |
+| `user-profile` | Fetch one Douyin user profile | Test passed | 2026-06-17 21:39:25 CST | `<sec_uid>` | none |
+| `user-video-list` | Fetch one Douyin user video list | Test passed | 2026-06-17 21:39:25 CST | `<sec_uid>` | `--number <u32>`, `--max-cursor <string>` |
+| `user-favorite-list` | Fetch one Douyin user favorite list | 2.0 release test failed: upstream returned an empty body | 2026-06-17 21:39:25 CST | `<sec_uid>` | `--number <u32>`, `--max-cursor <string>` |
+| `user-recommend-list` | Fetch one Douyin user recommend list | 2.0 release test failed: response contains a boolean where the current type expects an integer | 2026-06-17 21:39:25 CST | `<sec_uid>` | `--number <u32>`, `--max-cursor <string>` |
+| `search` | Search Douyin content | Test passed | 2026-06-17 21:39:25 CST | `<query>` | `--type <search_type>`, `--number <u32>`, `--search-id <string>` |
+| `suggest-words` | Fetch Douyin suggest words | Test passed | 2026-06-17 21:39:25 CST | `<query>` | none |
+| `music-info` | Fetch Douyin music metadata | Test passed | 2026-06-17 21:39:25 CST | `<music_id>` | none |
+| `live-room-info` | Fetch Douyin live room info | Test passed | 2026-06-17 22:07:50 CST | `<room_id>` | required named `--web-rid <string>` |
+| `login-qrcode` | Request a Douyin login QR code | 2.0 release test failed: upstream returned an HTML risk-control page instead of JSON | 2026-06-17 21:39:25 CST | none | `--verify-fp <string>` |
+| `emoji-list` | Fetch the Douyin emoji list | Test passed | 2026-06-17 21:39:25 CST | none | none |
+| `dynamic-emoji-list` | Fetch the Douyin dynamic emoji list | Test passed | 2026-06-17 21:39:25 CST | none | none |
+| `danmaku-list` | Fetch the Douyin danmaku list | Test passed | 2026-06-17 21:39:25 CST | `<aweme_id>` | required `--duration <u64>`, `--start-time <u64>`, `--end-time <u64>` |
 
 ### 6.1 Douyin Enum Parameters
 
