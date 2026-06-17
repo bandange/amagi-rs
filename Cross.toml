@@ -1,0 +1,6 @@
+[build.env]
+passthrough = [
+    "BUILD_TYPE",
+    "AMAGI_BUILD_GIT_HASH",
+    "GITHUB_SHA",
+]
