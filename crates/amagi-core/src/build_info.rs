@@ -12,3 +12,25 @@ pub const BUILD_RUSTC: &str = env!("AMAGI_BUILD_RUSTC");
 pub const BUILD_TARGET: &str = env!("AMAGI_BUILD_TARGET");
 /// Rustup toolchain label used for the build, when available.
 pub const BUILD_TOOLCHAIN: &str = env!("AMAGI_BUILD_TOOLCHAIN");
+
+/// Build metadata marker kept in optimized binaries for cross-build CI checks.
+#[used]
+pub static BUILD_METADATA_MARKER: &str = concat!(
+    "AMAGI_BUILD_METADATA|version=",
+    env!("AMAGI_DISPLAY_VERSION"),
+    "|type=",
+    env!("AMAGI_BUILD_TYPE"),
+    "|rustc=",
+    env!("AMAGI_BUILD_RUSTC"),
+    "|target=",
+    env!("AMAGI_BUILD_TARGET"),
+    "|built=",
+    env!("AMAGI_BUILD_TIME"),
+    "|toolchain=",
+    env!("AMAGI_BUILD_TOOLCHAIN"),
+);
+
+/// Make the metadata marker reachable from final binaries without changing output.
+pub fn retain_metadata_marker() {
+    std::hint::black_box(BUILD_METADATA_MARKER);
+}

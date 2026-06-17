@@ -475,6 +475,8 @@ fn help_template(catalog: &LocaleCatalog) -> String {
 }
 
 fn version_output(catalog: &LocaleCatalog) -> String {
+    amagi_core::build_info::retain_metadata_marker();
+
     format!(
         "{}\n{}\n{}: {}\n{}: {}",
         build_type_label(catalog),

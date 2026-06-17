@@ -156,9 +156,11 @@ jobs:
         run: |
           binary="target/${{ matrix.target }}/release/${BIN_NAME}"
           strings "${binary}" > version-strings.txt
-          grep -E "daily-[0-9a-f]+" version-strings.txt
-          grep -E "rustc [0-9]" version-strings.txt
-          grep -E "[0-9]{4}-[0-9]{2}-[0-9]{2}T" version-strings.txt
+          grep -F "AMAGI_BUILD_METADATA|" version-strings.txt
+          grep -E "version=daily-[0-9a-f]+" version-strings.txt
+          grep -E "rustc=rustc [0-9]" version-strings.txt
+          grep -F "target=${{ matrix.target }}" version-strings.txt
+          grep -E "built=[0-9]{4}-[0-9]{2}-[0-9]{2}T" version-strings.txt
 
       - name: Package (tar.gz)
         if: runner.os != 'Windows'
