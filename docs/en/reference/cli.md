@@ -40,7 +40,7 @@ Currently available `run` platforms:
 | `bilibili` | 26 | video, comments, dynamics, bangumi, live, login QR, articles, captcha, emoji |
 | `douyin` | 19 | works, comments, users, search, music, live, login QR, emoji, danmaku |
 | `kuaishou` | 6 | works, comments, user profile, user works, live, emoji |
-| `twitter` | 17 | search, profiles, timelines, replies, media, follower graph, authenticated timelines, tweets, Spaces |
+| `twitter` | 19 | search, profiles, timelines, replies, media, follower graph, authenticated timelines, live room info, live room streams, tweets, Spaces |
 | `xiaohongshu` | 7 | home feed, notes, comments, profiles, search, emoji |
 
 ## 3. Global Options
@@ -101,33 +101,33 @@ amagi run bilibili <TASK> ...
 
 | Task | Description | Status | Required Positional Parameters | Optional / Named Parameters |
 | --- | --- | --- | --- | --- |
-| `video-info` | Fetch one Bilibili video payload | tested and usable | `<bvid>` | none |
-| `video-stream` | Fetch one Bilibili video stream payload | tested and usable | `<aid>` | required named `--cid <u64>` |
-| `video-danmaku` | Fetch one Bilibili video danmaku segment | tested and usable | `<cid>` | `--segment-index <u32>` |
-| `comments` | Fetch comments for one Bilibili subject | tested and usable | `<oid>` | required `--type <u32>`, `--number <u32>`, `--mode <u32>` |
-| `comment-replies` | Fetch replies for one Bilibili root comment | tested and usable | `<oid> <root>` | required `--type <u32>`, `--number <u32>` |
-| `user-card` | Fetch one Bilibili user card | tested and usable | `<host_mid>` | none |
-| `user-dynamic-list` | Fetch one Bilibili user dynamic list | tested and usable | `<host_mid>` | none |
-| `user-space-info` | Fetch one Bilibili user space payload | tested and usable | `<host_mid>` | none |
-| `uploader-total-views` | Fetch one uploader's total views | tested and usable | `<host_mid>` | none |
-| `dynamic-detail` | Fetch one Bilibili dynamic detail payload | tested and usable | `<dynamic_id>` | none |
-| `dynamic-card` | Fetch one Bilibili dynamic card payload | tested and usable | `<dynamic_id>` | none |
-| `bangumi-info` | Fetch one Bilibili bangumi metadata payload | not re-verified in this pass | `<bangumi_id>` | none |
-| `bangumi-stream` | Fetch one Bilibili bangumi stream payload | not re-verified in this pass | `<ep_id>` | required named `--cid <u64>` |
-| `live-room-info` | Fetch one Bilibili live room detail payload | not re-verified in this pass | `<room_id>` | none |
-| `live-room-init` | Fetch one Bilibili live room init payload | not re-verified in this pass | `<room_id>` | none |
-| `login-status` | Fetch the current Bilibili login status | tested and usable | none | none |
-| `login-qrcode` | Request a Bilibili login QR code | tested and usable | none | none |
-| `qrcode-status` | Poll one Bilibili login QR code | not re-verified in this pass | `<qrcode_key>` | none |
-| `emoji-list` | Fetch the Bilibili emoji catalog | tested and usable | none | none |
-| `av-to-bv` | Convert one AV identifier into BV | tested and usable | `<aid>` | none |
-| `bv-to-av` | Convert one BV identifier into AV | tested and usable | `<bvid>` | none |
-| `article-content` | Fetch one Bilibili article content payload | not re-verified in this pass | `<article_id>` | none |
-| `article-cards` | Fetch article cards for one or more ids | not re-verified in this pass | `<ids>...` | none |
-| `article-info` | Fetch one Bilibili article metadata payload | not re-verified in this pass | `<article_id>` | none |
-| `article-list-info` | Fetch one Bilibili article-list payload | not re-verified in this pass | `<list_id>` | none |
-| `captcha-from-voucher` | Request a Bilibili captcha challenge from one voucher | not re-verified in this pass | `<v_voucher>` | `--csrf <string>` |
-| `validate-captcha` | Validate one Bilibili captcha result | not re-verified in this pass | `<challenge> <token> <validate> <seccode>` | `--csrf <string>` |
+| `video-info` | Fetch one Bilibili video payload | 2.0发布待测试 | `<bvid>` | none |
+| `video-stream` | Fetch one Bilibili video stream payload | 2.0发布待测试 | `<aid>` | required named `--cid <u64>` |
+| `video-danmaku` | Fetch one Bilibili video danmaku segment | 2.0发布待测试 | `<cid>` | `--segment-index <u32>` |
+| `comments` | Fetch comments for one Bilibili subject | 2.0发布待测试 | `<oid>` | required `--type <u32>`, `--number <u32>`, `--mode <u32>` |
+| `comment-replies` | Fetch replies for one Bilibili root comment | 2.0发布待测试 | `<oid> <root>` | required `--type <u32>`, `--number <u32>` |
+| `user-card` | Fetch one Bilibili user card | 2.0发布待测试 | `<host_mid>` | none |
+| `user-dynamic-list` | Fetch one Bilibili user dynamic list | 2.0发布待测试 | `<host_mid>` | none |
+| `user-space-info` | Fetch one Bilibili user space payload | 2.0发布待测试 | `<host_mid>` | none |
+| `uploader-total-views` | Fetch one uploader's total views | 2.0发布待测试 | `<host_mid>` | none |
+| `dynamic-detail` | Fetch one Bilibili dynamic detail payload | 2.0发布待测试 | `<dynamic_id>` | none |
+| `dynamic-card` | Fetch one Bilibili dynamic card payload | 2.0发布待测试 | `<dynamic_id>` | none |
+| `bangumi-info` | Fetch one Bilibili bangumi metadata payload | 2.0发布待测试 | `<bangumi_id>` | none |
+| `bangumi-stream` | Fetch one Bilibili bangumi stream payload | 2.0发布待测试 | `<ep_id>` | required named `--cid <u64>` |
+| `live-room-info` | Fetch one Bilibili live room detail payload | 2.0发布待测试 | `<room_id>` | none |
+| `live-room-init` | Fetch one Bilibili live room init payload | 2.0发布待测试 | `<room_id>` | none |
+| `login-status` | Fetch the current Bilibili login status | 2.0发布待测试 | none | none |
+| `login-qrcode` | Request a Bilibili login QR code | 2.0发布待测试 | none | none |
+| `qrcode-status` | Poll one Bilibili login QR code | 2.0发布待测试 | `<qrcode_key>` | none |
+| `emoji-list` | Fetch the Bilibili emoji catalog | 2.0发布待测试 | none | none |
+| `av-to-bv` | Convert one AV identifier into BV | 2.0发布待测试 | `<aid>` | none |
+| `bv-to-av` | Convert one BV identifier into AV | 2.0发布待测试 | `<bvid>` | none |
+| `article-content` | Fetch one Bilibili article content payload | 2.0发布待测试 | `<article_id>` | none |
+| `article-cards` | Fetch article cards for one or more ids | 2.0发布待测试 | `<ids>...` | none |
+| `article-info` | Fetch one Bilibili article metadata payload | 2.0发布待测试 | `<article_id>` | none |
+| `article-list-info` | Fetch one Bilibili article-list payload | 2.0发布待测试 | `<list_id>` | none |
+| `captcha-from-voucher` | Request a Bilibili captcha challenge from one voucher | 2.0发布待测试 | `<v_voucher>` | `--csrf <string>` |
+| `validate-captcha` | Validate one Bilibili captcha result | 2.0发布待测试 | `<challenge> <token> <validate> <seccode>` | `--csrf <string>` |
 
 ### 5.1 Bilibili Parameter Reference
 
@@ -168,25 +168,25 @@ amagi run douyin <TASK> ...
 
 | Task | Description | Status | Required Positional Parameters | Optional / Named Parameters |
 | --- | --- | --- | --- | --- |
-| `parse-work` | Parse one Douyin work | tested and usable | `<aweme_id>` | none |
-| `video-work` | Fetch one Douyin video work | tested and usable | `<aweme_id>` | none |
-| `image-album-work` | Fetch one Douyin image album work | tested and usable | `<aweme_id>` | none |
-| `slides-work` | Fetch one Douyin slides work | tested and usable | `<aweme_id>` | none |
-| `text-work` | Fetch one Douyin text work | tested and usable | `<aweme_id>` | none |
-| `work-comments` | Fetch comments for one Douyin work | tested and usable | `<aweme_id>` | `--number <u32>`, `--cursor <u64>` |
-| `comment-replies` | Fetch replies for one Douyin comment | tested and usable | `<aweme_id> <comment_id>` | `--number <u32>`, `--cursor <u64>` |
-| `user-profile` | Fetch one Douyin user profile | tested and usable | `<sec_uid>` | none |
-| `user-video-list` | Fetch one Douyin user video list | tested and usable | `<sec_uid>` | `--number <u32>`, `--max-cursor <string>` |
-| `user-favorite-list` | Fetch one Douyin user favorite list | tested, current implementation failure | `<sec_uid>` | `--number <u32>`, `--max-cursor <string>` |
-| `user-recommend-list` | Fetch one Douyin user recommend list | tested, current implementation failure | `<sec_uid>` | `--number <u32>`, `--max-cursor <string>` |
-| `search` | Search Douyin content | tested and usable | `<query>` | `--type <search_type>`, `--number <u32>`, `--search-id <string>` |
-| `suggest-words` | Fetch Douyin suggest words | tested and usable | `<query>` | none |
-| `music-info` | Fetch Douyin music metadata | tested and usable | `<music_id>` | none |
-| `live-room-info` | Fetch Douyin live room info | tested and usable | `<room_id>` | required named `--web-rid <string>` |
-| `login-qrcode` | Request a Douyin login QR code | tested, current implementation failure | none | `--verify-fp <string>` |
-| `emoji-list` | Fetch the Douyin emoji list | tested and usable | none | none |
-| `dynamic-emoji-list` | Fetch the Douyin dynamic emoji list | tested and usable | none | none |
-| `danmaku-list` | Fetch the Douyin danmaku list | tested, known caveat | `<aweme_id>` | required `--duration <u64>`, `--start-time <u64>`, `--end-time <u64>` |
+| `parse-work` | Parse one Douyin work | 2.0发布待测试 | `<aweme_id>` | none |
+| `video-work` | Fetch one Douyin video work | 2.0发布待测试 | `<aweme_id>` | none |
+| `image-album-work` | Fetch one Douyin image album work | 2.0发布待测试 | `<aweme_id>` | none |
+| `slides-work` | Fetch one Douyin slides work | 2.0发布待测试 | `<aweme_id>` | none |
+| `text-work` | Fetch one Douyin text work | 2.0发布待测试 | `<aweme_id>` | none |
+| `work-comments` | Fetch comments for one Douyin work | 2.0发布待测试 | `<aweme_id>` | `--number <u32>`, `--cursor <u64>` |
+| `comment-replies` | Fetch replies for one Douyin comment | 2.0发布待测试 | `<aweme_id> <comment_id>` | `--number <u32>`, `--cursor <u64>` |
+| `user-profile` | Fetch one Douyin user profile | 2.0发布待测试 | `<sec_uid>` | none |
+| `user-video-list` | Fetch one Douyin user video list | 2.0发布待测试 | `<sec_uid>` | `--number <u32>`, `--max-cursor <string>` |
+| `user-favorite-list` | Fetch one Douyin user favorite list | 2.0发布待测试 | `<sec_uid>` | `--number <u32>`, `--max-cursor <string>` |
+| `user-recommend-list` | Fetch one Douyin user recommend list | 2.0发布待测试 | `<sec_uid>` | `--number <u32>`, `--max-cursor <string>` |
+| `search` | Search Douyin content | 2.0发布待测试 | `<query>` | `--type <search_type>`, `--number <u32>`, `--search-id <string>` |
+| `suggest-words` | Fetch Douyin suggest words | 2.0发布待测试 | `<query>` | none |
+| `music-info` | Fetch Douyin music metadata | 2.0发布待测试 | `<music_id>` | none |
+| `live-room-info` | Fetch Douyin live room info | 2.0发布待测试 | `<room_id>` | required named `--web-rid <string>` |
+| `login-qrcode` | Request a Douyin login QR code | 2.0发布待测试 | none | `--verify-fp <string>` |
+| `emoji-list` | Fetch the Douyin emoji list | 2.0发布待测试 | none | none |
+| `dynamic-emoji-list` | Fetch the Douyin dynamic emoji list | 2.0发布待测试 | none | none |
+| `danmaku-list` | Fetch the Douyin danmaku list | 2.0发布待测试 | `<aweme_id>` | required `--duration <u64>`, `--start-time <u64>`, `--end-time <u64>` |
 
 ### 6.1 Douyin Enum Parameters
 
@@ -224,12 +224,12 @@ amagi run kuaishou <TASK> ...
 
 | Task | Description | Status | Required Positional Parameters | Optional / Named Parameters |
 | --- | --- | --- | --- | --- |
-| `video-work` | Fetch one Kuaishou video work | tested and usable | `<photo_id>` | none |
-| `work-comments` | Fetch comments for one Kuaishou work | tested and usable | `<photo_id>` | none |
-| `emoji-list` | Fetch the Kuaishou emoji catalog | tested and usable | none | none |
-| `user-profile` | Fetch one Kuaishou user profile | tested and usable | `<principal_id>` | none |
-| `user-work-list` | Fetch one Kuaishou user work list | tested and usable | `<principal_id>` | `--pcursor <string>`, `--count <u32>` |
-| `live-room-info` | Fetch Kuaishou live room info | tested and usable | `<principal_id>` | none |
+| `video-work` | Fetch one Kuaishou video work | 2.0发布待测试 | `<photo_id>` | none |
+| `work-comments` | Fetch comments for one Kuaishou work | 2.0发布待测试 | `<photo_id>` | none |
+| `emoji-list` | Fetch the Kuaishou emoji catalog | 2.0发布待测试 | none | none |
+| `user-profile` | Fetch one Kuaishou user profile | 2.0发布待测试 | `<principal_id>` | none |
+| `user-work-list` | Fetch one Kuaishou user work list | 2.0发布待测试 | `<principal_id>` | `--pcursor <string>`, `--count <u32>` |
+| `live-room-info` | Fetch Kuaishou live room info | 2.0发布待测试 | `<principal_id>` | none |
 
 ### 7.1 Kuaishou Parameter Reference
 
@@ -250,31 +250,29 @@ amagi run twitter <TASK> ...
 
 | Task | Description | Status | Required Positional Parameters | Optional / Named Parameters |
 | --- | --- | --- | --- | --- |
-| `search-tweets` | Search Twitter/X tweets | tested and usable | `<query>` | `--search-type <mode>`, `--count <u32>`, `--cursor <string>` |
-| `search-users` | Search Twitter/X users | tested and usable | `<query>` | `--count <u32>`, `--cursor <string>` |
-| `user-profile` | Fetch one Twitter/X user profile | tested and usable | `<screen_name>` | none |
-| `user-timeline` | Fetch one Twitter/X user timeline | tested and usable | `<screen_name>` | `--count <u32>`, `--cursor <string>` |
-| `user-replies` | Fetch one Twitter/X user replies timeline | tested, known caveat | `<screen_name>` | `--count <u32>`, `--cursor <string>` |
-| `user-media` | Fetch one Twitter/X user media timeline | tested, known caveat | `<screen_name>` | `--count <u32>`, `--cursor <string>` |
-| `user-followers` | Fetch one Twitter/X user followers page | tested and usable | `<screen_name>` | `--count <u32>`, `--cursor <string>` |
-| `user-following` | Fetch one Twitter/X user following page | tested and usable | `<screen_name>` | `--count <u32>`, `--cursor <string>` |
-| `user-likes` | Fetch liked tweets for the authenticated Twitter/X account | tested and usable | none | `--count <u32>`, `--cursor <string>` |
-| `user-bookmarks` | Fetch bookmarks for the authenticated Twitter/X account | tested and usable | none | `--count <u32>`, `--cursor <string>` |
-| `user-followed` | Fetch the followed home timeline for the authenticated Twitter/X account | tested and usable | none | `--count <u32>`, `--cursor <string>` |
-| `user-recommended` | Fetch the recommended home timeline for the authenticated Twitter/X account | tested and usable | none | `--count <u32>`, `--cursor <string>` |
-| `tweet-detail` | Fetch one Twitter/X tweet detail | tested and usable | `<tweet_id>` | none |
-| `tweet-replies` | Fetch replies for one Twitter/X tweet | tested, known caveat | `<tweet_id>` | `--cursor <string>`, `--sort-by <sort_by>` |
-| `tweet-likers` | Fetch users who liked one Twitter/X tweet | tested and usable | `<tweet_id>` | `--count <u32>`, `--cursor <string>` |
-| `tweet-retweeters` | Fetch users who retweeted one Twitter/X tweet | tested and usable | `<tweet_id>` | `--count <u32>`, `--cursor <string>` |
-| `space-detail` | Fetch one Twitter/X Space detail | not re-verified in this pass | `<space_id>` | none |
+| `search-tweets` | Search Twitter/X tweets | 2.0发布待测试 | `<query>` | `--search-type <mode>`, `--count <u32>`, `--cursor <string>` |
+| `search-users` | Search Twitter/X users | 2.0发布待测试 | `<query>` | `--count <u32>`, `--cursor <string>` |
+| `user-profile` | Fetch one Twitter/X user profile | 2.0发布待测试 | `<screen_name>` | none |
+| `user-timeline` | Fetch one Twitter/X user timeline | 2.0发布待测试 | `<screen_name>` | `--count <u32>`, `--cursor <string>` |
+| `user-replies` | Fetch one Twitter/X user replies timeline | 2.0发布待测试 | `<screen_name>` | `--count <u32>`, `--cursor <string>` |
+| `user-media` | Fetch one Twitter/X user media timeline | 2.0发布待测试 | `<screen_name>` | `--count <u32>`, `--cursor <string>` |
+| `user-followers` | Fetch one Twitter/X user followers page | 2.0发布待测试 | `<screen_name>` | `--count <u32>`, `--cursor <string>` |
+| `user-following` | Fetch one Twitter/X user following page | 2.0发布待测试 | `<screen_name>` | `--count <u32>`, `--cursor <string>` |
+| `user-likes` | Fetch liked tweets for the authenticated Twitter/X account | 2.0发布待测试 | none | `--count <u32>`, `--cursor <string>` |
+| `user-bookmarks` | Fetch bookmarks for the authenticated Twitter/X account | 2.0发布待测试 | none | `--count <u32>`, `--cursor <string>` |
+| `user-followed` | Fetch the followed home timeline for the authenticated Twitter/X account | 2.0发布待测试 | none | `--count <u32>`, `--cursor <string>` |
+| `user-recommended` | Fetch the recommended home timeline for the authenticated Twitter/X account | 2.0发布待测试 | none | `--count <u32>`, `--cursor <string>` |
+| `live-room-info` | Fetch current live room information for a Twitter/X account | 2.0发布待测试 | optional `<screen_name>` | `--user-id <user_id>`; choose either `screen_name` or `--user-id` |
+| `live-room-stream` | Resolve a Twitter/X live room master HLS stream | 2.0发布待测试 | optional `<broadcast_id>` | `--media-key <media_key>` or `--tweet-id <tweet_id>`; choose exactly one input |
+| `tweet-detail` | Fetch one Twitter/X tweet detail | 2.0发布待测试 | `<tweet_id>` | none |
+| `tweet-replies` | Fetch replies for one Twitter/X tweet | 2.0发布待测试 | `<tweet_id>` | `--cursor <string>`, `--sort-by <sort_by>` |
+| `tweet-likers` | Fetch users who liked one Twitter/X tweet | 2.0发布待测试 | `<tweet_id>` | `--count <u32>`, `--cursor <string>` |
+| `tweet-retweeters` | Fetch users who retweeted one Twitter/X tweet | 2.0发布待测试 | `<tweet_id>` | `--count <u32>`, `--cursor <string>` |
+| `space-detail` | Fetch one Twitter/X Space detail | 2.0发布待测试 | `<space_id>` | none |
 
 CLI verification status meanings:
 
-- `tested and usable`: the command path was verified and can be used as part of the current supported surface
-- `tested, known caveat`: the command runs successfully, but the current output still differs from the intended command semantics
-- `tested, requires valid authenticated session`: the command path was exercised, but the current environment did not provide a valid logged-in session and the upstream returned an authentication failure
-- `tested, current implementation failure`: the command was exercised in this pass, but the current implementation failed and needs a code fix before it is usable
-- `not re-verified in this pass`: the interface is documented, but this CLI verification pass did not cover it separately
+- `2.0发布待测试`: pending verification for the 2.0 release.
 
 Current caveats:
 
@@ -298,6 +296,7 @@ Current caveats:
 | `count` | `u32` | item count |
 | `cursor` | string | pagination cursor |
 | `screen_name` | string | user `screen_name` |
+| `user_id` | string | numeric Twitter/X user id |
 | `tweet_id` | string | tweet id |
 | `space_id` | string | Space id |
 
@@ -311,13 +310,13 @@ amagi run xiaohongshu <TASK> ...
 
 | Task | Description | Status | Required Positional Parameters | Optional / Named Parameters |
 | --- | --- | --- | --- | --- |
-| `home-feed` | Fetch the Xiaohongshu home feed | tested and usable | none | `--cursor-score <string>`, `--num <u32>`, `--refresh-type <u32>`, `--note-index <u32>`, `--category <string>`, `--search-key <string>` |
-| `note-detail` | Fetch one Xiaohongshu note detail | tested and usable | `<note_id>` | required named `--xsec-token <string>` |
-| `note-comments` | Fetch one page of Xiaohongshu note comments | tested and usable | `<note_id>` | required `--xsec-token <string>`, `--cursor <string>` |
-| `user-profile` | Fetch one Xiaohongshu user profile | tested and usable | `<user_id>` | required `--xsec-token <string>`, optional `--xsec-source <string>` |
-| `user-note-list` | Fetch one page of Xiaohongshu user notes | tested and usable | `<user_id>` | required `--xsec-token <string>`, optional `--xsec-source <string>`, `--cursor <string>`, `--num <u32>` |
-| `emoji-list` | Fetch the Xiaohongshu emoji catalog | tested and usable | none | none |
-| `search` | Search Xiaohongshu notes | tested and usable | `<keyword>` | `--page <u32>`, `--page-size <u32>`, `--sort <sort>`, `--note-type <note_type>` |
+| `home-feed` | Fetch the Xiaohongshu home feed | 2.0发布待测试 | none | `--cursor-score <string>`, `--num <u32>`, `--refresh-type <u32>`, `--note-index <u32>`, `--category <string>`, `--search-key <string>` |
+| `note-detail` | Fetch one Xiaohongshu note detail | 2.0发布待测试 | `<note_id>` | required named `--xsec-token <string>` |
+| `note-comments` | Fetch one page of Xiaohongshu note comments | 2.0发布待测试 | `<note_id>` | required `--xsec-token <string>`, `--cursor <string>` |
+| `user-profile` | Fetch one Xiaohongshu user profile | 2.0发布待测试 | `<user_id>` | required `--xsec-token <string>`, optional `--xsec-source <string>` |
+| `user-note-list` | Fetch one page of Xiaohongshu user notes | 2.0发布待测试 | `<user_id>` | required `--xsec-token <string>`, optional `--xsec-source <string>`, `--cursor <string>`, `--num <u32>` |
+| `emoji-list` | Fetch the Xiaohongshu emoji catalog | 2.0发布待测试 | none | none |
+| `search` | Search Xiaohongshu notes | 2.0发布待测试 | `<keyword>` | `--page <u32>`, `--page-size <u32>`, `--sort <sort>`, `--note-type <note_type>` |
 
 ### 9.1 Xiaohongshu Enum Parameters
 
