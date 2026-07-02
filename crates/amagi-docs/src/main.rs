@@ -10,6 +10,7 @@ const THEME_PALETTE_TONES: &[i32] = &[0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 95,
 const THEME_STORAGE_KEY: &str = "amagi-docs-theme";
 const LANGUAGES: &[Language] = &[Language::Chinese, Language::English];
 const PROJECT_REPOSITORY_URL: &str = "https://github.com/bandange/amagi-rs";
+const PROJECT_COMMIT_URL_PREFIX: &str = "https://github.com/bandange/amagi-rs/commit/";
 const PROJECT_LICENSE_URL: &str = "https://github.com/bandange/amagi-rs/blob/main/LICENSE";
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
@@ -148,8 +149,8 @@ impl Language {
 
     fn repository_label(self) -> &'static str {
         match self {
-            Language::English => "Repository",
-            Language::Chinese => "项目地址",
+            Language::English => "Source",
+            Language::Chinese => "源码",
         }
     }
 
@@ -595,6 +596,9 @@ fn DocsLayout(language: Language, slug: String) -> Element {
 
 #[component]
 fn SiteFooter(language: Language) -> Element {
+    let source_href = docs_source_href();
+    let source_label = docs_source_link_label(language);
+
     rsx! {
         footer { class: "site-footer",
             div { class: "site-footer-main",
@@ -614,14 +618,37 @@ fn SiteFooter(language: Language) -> Element {
                     "{language.license_label()}"
                 }
                 a {
-                    href: PROJECT_REPOSITORY_URL,
+                    href: "{source_href}",
                     target: "_blank",
                     rel: "noreferrer",
-                    "{language.repository_label()}"
+                    "{source_label}"
                 }
             }
         }
     }
+}
+
+fn docs_source_href() -> String {
+    match docs_build_git_sha() {
+        Some(sha) => format!("{PROJECT_COMMIT_URL_PREFIX}{sha}"),
+        None => PROJECT_REPOSITORY_URL.to_owned(),
+    }
+}
+
+fn docs_source_link_label(language: Language) -> String {
+    match docs_build_git_sha_short() {
+        Some(short_sha) => format!("{} @ {short_sha}", language.repository_label()),
+        None => language.repository_label().to_owned(),
+    }
+}
+
+fn docs_build_git_sha() -> Option<&'static str> {
+    let sha = option_env!("AMAGI_DOCS_GIT_SHA")?.trim();
+    if sha.is_empty() { None } else { Some(sha) }
+}
+
+fn docs_build_git_sha_short() -> Option<&'static str> {
+    docs_build_git_sha().map(|sha| if sha.len() > 7 { &sha[..7] } else { sha })
 }
 
 #[component]

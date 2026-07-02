@@ -308,15 +308,15 @@ Prefix:
 amagi run xiaohongshu <TASK> ...
 ```
 
-| Task | Description | Status | Required Positional Parameters | Optional / Named Parameters |
-| --- | --- | --- | --- | --- |
-| `home-feed` | Fetch the Xiaohongshu home feed | 2.0发布待测试 | none | `--cursor-score <string>`, `--num <u32>`, `--refresh-type <u32>`, `--note-index <u32>`, `--category <string>`, `--search-key <string>` |
-| `note-detail` | Fetch one Xiaohongshu note detail | 2.0发布待测试 | `<note_id>` | required named `--xsec-token <string>` |
-| `note-comments` | Fetch one page of Xiaohongshu note comments | 2.0发布待测试 | `<note_id>` | required `--xsec-token <string>`, `--cursor <string>` |
-| `user-profile` | Fetch one Xiaohongshu user profile | 2.0发布待测试 | `<user_id>` | required `--xsec-token <string>`, optional `--xsec-source <string>` |
-| `user-note-list` | Fetch one page of Xiaohongshu user notes | 2.0发布待测试 | `<user_id>` | required `--xsec-token <string>`, optional `--xsec-source <string>`, `--cursor <string>`, `--num <u32>` |
-| `emoji-list` | Fetch the Xiaohongshu emoji catalog | 2.0发布待测试 | none | none |
-| `search` | Search Xiaohongshu notes | 2.0发布待测试 | `<keyword>` | `--page <u32>`, `--page-size <u32>`, `--sort <sort>`, `--note-type <note_type>` |
+| Task | Description | Status | Test Time | Required Positional Parameters | Optional / Named Parameters |
+| --- | --- | --- | --- | --- | --- |
+| `home-feed` | Fetch the Xiaohongshu home feed | Test passed | 2026-06-18 00:11:45 CST | none | `--cursor-score <string>`, `--num <u32>`, `--refresh-type <u32>`, `--note-index <u32>`, `--category <string>`, `--search-key <string>` |
+| `note-detail` | Fetch one Xiaohongshu note detail | Test passed | 2026-06-18 00:11:45 CST | `<note_id>` | required named `--xsec-token <string>` |
+| `note-comments` | Fetch one page of Xiaohongshu note comments | Test passed | 2026-06-18 00:11:45 CST | `<note_id>` | required `--xsec-token <string>`, `--cursor <string>` |
+| `user-profile` | Fetch one Xiaohongshu user profile | Test passed | 2026-06-18 00:11:45 CST | `<user_id>` | required `--xsec-token <string>`, optional `--xsec-source <string>` |
+| `user-note-list` | Fetch one page of Xiaohongshu user notes | Test passed | 2026-06-18 00:11:45 CST | `<user_id>` | required `--xsec-token <string>`, optional `--xsec-source <string>`, `--cursor <string>`, `--num <u32>` |
+| `emoji-list` | Fetch the Xiaohongshu emoji catalog | Test passed | 2026-06-18 00:11:45 CST | none | none |
+| `search` | Search Xiaohongshu notes | Test passed | 2026-06-18 00:11:45 CST | `<keyword>` | `--page <u32>`, `--page-size <u32>`, `--sort <sort>`, `--note-type <note_type>` |
 
 ### 9.1 Xiaohongshu Enum Parameters
 
