@@ -1,3 +1,5 @@
+//! Shared API specification types exposed by adapters and the HTTP server.
+
 use serde::Serialize;
 
 use crate::Platform;

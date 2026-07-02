@@ -1,3 +1,5 @@
+//! Supported platform identifiers and parsing helpers.
+
 use std::fmt;
 use std::str::FromStr;
 

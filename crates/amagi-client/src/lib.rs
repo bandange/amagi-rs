@@ -2,6 +2,7 @@
 //!
 //! This crate exposes the shared SDK entrypoint while platform-specific
 //! fetchers live in `amagi-adapters`.
+#![warn(missing_docs)]
 
 pub mod events;
 

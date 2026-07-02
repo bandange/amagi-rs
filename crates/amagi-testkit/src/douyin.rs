@@ -1,3 +1,5 @@
+//! Douyin test fixtures, fetcher constructors, and assertion helpers.
+
 use amagi::douyin::{
     DEFAULT_USER_AGENT, DEFAULT_WINDOW_ENV, DouyinApiUrls, DouyinFetcher, DouyinParsedWork,
     DouyinSearchResult, DouyinSearchType, build_signed_url_with_a_bogus,
@@ -20,6 +22,11 @@ const TEST_QUERY: &str = "test query";
 const TEST_URL: &str =
     "https://www.douyin.com/aweme/v1/web/aweme/detail/?aweme_id=test_aweme_id&aid=6383";
 
+/// Assert that every public Douyin URL builder can produce a plausible URL.
+///
+/// # Errors
+///
+/// Returns an error when any URL builder rejects the fixed test inputs.
 pub fn assert_public_url_builders_cover_all_endpoints() -> TestResult {
     let urls = DouyinApiUrls::with_verify_fp(Some(DEFAULT_USER_AGENT), "verify_test");
     assert_eq!(urls.verify_fp(), "verify_test");
@@ -89,6 +96,12 @@ pub fn assert_public_url_builders_cover_all_endpoints() -> TestResult {
     Ok(())
 }
 
+/// Assert that public Douyin signing helpers return non-empty deterministic values.
+///
+/// # Errors
+///
+/// Returns an error when a signing helper cannot derive a signature from the
+/// fixed test input.
 pub fn assert_sign_helpers_generate_nonempty_values() -> TestResult {
     let deterministic_ms_token = generate_ms_token_from_entropy(4, b"abcd");
     assert_eq!(deterministic_ms_token.len(), 4);
@@ -136,6 +149,13 @@ pub fn assert_sign_helpers_generate_nonempty_values() -> TestResult {
     Ok(())
 }
 
+/// Build a Douyin fetcher only when `AMAGI_DOUYIN_COOKIE` is set.
+///
+/// Returns `Ok(None)` and prints a skip message when the cookie is unavailable.
+///
+/// # Errors
+///
+/// Returns an error when the shared test client cannot be constructed.
 #[cfg(feature = "client")]
 pub fn fetcher_from_env_if_cookie(
     manifest_dir: impl AsRef<std::path::Path>,
@@ -155,14 +175,25 @@ pub fn fetcher_from_env_if_cookie(
     Ok(Some(client.douyin_fetcher()))
 }
 
+/// Minimal Douyin identifiers derived from private test data or search results.
 #[derive(Debug, Clone)]
 pub struct DouyinSeedSample {
+    /// Aweme id used as the primary work-detail seed.
     pub aweme_id: String,
+    /// Optional author `sec_uid` derived from the same sample.
     pub sec_uid: Option<String>,
+    /// Optional music id derived from the same sample.
     pub music_id: Option<String>,
+    /// Work duration in milliseconds.
     pub duration_ms: u64,
 }
 
+/// Derive a reusable Douyin sample from private env vars or live search data.
+///
+/// # Errors
+///
+/// Returns an error when upstream requests fail or no usable sample can be
+/// derived.
 pub async fn seed_sample(fetcher: &DouyinFetcher) -> TestResult<DouyinSeedSample> {
     if let Some(aweme_id) = private_env("AMAGI_PRIVATE_DOUYIN_AWEME_ID") {
         let work = fetcher.parse_work(&aweme_id).await?;
@@ -187,6 +218,7 @@ pub async fn seed_sample(fetcher: &DouyinFetcher) -> TestResult<DouyinSeedSample
     Err("could not derive a Douyin seed aweme from env or search results".into())
 }
 
+/// Build a Douyin seed sample from parsed work detail.
 pub fn seed_from_work(
     work: &DouyinParsedWork,
     fallback_aweme_id: String,
@@ -217,6 +249,7 @@ pub fn seed_from_work(
     })
 }
 
+/// Build a Douyin seed sample from a search response.
 pub fn seed_from_search(search: &DouyinSearchResult) -> Option<DouyinSeedSample> {
     search.data.iter().find_map(|item| {
         let aweme = item.aweme_info.as_ref()?;
@@ -232,6 +265,7 @@ pub fn seed_from_search(search: &DouyinSearchResult) -> Option<DouyinSeedSample>
     })
 }
 
+/// Assert that parsed work detail returned the expected aweme id.
 pub fn assert_work_detail(label: &str, work: &DouyinParsedWork, expected_aweme_id: &str) {
     assert_status_ok(label, work.meta.status_code);
     let detail = work
@@ -245,6 +279,7 @@ pub fn assert_work_detail(label: &str, work: &DouyinParsedWork, expected_aweme_i
     );
 }
 
+/// Assert that a Douyin search response is successful and contains useful data.
 pub fn assert_search_result(label: &str, search: &DouyinSearchResult) {
     assert_status_ok(label, search.meta.status_code);
     assert!(
@@ -255,16 +290,19 @@ pub fn assert_search_result(label: &str, search: &DouyinSearchResult) {
     );
 }
 
+/// Assert that an optional Douyin `status_code` is either absent or success.
 pub fn assert_status_ok(label: &str, status_code: Option<i64>) {
     if let Some(status_code) = status_code {
         assert_eq!(status_code, 0, "{label} returned non-zero status_code");
     }
 }
 
+/// Assert that a raw-payload condition is true for the named test case.
 pub fn assert_raw_payload(label: &str, condition: bool) {
     assert!(condition, "{label} should return a non-empty payload");
 }
 
+/// Return the first non-empty string or numeric value found at one of `keys`.
 pub fn string_at(value: &Value, keys: &[&str]) -> Option<String> {
     keys.iter().find_map(|key| {
         value.get(*key).and_then(|value| match value {
@@ -275,10 +313,12 @@ pub fn string_at(value: &Value, keys: &[&str]) -> Option<String> {
     })
 }
 
+/// Return the first non-empty string or numeric value under `parent`.
 pub fn nested_string_at(value: &Value, parent: &str, keys: &[&str]) -> Option<String> {
     value.get(parent).and_then(|value| string_at(value, keys))
 }
 
+/// Return the first unsigned integer value found at one of `keys`.
 pub fn number_at(value: &Value, keys: &[&str]) -> Option<u64> {
     keys.iter().find_map(|key| {
         value.get(*key).and_then(|value| {

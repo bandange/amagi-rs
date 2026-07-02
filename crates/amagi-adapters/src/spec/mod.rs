@@ -1,3 +1,5 @@
+//! Published API metadata for every platform adapter.
+
 use amagi_core::{Platform, PlatformApiSpec};
 
 mod bilibili;

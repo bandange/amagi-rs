@@ -1,4 +1,5 @@
 //! Shared core types, errors, and environment helpers for amagi crates.
+#![warn(missing_docs)]
 
 pub mod build_info;
 pub mod defaults;

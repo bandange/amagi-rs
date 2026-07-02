@@ -1,7 +1,10 @@
+//! Default request methods and headers for supported platforms.
+
 use std::collections::BTreeMap;
 
 use crate::{HttpMethod, Platform};
 
+/// Return the default HTTP method used for a platform's published endpoints.
 pub fn platform_default_method(platform: Platform) -> HttpMethod {
     match platform {
         Platform::Kuaishou => HttpMethod::Post,
@@ -11,6 +14,10 @@ pub fn platform_default_method(platform: Platform) -> HttpMethod {
     }
 }
 
+/// Return browser-like default headers used when calling a platform upstream.
+///
+/// The returned map is intentionally platform-specific and can be overridden by
+/// user-supplied [`crate::RequestConfig`] headers before a request is sent.
 pub fn platform_default_headers(platform: Platform) -> BTreeMap<String, String> {
     let mut headers = BTreeMap::new();
 

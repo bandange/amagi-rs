@@ -1,4 +1,5 @@
 //! Rust-native platform fetchers and shared upstream transport helpers.
+#![warn(missing_docs)]
 
 pub mod bilibili;
 mod context;

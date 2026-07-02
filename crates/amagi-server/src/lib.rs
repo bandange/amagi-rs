@@ -1,4 +1,5 @@
 //! Axum HTTP server and node transport for amagi.
+#![warn(missing_docs)]
 
 mod config;
 pub mod node;

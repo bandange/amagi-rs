@@ -1,3 +1,5 @@
+//! Client request configuration, cookies, and resolved request profiles.
+
 use std::collections::BTreeMap;
 use std::io;
 use std::path::Path;

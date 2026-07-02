@@ -1,4 +1,5 @@
 //! Command-line runtime for amagi.
+#![warn(missing_docs)]
 
 pub mod app;
 pub mod cli;
