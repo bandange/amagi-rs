@@ -1,6 +1,50 @@
 (function () {
+  var CODE_LANGUAGE_ALIASES = {
+    dotenv: "ini",
+    env: "ini",
+    powershell: "plaintext",
+    ps1: "plaintext",
+    pwsh: "plaintext",
+  };
+
   function codeBlockScope(root) {
     return root && root.querySelectorAll ? root : document;
+  }
+
+  function codeBlockLanguage(block) {
+    for (var index = 0; index < block.classList.length; index += 1) {
+      var className = block.classList[index];
+
+      if (className.indexOf("language-") === 0) {
+        return className.slice("language-".length).toLowerCase();
+      }
+    }
+
+    return "";
+  }
+
+  function normalizeCodeBlockLanguage(block) {
+    if (!window.hljs || !window.hljs.getLanguage) {
+      return;
+    }
+
+    var requestedLanguage = codeBlockLanguage(block);
+    if (!requestedLanguage) {
+      return;
+    }
+
+    var highlightLanguage =
+      CODE_LANGUAGE_ALIASES[requestedLanguage] || requestedLanguage;
+
+    if (!window.hljs.getLanguage(highlightLanguage)) {
+      highlightLanguage = "plaintext";
+    }
+
+    if (highlightLanguage !== requestedLanguage) {
+      block.classList.remove("language-" + requestedLanguage);
+      block.classList.add("language-" + highlightLanguage);
+      block.dataset.originalLanguage = requestedLanguage;
+    }
   }
 
   function fallbackCopy(text) {
@@ -99,6 +143,7 @@
     scope
       .querySelectorAll(".markdown-body pre code:not([data-highlighted])")
       .forEach(function (block) {
+        normalizeCodeBlockLanguage(block);
         window.hljs.highlightElement(block);
       });
   }
@@ -112,9 +157,13 @@
     processCodeBlocks(root || document);
   };
 
-  document.addEventListener("DOMContentLoaded", function () {
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", function () {
+      processCodeBlocks(document);
+    });
+  } else {
     processCodeBlocks(document);
-  });
+  }
 
   var observer = new MutationObserver(function (mutations) {
     mutations.forEach(function (mutation) {

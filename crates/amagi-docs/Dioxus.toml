@@ -13,8 +13,8 @@ reload_html = true
 watch_path = ["src", "assets", "../../docs"]
 
 [web.resource]
-style = ["main.css"]
-script = ["highlight.min.js", "syntax-highlight.js"]
+style = []
+script = []
 
 [web.resource.dev]
 script = []

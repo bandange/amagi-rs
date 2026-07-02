@@ -74,11 +74,6 @@ The service runtime reads the same shared environment variables as the Rust API:
 - `AMAGI_HOST`
 - `AMAGI_PORT`
 
-On top of those shared variables, `amagi serve` also supports a node-aware set
-of service-mode parameters. These can be provided through environment variables
-or `.env`, and can also be overridden by the corresponding `amagi serve` CLI
-options.
-
 `amagi serve` also loads layered dotenv configuration automatically during startup.
 
 Default dotenv lookup order:
@@ -95,60 +90,7 @@ Override variable:
 
 - `AMAGI_USER_ENV_FILE`
 
-### 2.1 Node-aware Service Parameters
-
-These parameters fall into three groups: proxy controls, node transport, and
-per-platform routing.
-
-#### 2.1.1 Proxy And Node Transport
-
-| Variable | Default | Description |
-| --- | --- | --- |
-| `AMAGI_PROXY_TIMEOUT_MS` | `15000` | request timeout shared by HTTP upstream proxying and node dispatch |
-| `AMAGI_PROXY_MAX_HOPS` | `4` | maximum HTTP proxy hop count |
-| `AMAGI_NODE_ID` | none | stable node id once node transport is enabled |
-| `AMAGI_NODE_ROLE` | inferred | node role; supports `root`, `worker`, `relay`, `hybrid` |
-| `AMAGI_NODE_ACCEPT_DOWNSTREAM` | role-derived | whether downstream node sessions are accepted; defaults to `true` for `root` / `relay` and `false` for `worker` / `hybrid` |
-| `AMAGI_NODE_CONNECT_UPSTREAM` | none | upstream `wss://` endpoint this node connects to |
-| `AMAGI_NODE_AUTH_TOKEN` | none | shared node auth token; required once node transport is configured |
-| `AMAGI_NODE_AUTH_CREDENTIALS` | none | optional per-node credential map, for example `worker-a=secret-a,worker-b=secret-b` |
-| `AMAGI_NODE_CONTROL_TOKEN` | falls back to `AMAGI_NODE_AUTH_TOKEN` | bearer token for internal control APIs |
-| `AMAGI_NODE_ALLOW_INSECURE_WS` | `false` | allow insecure `ws://` upstream transport |
-| `AMAGI_NODE_HEARTBEAT_MS` | `10000` | node heartbeat interval |
-| `AMAGI_NODE_REQUEST_TIMEOUT_MS` | `15000` | timeout budget for one node task |
-| `AMAGI_NODE_MAX_HOPS` | `4` | maximum node-routing hop count |
-| `AMAGI_NODE_MAX_CONCURRENT_TASKS` | `8` | maximum number of concurrent node tasks executed locally |
-| `AMAGI_NODE_AUTO_CLAIM_PUBLISHED_ROUTES` | `false` | automatically claim locally executable platforms upstream after connect |
-
-#### 2.1.2 Per-platform Routing Parameters
-
-`<PLATFORM>` currently maps to:
-
-- `DOUYIN`
-- `BILIBILI`
-- `KUAISHOU`
-- `XIAOHONGSHU`
-- `TWITTER`
-
-| Variable family | Description |
-| --- | --- |
-| `AMAGI_PLATFORM_<PLATFORM>_MODE` | serving mode for the platform; supports `enabled`, `local`, `upstream`, `disabled`, where `enabled` aliases `local` |
-| `AMAGI_PLATFORM_<PLATFORM>_ROUTE` | static route target for the platform; supports `local`, `disabled`, or `node:<id>` |
-| `AMAGI_PLATFORM_<PLATFORM>_UPSTREAM` | static HTTP upstream base URL for the platform; used as an HTTP fallback inside the generic `upstream` path when configured |
-
-#### 2.1.3 Validation Rules
-
-- As soon as any node-transport setting is present, the runtime attempts to resolve the full node configuration.
-- When node transport is enabled, `AMAGI_NODE_ID` and `AMAGI_NODE_AUTH_TOKEN` are both required.
-- `AMAGI_NODE_ROLE=worker` and `relay` require `AMAGI_NODE_CONNECT_UPSTREAM`.
-- `AMAGI_NODE_CONNECT_UPSTREAM` must use `wss://` unless `AMAGI_NODE_ALLOW_INSECURE_WS=true`.
-- `*_ROUTE=node:<id>` also requires node-transport configuration to exist.
-- `*_ROUTE=node:<id>` means "pin this platform to one node", not "switch to a separate platform mode".
-
-For request-routing, advertisement, drain / isolate, and control-plane behavior,
-pair this section with the `serve` command table in the CLI reference.
-
-### 2.2 Per-request Cookie Override Headers
+### 2.1 Per-request Cookie Override Headers
 
 Besides startup environment variables, `amagi serve` also accepts per-request
 cookie overrides through HTTP headers:
@@ -172,9 +114,64 @@ request should use guest-mode behavior instead.
 These headers are intended for direct HTTP callers such as `curl`, automation
 scripts, reverse proxies, and backend services.
 
-## 3. Response Conventions
+## 3. Nodes And Service Routing
 
-### 3.1 Success Responses
+These parameters fall into three groups: proxy controls, node transport, and
+per-platform routing.
+They can be provided through environment variables or `.env`, and can also be
+overridden by the corresponding `amagi serve` CLI options.
+
+### 3.1 Proxy And Node Transport
+
+| Variable | Default | Description |
+| --- | --- | --- |
+| `AMAGI_PROXY_TIMEOUT_MS` | `15000` | request timeout shared by HTTP upstream proxying and node dispatch |
+| `AMAGI_PROXY_MAX_HOPS` | `4` | maximum HTTP proxy hop count |
+| `AMAGI_NODE_ID` | none | stable node id once node transport is enabled |
+| `AMAGI_NODE_ROLE` | inferred | node role; supports `root`, `worker`, `relay`, `hybrid` |
+| `AMAGI_NODE_ACCEPT_DOWNSTREAM` | role-derived | whether downstream node sessions are accepted; defaults to `true` for `root` / `relay` and `false` for `worker` / `hybrid` |
+| `AMAGI_NODE_CONNECT_UPSTREAM` | none | upstream `wss://` endpoint this node connects to |
+| `AMAGI_NODE_AUTH_TOKEN` | none | shared node auth token; required once node transport is configured |
+| `AMAGI_NODE_AUTH_CREDENTIALS` | none | optional per-node credential map, for example `worker-a=secret-a,worker-b=secret-b` |
+| `AMAGI_NODE_CONTROL_TOKEN` | falls back to `AMAGI_NODE_AUTH_TOKEN` | bearer token for internal control APIs |
+| `AMAGI_NODE_ALLOW_INSECURE_WS` | `false` | allow insecure `ws://` upstream transport |
+| `AMAGI_NODE_HEARTBEAT_MS` | `10000` | node heartbeat interval |
+| `AMAGI_NODE_REQUEST_TIMEOUT_MS` | `15000` | timeout budget for one node task |
+| `AMAGI_NODE_MAX_HOPS` | `4` | maximum node-routing hop count |
+| `AMAGI_NODE_MAX_CONCURRENT_TASKS` | `8` | maximum number of concurrent node tasks executed locally |
+| `AMAGI_NODE_AUTO_CLAIM_PUBLISHED_ROUTES` | `false` | automatically claim locally executable platforms upstream after connect |
+
+### 3.2 Per-platform Routing Parameters
+
+`<PLATFORM>` currently maps to:
+
+- `DOUYIN`
+- `BILIBILI`
+- `KUAISHOU`
+- `XIAOHONGSHU`
+- `TWITTER`
+
+| Variable family | Description |
+| --- | --- |
+| `AMAGI_PLATFORM_<PLATFORM>_MODE` | serving mode for the platform; supports `enabled`, `local`, `upstream`, `disabled`, where `enabled` aliases `local` |
+| `AMAGI_PLATFORM_<PLATFORM>_ROUTE` | static route target for the platform; supports `local`, `disabled`, or `node:<id>` |
+| `AMAGI_PLATFORM_<PLATFORM>_UPSTREAM` | static HTTP upstream base URL for the platform; used as an HTTP fallback inside the generic `upstream` path when configured |
+
+### 3.3 Validation Rules
+
+- As soon as any node-transport setting is present, the runtime attempts to resolve the full node configuration.
+- When node transport is enabled, `AMAGI_NODE_ID` and `AMAGI_NODE_AUTH_TOKEN` are both required.
+- `AMAGI_NODE_ROLE=worker` and `relay` require `AMAGI_NODE_CONNECT_UPSTREAM`.
+- `AMAGI_NODE_CONNECT_UPSTREAM` must use `wss://` unless `AMAGI_NODE_ALLOW_INSECURE_WS=true`.
+- `*_ROUTE=node:<id>` also requires node-transport configuration to exist.
+- `*_ROUTE=node:<id>` means "pin this platform to one node", not "switch to a separate platform mode".
+
+For request-routing, advertisement, drain / isolate, and control-plane behavior,
+pair this section with the `serve` command table in the CLI reference.
+
+## 4. Response Conventions
+
+### 4.1 Success Responses
 
 There are two success shapes:
 
@@ -183,7 +180,7 @@ There are two success shapes:
 - Business endpoints return the raw platform payload serialized from the Rust API
   fetcher result.
 
-### 3.2 Error Responses
+### 4.2 Error Responses
 
 API spec lookup errors:
 
@@ -209,14 +206,14 @@ Status-code policy:
 - `502 Bad Gateway`: upstream HTTP, upstream JSON, or upstream response errors
 - `404 Not Found`: unknown platform in `/api/spec/{platform}`
 
-### 3.3 Parameter Conventions
+### 4.3 Parameter Conventions
 
 - Path parameters are shown as `{name}`.
 - Optional query parameters are marked with `?`.
 - POST bodies are JSON.
 - All routes currently return JSON.
 
-## 4. Metadata Endpoints
+## 5. Metadata Endpoints
 
 | Method | Path | Parameters | Response | Description |
 | --- | --- | --- | --- | --- |
@@ -233,7 +230,7 @@ Valid `{platform}` values:
 - `twitter`
 - `xiaohongshu`
 
-## 5. Bilibili Routes
+## 6. Bilibili Routes
 
 Base path: `/api/bilibili`
 
@@ -267,7 +264,7 @@ Base path: `/api/bilibili`
 | `GET` | `/api/bilibili/convert/av/{aid}` | `aid` | none | Convert AV to BV |
 | `GET` | `/api/bilibili/convert/bv/{bvid}` | `bvid` | none | Convert BV to AV |
 
-## 6. Douyin Routes
+## 7. Douyin Routes
 
 Base path: `/api/douyin`
 
@@ -297,7 +294,7 @@ Supported query enums:
 
 - `/api/douyin/search`: `type=general|user|video`
 
-## 7. Kuaishou Routes
+## 8. Kuaishou Routes
 
 Base path: `/api/kuaishou`
 
@@ -310,7 +307,7 @@ Base path: `/api/kuaishou`
 | `GET` | `/api/kuaishou/user/{principal_id}/works` | `principal_id` | query: `pcursor?`, `count?` | Fetch a user's work list |
 | `GET` | `/api/kuaishou/live/{principal_id}` | `principal_id` | none | Fetch live room information |
 
-## 8. Twitter / X Routes
+## 9. Twitter / X Routes
 
 Base path: `/api/twitter`
 
@@ -335,7 +332,7 @@ Supported query enums:
 
 - `/api/twitter/search/tweets`: `search_type=latest|top`
 
-## 9. Xiaohongshu Routes
+## 10. Xiaohongshu Routes
 
 Base path: `/api/xiaohongshu`
 
@@ -354,7 +351,7 @@ Supported query enums:
 - `/api/xiaohongshu/search`: `sort=general|time_descending|popularity_descending`
 - `/api/xiaohongshu/search`: `note_type=all|video|image`
 
-## 10. Example Requests
+## 11. Example Requests
 
 ```bash
 curl "http://127.0.0.1:4567/health"
